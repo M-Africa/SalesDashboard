@@ -148,6 +148,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 .fpill.active{background:var(--red);color:#fff;border-color:var(--red)}
 .filter-select{width:100%;padding:7px 10px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:rgba(255,255,255,.75);font-size:11.5px;font-family:var(--font-body);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.35)'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 .filter-select:focus{outline:none;border-color:var(--red)}
+.filter-select option{background:#2C2A27;color:#fff}
 
 #user-bar{display:none;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.55);padding:14px 22px;border-top:1px solid rgba(255,255,255,.06);margin-top:auto}
 #user-bar.visible{display:flex}
@@ -465,7 +466,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 //  e.g. "https://mixta-dashboard.netlify.app"
 //  Do NOT include a trailing slash
 // ══════════════════════════════════════════════════════════════════════════
-const NETLIFY_URL = "masalesdash.netlify.app";
+const NETLIFY_URL = "https://masalesdash.netlify.app";
 
 // ══════════════════════════════════════════════════════════════════════════
 //  CONFIGURATION
@@ -573,45 +574,66 @@ async function handleSetPassword() {
   btn.classList.add("loading"); btn.disabled = true;
 
   try {
-    // Exchange the one-time token for an access token
-    const tokenRes = await fetch(`${API}/token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `grant_type=authorization_code&code=${encodeURIComponent(pendingToken)}`
-    });
-    const tokenData = await tokenRes.json();
-
-    if (!tokenRes.ok || !tokenData.access_token) {
-      throw new Error("Your invite or reset link has expired. Please request a new one from the admin.");
-    }
-
-    // Use that access token to set the new password
+    // Netlify Identity: use the raw invite/recovery token directly as a
+    // Bearer token to PUT the new password — no exchange step needed.
     const updateRes = await fetch(`${API}/user`, {
       method: "PUT",
       headers: {
         "Content-Type":  "application/json",
-        "Authorization": `Bearer ${tokenData.access_token}`
+        "Authorization": `Bearer ${pendingToken}`
       },
       body: JSON.stringify({ password: pwd1 })
     });
-    const userData = await updateRes.json();
+
+    // Response may be empty on some Netlify versions — handle both cases
+    const text = await updateRes.text();
+    const userData = text ? JSON.parse(text) : {};
 
     if (!updateRes.ok) {
+      const msg = userData.msg || userData.error || "";
+      if (updateRes.status === 401 || updateRes.status === 403 || msg.toLowerCase().includes("expired")) {
+        throw new Error("Your invite or reset link has expired. Please ask the admin to send a new invite, or use 'Forgot your password?' on the login screen.");
+      }
       throw new Error("Could not set password. Please try again or contact your admin.");
+    }
+
+    // Now log in properly with email + new password to get a valid session token
+    const email = userData.email || "";
+    const tokenRes = await fetch(`${API}/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `grant_type=password&username=${encodeURIComponent(email)}&password=${encodeURIComponent(pwd1)}`
+    });
+    const tokenData = await tokenRes.json();
+
+    if (!tokenRes.ok || !tokenData.access_token) {
+      // Password was set — just ask them to log in normally
+      errEl.style.background  = "var(--green-lite)";
+      errEl.style.borderColor = "#9ECDB0";
+      errEl.style.color       = "var(--green)";
+      errEl.textContent       = "✓ Password set successfully! Please sign in with your email and password.";
+      errEl.classList.add("visible");
+      setTimeout(() => {
+        document.getElementById("panel-set-password").style.display = "none";
+        document.getElementById("panel-login").style.display        = "block";
+        document.getElementById("email-input").value = email;
+        document.getElementById("password-input").focus();
+      }, 2000);
+      btn.classList.remove("loading"); btn.disabled = false;
+      return;
     }
 
     saveSession(tokenData.access_token, userData);
     pendingToken = null;
     tokenType    = null;
 
-    // Show success briefly then open dashboard
-    errEl.style.background   = "var(--green-lite)";
-    errEl.style.borderColor  = "#9ECDB0";
-    errEl.style.color        = "var(--green)";
-    errEl.textContent        = "✓ Password set successfully! Signing you in…";
+    errEl.style.background  = "var(--green-lite)";
+    errEl.style.borderColor = "#9ECDB0";
+    errEl.style.color       = "var(--green)";
+    errEl.textContent       = "✓ Password set! Signing you in…";
     errEl.classList.add("visible");
 
-    setTimeout(() => showDashboard(userData), 1000);
+    setTimeout(() => showDashboard(userData), 1200);
 
   } catch(e) {
     errEl.style = "";
