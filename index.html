@@ -226,45 +226,86 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 <!-- ── AUTH GATE ──────────────────────────────────────────────────────── -->
 <div id="auth-gate">
   <div class="auth-card">
+
+    <!-- Shared logo — always visible -->
     <div class="auth-logo">
-      <img id="auth-logo-img"
-           src="https://mixtafrica.com/wp-content/uploads/2023/09/mixtafrica-logo-1.png"
+      <img src="https://mixtafrica.com/wp-content/uploads/2023/09/mixtafrica-logo-1.png"
            alt="Mixta Africa"
            onerror="this.style.display='none';document.getElementById('auth-logo-fallback').style.display='block'">
       <span id="auth-logo-fallback" class="auth-logo-fallback" style="display:none">Mixta Africa</span>
     </div>
 
-    <h1 class="auth-title">Operations Dashboard</h1>
-    <p class="auth-sub">Restricted to authorised Mixta Africa personnel. Sign in with your approved email address to continue.</p>
+    <!-- ── PANEL 1: LOGIN (default) ── -->
+    <div id="panel-login">
+      <h1 class="auth-title">Operations Dashboard</h1>
+      <p class="auth-sub">Restricted to authorised Mixta Africa personnel. Sign in with your approved email address to continue.</p>
 
-    <div class="auth-error" id="auth-error"></div>
+      <div class="auth-error" id="auth-error"></div>
 
-    <div class="auth-field">
-      <label for="email-input">Email address</label>
-      <input type="email" id="email-input" placeholder="you@mixtaafrica.com" autocomplete="email">
+      <div class="auth-field">
+        <label for="email-input">Email address</label>
+        <input type="email" id="email-input" placeholder="you@mixtaafrica.com" autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label for="password-input">Password</label>
+        <input type="password" id="password-input" placeholder="Enter your password" autocomplete="current-password">
+      </div>
+
+      <button class="auth-btn" id="login-btn" onclick="handleLogin()">
+        <div class="spinner"></div>
+        <span class="btn-text">Sign in to your account</span>
+      </button>
+
+      <div class="auth-divider">or</div>
+
+      <p class="auth-request">
+        Don't have access? <a href="mailto:operations@mixtaafrica.com?subject=Dashboard access request">Request access from admin</a><br>
+        <a href="#" onclick="handleForgotPassword(event)" style="margin-top:4px;display:inline-block">Forgot your password?</a>
+      </p>
+
+      <div class="auth-footer">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Secured by Netlify Identity · Access managed by Mixta Africa admin
+      </div>
     </div>
 
-    <div class="auth-field">
-      <label for="password-input">Password</label>
-      <input type="password" id="password-input" placeholder="Enter your password" autocomplete="current-password">
+    <!-- ── PANEL 2: SET PASSWORD (invite & recovery tokens) ── -->
+    <div id="panel-set-password" style="display:none">
+      <h1 class="auth-title" id="set-pwd-title">Set your password</h1>
+      <p class="auth-sub" id="set-pwd-sub">Choose a secure password for your Mixta Africa dashboard account.</p>
+
+      <div class="auth-error" id="set-pwd-error"></div>
+
+      <div class="auth-field">
+        <label for="new-password-input">New password</label>
+        <input type="password" id="new-password-input" placeholder="Minimum 8 characters" autocomplete="new-password">
+      </div>
+      <div class="auth-field">
+        <label for="confirm-password-input">Confirm password</label>
+        <input type="password" id="confirm-password-input" placeholder="Re-enter your password" autocomplete="new-password">
+      </div>
+
+      <!-- Password strength indicator -->
+      <div style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink-mute);margin-bottom:4px">
+          <span>Password strength</span><span id="strength-label">—</span>
+        </div>
+        <div style="height:4px;background:var(--stone);border-radius:999px;overflow:hidden">
+          <div id="strength-bar" style="height:100%;width:0%;border-radius:999px;transition:width .3s,background .3s"></div>
+        </div>
+      </div>
+
+      <button class="auth-btn" id="set-pwd-btn" onclick="handleSetPassword()">
+        <div class="spinner"></div>
+        <span class="btn-text">Set password &amp; sign in</span>
+      </button>
+
+      <div class="auth-footer" style="margin-top:20px">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Secured by Netlify Identity · Access managed by Mixta Africa admin
+      </div>
     </div>
 
-    <button class="auth-btn" id="login-btn" onclick="handleLogin()">
-      <div class="spinner"></div>
-      <span class="btn-text">Sign in to your account</span>
-    </button>
-
-    <div class="auth-divider">or</div>
-
-    <p class="auth-request">
-      Don't have access? <a href="mailto:operations@mixtaafrica.com?subject=Dashboard access request">Request access from admin</a><br>
-      <a href="#" id="forgot-link" onclick="handleForgotPassword(event)" style="margin-top:4px;display:inline-block">Forgot your password?</a>
-    </p>
-
-    <div class="auth-footer">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-      Secured by Netlify Identity · Access managed by Mixta Africa admin
-    </div>
   </div>
 </div>
 
@@ -424,7 +465,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 //  e.g. "https://mixta-dashboard.netlify.app"
 //  Do NOT include a trailing slash
 // ══════════════════════════════════════════════════════════════════════════
-const NETLIFY_URL = "https://masalesdash.netlify.app";
+const NETLIFY_URL = "masalesdash.netlify.app";
 
 // ══════════════════════════════════════════════════════════════════════════
 //  CONFIGURATION
@@ -441,8 +482,146 @@ const CONFIG = {
 const API = `${NETLIFY_URL}/.netlify/identity`;
 let authToken   = null;
 let currentUser = null;
+let pendingToken = null;  // holds invite_token or recovery_token from URL hash
+let tokenType    = null;  // "invite" | "recovery"
 
-// Restore session from localStorage on page load
+// ── Parse URL hash for Netlify identity tokens ────────────────────────────
+function parseHashTokens() {
+  const hash   = window.location.hash.substring(1); // strip leading #
+  const params = new URLSearchParams(hash);
+  if (params.get("invite_token")) {
+    pendingToken = params.get("invite_token");
+    tokenType    = "invite";
+    // Clean the token from the URL bar without reloading
+    history.replaceState(null, "", window.location.pathname);
+    return true;
+  }
+  if (params.get("recovery_token")) {
+    pendingToken = params.get("recovery_token");
+    tokenType    = "recovery";
+    history.replaceState(null, "", window.location.pathname);
+    return true;
+  }
+  return false;
+}
+
+// ── Show the set-password panel ───────────────────────────────────────────
+function showSetPasswordPanel() {
+  document.getElementById("panel-login").style.display        = "none";
+  document.getElementById("panel-set-password").style.display = "block";
+  if (tokenType === "invite") {
+    document.getElementById("set-pwd-title").textContent = "Welcome — set your password";
+    document.getElementById("set-pwd-sub").textContent   = "Your Mixta Africa dashboard account is ready. Choose a secure password to complete your setup.";
+  } else {
+    document.getElementById("set-pwd-title").textContent = "Reset your password";
+    document.getElementById("set-pwd-sub").textContent   = "Choose a new secure password for your Mixta Africa dashboard account.";
+  }
+  document.getElementById("new-password-input").focus();
+}
+
+// ── Password strength meter ───────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  const pwdInput = document.getElementById("new-password-input");
+  if (pwdInput) {
+    pwdInput.addEventListener("input", function() {
+      const v = this.value;
+      let score = 0;
+      if (v.length >= 8)  score++;
+      if (v.length >= 12) score++;
+      if (/[A-Z]/.test(v)) score++;
+      if (/[0-9]/.test(v)) score++;
+      if (/[^A-Za-z0-9]/.test(v)) score++;
+      const bar   = document.getElementById("strength-bar");
+      const label = document.getElementById("strength-label");
+      const map   = [
+        { w:"0%",   bg:"transparent", t:"—" },
+        { w:"25%",  bg:"#E8A0A8",     t:"Weak" },
+        { w:"50%",  bg:"#ba7517",     t:"Fair" },
+        { w:"75%",  bg:"#185FA5",     t:"Good" },
+        { w:"100%", bg:"#1B6B35",     t:"Strong" },
+      ];
+      const s = map[Math.min(score, 4)];
+      bar.style.width      = s.w;
+      bar.style.background = s.bg;
+      label.textContent    = s.t;
+      label.style.color    = s.bg === "transparent" ? "var(--ink-mute)" : s.bg;
+    });
+  }
+});
+
+// ── Handle set password submit ────────────────────────────────────────────
+async function handleSetPassword() {
+  const pwd1  = document.getElementById("new-password-input").value;
+  const pwd2  = document.getElementById("confirm-password-input").value;
+  const btn   = document.getElementById("set-pwd-btn");
+  const errEl = document.getElementById("set-pwd-error");
+  errEl.classList.remove("visible");
+
+  if (!pwd1) {
+    errEl.textContent = "Please enter a password.";
+    errEl.classList.add("visible"); return;
+  }
+  if (pwd1.length < 8) {
+    errEl.textContent = "Password must be at least 8 characters.";
+    errEl.classList.add("visible"); return;
+  }
+  if (pwd1 !== pwd2) {
+    errEl.textContent = "Passwords do not match. Please try again.";
+    errEl.classList.add("visible"); return;
+  }
+
+  btn.classList.add("loading"); btn.disabled = true;
+
+  try {
+    // Exchange the one-time token for an access token
+    const tokenRes = await fetch(`${API}/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `grant_type=authorization_code&code=${encodeURIComponent(pendingToken)}`
+    });
+    const tokenData = await tokenRes.json();
+
+    if (!tokenRes.ok || !tokenData.access_token) {
+      throw new Error("Your invite or reset link has expired. Please request a new one from the admin.");
+    }
+
+    // Use that access token to set the new password
+    const updateRes = await fetch(`${API}/user`, {
+      method: "PUT",
+      headers: {
+        "Content-Type":  "application/json",
+        "Authorization": `Bearer ${tokenData.access_token}`
+      },
+      body: JSON.stringify({ password: pwd1 })
+    });
+    const userData = await updateRes.json();
+
+    if (!updateRes.ok) {
+      throw new Error("Could not set password. Please try again or contact your admin.");
+    }
+
+    saveSession(tokenData.access_token, userData);
+    pendingToken = null;
+    tokenType    = null;
+
+    // Show success briefly then open dashboard
+    errEl.style.background   = "var(--green-lite)";
+    errEl.style.borderColor  = "#9ECDB0";
+    errEl.style.color        = "var(--green)";
+    errEl.textContent        = "✓ Password set successfully! Signing you in…";
+    errEl.classList.add("visible");
+
+    setTimeout(() => showDashboard(userData), 1000);
+
+  } catch(e) {
+    errEl.style = "";
+    errEl.textContent = e.message || "Something went wrong. Please try again.";
+    errEl.classList.add("visible");
+    btn.classList.remove("loading"); btn.disabled = false;
+  }
+}
+
+// ── Session helpers ───────────────────────────────────────────────────────
 function restoreSession() {
   try {
     const saved = localStorage.getItem("mixta_auth");
@@ -459,7 +638,7 @@ function saveSession(token, user) {
   authToken   = token;
   currentUser = user;
   localStorage.setItem("mixta_auth", JSON.stringify({
-    token, user, expires: Date.now() + 60 * 60 * 1000 // 1 hour
+    token, user, expires: Date.now() + 60 * 60 * 1000
   }));
 }
 
@@ -469,12 +648,12 @@ function clearSession() {
   localStorage.removeItem("mixta_auth");
 }
 
+// ── Login ─────────────────────────────────────────────────────────────────
 async function handleLogin() {
   const email    = document.getElementById("email-input").value.trim();
   const password = document.getElementById("password-input").value;
   const btn      = document.getElementById("login-btn");
   const errEl    = document.getElementById("auth-error");
-
   errEl.classList.remove("visible");
 
   if (!email || !password) {
@@ -490,24 +669,18 @@ async function handleLogin() {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `grant_type=password&username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
     });
-
     const data = await res.json();
 
     if (!res.ok) {
       const msg = data.error_description || data.msg || data.error || "";
-      if (msg.toLowerCase().includes("invalid") || msg.toLowerCase().includes("failed") || res.status === 400) {
+      if (res.status === 400 || msg.toLowerCase().includes("invalid") || msg.toLowerCase().includes("failed")) {
         throw new Error("Incorrect email or password. Please try again.");
       }
-      if (res.status === 422) {
-        throw new Error("Your account has not been confirmed yet. Please check your email for an invite link from Mixta Africa.");
-      }
-      throw new Error("Unable to sign in. Please try again or contact your admin.");
+      throw new Error("Unable to sign in. Please contact your admin.");
     }
 
-    // Fetch user profile
     const userRes  = await fetch(`${API}/user`, { headers: { "Authorization": `Bearer ${data.access_token}` } });
     const userData = await userRes.json();
-
     saveSession(data.access_token, userData);
     showDashboard(userData);
 
@@ -519,6 +692,7 @@ async function handleLogin() {
   btn.classList.remove("loading"); btn.disabled = false;
 }
 
+// ── Forgot password ───────────────────────────────────────────────────────
 async function handleForgotPassword(e) {
   e.preventDefault();
   const email = document.getElementById("email-input").value.trim();
@@ -536,10 +710,10 @@ async function handleForgotPassword(e) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email })
     });
-    errEl.style.background = "var(--green-lite)";
+    errEl.style.background  = "var(--green-lite)";
     errEl.style.borderColor = "#9ECDB0";
-    errEl.style.color = "var(--green)";
-    errEl.textContent = `✓ Password reset email sent to ${email}. Check your inbox.`;
+    errEl.style.color       = "var(--green)";
+    errEl.textContent       = `✓ Password reset email sent to ${email}. Click the link in that email — it will bring you back here to set a new password.`;
     errEl.classList.add("visible");
   } catch(e) {
     errEl.style = "";
@@ -548,15 +722,19 @@ async function handleForgotPassword(e) {
   }
 }
 
+// ── Logout ────────────────────────────────────────────────────────────────
 function handleLogout() {
   clearSession();
   document.getElementById("dashboard").style.display = "none";
   document.getElementById("auth-gate").classList.remove("hidden");
-  document.getElementById("email-input").value = "";
+  document.getElementById("panel-login").style.display        = "block";
+  document.getElementById("panel-set-password").style.display = "none";
+  document.getElementById("email-input").value    = "";
   document.getElementById("password-input").value = "";
   document.getElementById("user-bar").classList.remove("visible");
 }
 
+// ── Show dashboard after auth ─────────────────────────────────────────────
 function showDashboard(user) {
   document.getElementById("auth-gate").classList.add("hidden");
   document.getElementById("dashboard").style.display = "grid";
@@ -569,13 +747,9 @@ function showDashboard(user) {
   refreshData();
 }
 
-// Allow Enter key to submit login
-document.getElementById("password-input").addEventListener("keydown", e => {
-  if (e.key === "Enter") handleLogin();
-});
-document.getElementById("email-input").addEventListener("keydown", e => {
-  if (e.key === "Enter") document.getElementById("password-input").focus();
-});
+// Enter key support
+document.getElementById("password-input").addEventListener("keydown", e => { if(e.key==="Enter") handleLogin(); });
+document.getElementById("email-input").addEventListener("keydown",    e => { if(e.key==="Enter") document.getElementById("password-input").focus(); });
 
 // ══════════════════════════════════════════════════════════════════════════
 //  FALLBACK DATA
@@ -764,12 +938,20 @@ function setView(v,el){document.querySelectorAll(".nav-item").forEach(n=>n.class
 //  INIT — check for existing session, else show login
 // ══════════════════════════════════════════════════════════════════════════
 (function init(){
-  if(restoreSession()){
-    showDashboard(currentUser);
-  } else {
+  // 1. Check for invite_token or recovery_token in the URL hash first
+  if (parseHashTokens()) {
     document.getElementById("loading-overlay").classList.add("hidden");
+    showSetPasswordPanel();
+    return;
   }
-  setInterval(refreshData,CONFIG.REFRESH_INTERVAL);
+  // 2. Check for an existing valid session
+  if (restoreSession()) {
+    showDashboard(currentUser);
+    return;
+  }
+  // 3. No token, no session — show login
+  document.getElementById("loading-overlay").classList.add("hidden");
+  setInterval(refreshData, CONFIG.REFRESH_INTERVAL);
 })();
 </script>
 </body>
