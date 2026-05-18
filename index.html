@@ -557,6 +557,7 @@ async function handleSetPassword() {
   const btn   = document.getElementById("set-pwd-btn");
   const errEl = document.getElementById("set-pwd-error");
   errEl.classList.remove("visible");
+  errEl.removeAttribute("style");
 
   if (!pwd1) {
     errEl.textContent = "Please enter a password.";
@@ -574,70 +575,96 @@ async function handleSetPassword() {
   btn.classList.add("loading"); btn.disabled = true;
 
   try {
-    // Netlify Identity: use the raw invite/recovery token directly as a
-    // Bearer token to PUT the new password — no exchange step needed.
+    // ── STEP 1: Verify the token with Netlify's /verify endpoint ──────────
+    // This is the correct Netlify Identity flow for both invite and recovery.
+    // It returns a full access_token we can then use.
+    const verifyType = tokenType === "invite" ? "signup" : "recovery";
+    const verifyRes  = await fetch(`${API}/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: pendingToken, type: verifyType })
+    });
+
+    const verifyText = await verifyRes.text();
+    let   verifyData = {};
+    try { verifyData = JSON.parse(verifyText); } catch(e) {}
+
+    if (!verifyRes.ok || !verifyData.access_token) {
+      const msg = (verifyData.msg || verifyData.error || "").toLowerCase();
+      if (msg.includes("expired") || verifyRes.status === 401 || verifyRes.status === 422) {
+        throw new Error(
+          "EXPIRED" // handled specially below
+        );
+      }
+      throw new Error("Verification failed. Please request a new invite from the admin.");
+    }
+
+    const accessToken = verifyData.access_token;
+
+    // ── STEP 2: Use the access token to set the new password ───────────────
     const updateRes = await fetch(`${API}/user`, {
       method: "PUT",
       headers: {
         "Content-Type":  "application/json",
-        "Authorization": `Bearer ${pendingToken}`
+        "Authorization": `Bearer ${accessToken}`
       },
       body: JSON.stringify({ password: pwd1 })
     });
 
-    // Response may be empty on some Netlify versions — handle both cases
-    const text = await updateRes.text();
-    const userData = text ? JSON.parse(text) : {};
+    const updateText = await updateRes.text();
+    let   userData   = {};
+    try { userData = JSON.parse(updateText); } catch(e) {}
 
     if (!updateRes.ok) {
-      const msg = userData.msg || userData.error || "";
-      if (updateRes.status === 401 || updateRes.status === 403 || msg.toLowerCase().includes("expired")) {
-        throw new Error("Your invite or reset link has expired. Please ask the admin to send a new invite, or use 'Forgot your password?' on the login screen.");
-      }
-      throw new Error("Could not set password. Please try again or contact your admin.");
+      throw new Error("Could not save your password. Please try again or contact your admin.");
     }
 
-    // Now log in properly with email + new password to get a valid session token
-    const email = userData.email || "";
-    const tokenRes = await fetch(`${API}/token`, {
+    // ── STEP 3: Log in with the new password to get a fresh session ────────
+    const email     = userData.email || verifyData.email || "";
+    const loginRes  = await fetch(`${API}/token`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `grant_type=password&username=${encodeURIComponent(email)}&password=${encodeURIComponent(pwd1)}`
     });
-    const tokenData = await tokenRes.json();
+    const loginData = loginRes.ok ? await loginRes.json() : {};
 
-    if (!tokenRes.ok || !tokenData.access_token) {
-      // Password was set — just ask them to log in normally
-      errEl.style.background  = "var(--green-lite)";
-      errEl.style.borderColor = "#9ECDB0";
-      errEl.style.color       = "var(--green)";
-      errEl.textContent       = "✓ Password set successfully! Please sign in with your email and password.";
-      errEl.classList.add("visible");
-      setTimeout(() => {
-        document.getElementById("panel-set-password").style.display = "none";
-        document.getElementById("panel-login").style.display        = "block";
-        document.getElementById("email-input").value = email;
-        document.getElementById("password-input").focus();
-      }, 2000);
-      btn.classList.remove("loading"); btn.disabled = false;
-      return;
-    }
-
-    saveSession(tokenData.access_token, userData);
     pendingToken = null;
     tokenType    = null;
 
     errEl.style.background  = "var(--green-lite)";
     errEl.style.borderColor = "#9ECDB0";
     errEl.style.color       = "var(--green)";
-    errEl.textContent       = "✓ Password set! Signing you in…";
-    errEl.classList.add("visible");
 
-    setTimeout(() => showDashboard(userData), 1200);
+    if (loginData.access_token) {
+      // Full auto-login
+      saveSession(loginData.access_token, userData);
+      errEl.textContent = "✓ Password set! Signing you in…";
+      errEl.classList.add("visible");
+      setTimeout(() => showDashboard(userData), 1200);
+    } else {
+      // Password was set but auto-login failed — send to login screen
+      errEl.textContent = "✓ Password set successfully! Please sign in with your email and new password.";
+      errEl.classList.add("visible");
+      setTimeout(() => {
+        document.getElementById("panel-set-password").style.display = "none";
+        document.getElementById("panel-login").style.display        = "block";
+        if (email) document.getElementById("email-input").value = email;
+        document.getElementById("password-input").focus();
+      }, 2000);
+      btn.classList.remove("loading"); btn.disabled = false;
+    }
 
   } catch(e) {
-    errEl.style = "";
-    errEl.textContent = e.message || "Something went wrong. Please try again.";
+    errEl.removeAttribute("style");
+    if (e.message === "EXPIRED") {
+      errEl.innerHTML =
+        "Your invite link has expired — Netlify invite links are only valid for <strong>24 hours</strong>.<br><br>" +
+        "Please do one of the following:<br>" +
+        "• Ask your admin to send a <strong>new invite</strong> from the Netlify dashboard<br>" +
+        "• Or use <strong>'Forgot your password?'</strong> on the login screen if your account already exists";
+    } else {
+      errEl.textContent = e.message || "Something went wrong. Please try again.";
+    }
     errEl.classList.add("visible");
     btn.classList.remove("loading"); btn.disabled = false;
   }
@@ -870,7 +897,7 @@ function parseSales(table){
 }
 async function refreshData(){
   document.getElementById("refresh-btn2").textContent="↻ Loading…";
-  if(CONFIG.SHEET_ID!=="YOUR_GOOGLE_SHEET_ID_HERE"){
+  if(CONFIG.SHEET_ID !== "UNCONFIGURED"){
     try{
       const[inflowTbl,salesTbl]=await Promise.all([fetchSheet(CONFIG.TABS.INFLOW),fetchSheet(CONFIG.TABS.SALES)]);
       const liveInflow=parseInflow(inflowTbl),liveSales=parseSales(salesTbl);
