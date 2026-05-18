@@ -1088,6 +1088,7 @@ function setView(v,el) {
 
 // Set today's date
 document.getElementById("as-of-date").textContent = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+netlifyIdentity.init({ APIUrl: "https://masalesdash.netlify.app/.netlify/identity" });
 document.getElementById("dashboard-link").href = window.location.href;
 
 setInterval(refreshData, CONFIG.REFRESH_INTERVAL);
