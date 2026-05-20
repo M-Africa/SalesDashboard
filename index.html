@@ -442,7 +442,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
       <div class="card-title">Active project sales position</div>
       <div class="card-sub">Plots &amp; units sold · KYC status · Active offers · Weekly new sales</div>
       <table class="tbl">
-        <thead><tr><th>Project</th><th>Type</th><th>Total sales TD</th><th>KYC complete</th><th>KYC incomplete</th><th>Active offers</th><th>New this week</th><th>KYC completion</th></tr></thead>
+        <thead><tr><th>Project</th><th>Type</th><th>Total sales TD</th><th>Value of sales TD</th><th>KYC complete</th><th>KYC incomplete</th><th>Active offers</th><th>New this week</th><th>KYC completion</th></tr></thead>
         <tbody id="sales-tbody"></tbody>
         <tfoot id="sales-tfoot"></tfoot>
       </table>
@@ -824,20 +824,20 @@ const FALLBACK = {
     "RDP":              {Jan:0,Feb:0,Mar:6.58,Apr:0,May:30.0},
   },
   sales:[
-    {name:"Elms Garden",type:"plots",totalTD:181,completeKYC:165,incompleteKYC:16,offers:5,weekNew:4},
-    {name:"Lakowe Annexe",type:"plots",totalTD:80,completeKYC:79,incompleteKYC:1,offers:1,weekNew:1},
-    {name:"Ibudo Wura",type:"units",totalTD:148,completeKYC:94,incompleteKYC:1,offers:0,weekNew:0},
-    {name:"Beechwood Park",type:"plots",totalTD:430,completeKYC:430,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Park Villas",type:"units",totalTD:24,completeKYC:24,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Adiva III",type:"units",totalTD:93,completeKYC:92,incompleteKYC:1,offers:0,weekNew:1},
-    {name:"Marula Park",type:"plots",totalTD:67,completeKYC:67,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Lakowe Plots",type:"plots",totalTD:270,completeKYC:270,incompleteKYC:0,offers:1,weekNew:0},
-    {name:"The Cove",type:"units",totalTD:131,completeKYC:131,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Riyom & Wase",type:"plots",totalTD:4,completeKYC:4,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"RDP",type:"plots",totalTD:93,completeKYC:91,incompleteKYC:2,offers:0,weekNew:0},
-    {name:"Fara Park II",type:"plots",totalTD:166,completeKYC:166,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Lakowe Crossing",type:"plots",totalTD:6,completeKYC:6,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Waterfront Plots",type:"plots",totalTD:21,completeKYC:21,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Elms Garden",type:"plots",totalTD:181,completeKYC:165,incompleteKYC:16,offers:5,weekNew:4,valueToDate:0},
+    {name:"Lakowe Annexe",type:"plots",totalTD:80,completeKYC:79,incompleteKYC:1,offers:1,weekNew:1,valueToDate:0},
+    {name:"Ibudo Wura",type:"units",totalTD:148,completeKYC:94,incompleteKYC:1,offers:0,weekNew:0,valueToDate:0},
+    {name:"Beechwood Park",type:"plots",totalTD:430,completeKYC:430,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
+    {name:"Park Villas",type:"units",totalTD:24,completeKYC:24,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
+    {name:"Adiva III",type:"units",totalTD:93,completeKYC:92,incompleteKYC:1,offers:0,weekNew:1,valueToDate:0},
+    {name:"Marula Park",type:"plots",totalTD:67,completeKYC:67,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
+    {name:"Lakowe Plots",type:"plots",totalTD:270,completeKYC:270,incompleteKYC:0,offers:1,weekNew:0,valueToDate:0},
+    {name:"The Cove",type:"units",totalTD:131,completeKYC:131,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
+    {name:"Riyom & Wase",type:"plots",totalTD:4,completeKYC:4,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
+    {name:"RDP",type:"plots",totalTD:93,completeKYC:91,incompleteKYC:2,offers:0,weekNew:0,valueToDate:0},
+    {name:"Fara Park II",type:"plots",totalTD:166,completeKYC:166,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
+    {name:"Lakowe Crossing",type:"plots",totalTD:6,completeKYC:6,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
+    {name:"Waterfront Plots",type:"plots",totalTD:21,completeKYC:21,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
   ],
   projectTypes:{
     "Beechwood Park":"plots","The Cove":"units","Lakowe Annexe":"plots","Elms Estate":"plots",
@@ -891,7 +891,19 @@ function parseSales(table){
     if(!row.c||!row.c[0]||!row.c[0].v)return;
     const name=row.c[0].v.toString().trim();
     if(["TOTAL","PROJECT",""].includes(name.toUpperCase()))return;
-    sales.push({name,type:((row.c[1]&&row.c[1].v)||"").toLowerCase()==="unit"?"units":"plots",totalTD:parseInt(row.c[2]&&row.c[2].v)||0,completeKYC:parseInt(row.c[3]&&row.c[3].v)||0,incompleteKYC:parseInt(row.c[4]&&row.c[4].v)||0,offers:parseInt(row.c[5]&&row.c[5].v)||0,weekNew:parseInt(row.c[7]&&row.c[7].v)||0});
+    const rawType=((row.c[1]&&row.c[1].v)||"").toString().toLowerCase().trim();
+    // Accept "unit", "units", "built unit", "built units" → "units"; everything else → "plots"
+    const type = (rawType==="unit"||rawType==="units"||rawType.includes("unit")) ? "units" : "plots";
+    sales.push({
+      name,
+      type,
+      totalTD:       parseInt(row.c[2]&&row.c[2].v)||0,          // C - Total Sales TD
+      valueToDate:   parseFloat((row.c[3]&&row.c[3].v)||0)||0,   // D - Value of Sale To Date
+      completeKYC:   parseInt(row.c[4]&&row.c[4].v)||0,          // E - Complete KYC
+      incompleteKYC: parseInt(row.c[5]&&row.c[5].v)||0,          // F - Incomplete KYC
+      offers:        parseInt(row.c[6]&&row.c[6].v)||0,          // G - Active Offers
+      weekNew:       parseInt(row.c[8]&&row.c[8].v)||0,          // I - New Sales This Week
+    });
   });
   return sales.length?sales:null;
 }
@@ -917,6 +929,12 @@ async function refreshData(){
 //  RENDER
 // ══════════════════════════════════════════════════════════════════════════
 function fmt(n){return n>=1000?"₦"+(n/1000).toFixed(2)+"bn":"₦"+n.toFixed(1)+"m"}
+function fmtNaira(n){
+  if(!n||n===0) return "—";
+  if(n>=1e9)  return "₦"+(n/1e9).toFixed(2)+"bn";
+  if(n>=1e6)  return "₦"+(n/1e6).toFixed(1)+"m";
+  return "₦"+n.toLocaleString();
+}
 function getFilteredInflow(){
   const months=state.month==="all"?MONTHS:[MONTHS[MONTH_KEYS.indexOf(state.month)]].filter(Boolean);
   const result={};
@@ -934,12 +952,18 @@ function renderMetrics(){
   const curM=state.month==="all"?"May":MONTHS[MONTH_KEYS.indexOf(state.month)],prevM=MONTHS[MONTHS.indexOf(curM)-1];
   let curTotal=0,prevTotal=0;Object.values(DATA.inflow).forEach(mv=>{curTotal+=mv[curM]||0;if(prevM)prevTotal+=mv[prevM]||0});
   const pct=prevTotal>0?((curTotal-prevTotal)/prevTotal*100).toFixed(0):null;
-  const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({totalTD:a.totalTD+r.totalTD,incomplete:a.incomplete+r.incompleteKYC,weekNew:a.weekNew+r.weekNew,offers:a.offers+r.offers}),{totalTD:0,incomplete:0,weekNew:0,offers:0});
+  const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({
+    totalTD:a.totalTD+r.totalTD,
+    incomplete:a.incomplete+r.incompleteKYC,
+    weekNew:a.weekNew+r.weekNew,
+    offers:a.offers+r.offers,
+    valueToDate:a.valueToDate+(r.valueToDate||0),
+  }),{totalTD:0,incomplete:0,weekNew:0,offers:0,valueToDate:0});
   document.getElementById("metrics-row").innerHTML=`
     <div class="metric-card"><div class="metric-label">YTD inflow</div><div class="metric-value">${fmt(total)}</div><div class="metric-sub">${state.month==="all"?"Jan–May 2026":state.month+" 2026"}</div></div>
     <div class="metric-card"><div class="metric-label">${curM} inflow</div><div class="metric-value">${fmt(curTotal)}</div>${pct!==null?`<div class="metric-delta ${pct>=0?"delta-up":"delta-down"}">${pct>=0?"▲":"▼"} ${Math.abs(pct)}% vs ${prevM||""}</div>`:""}</div>
     <div class="metric-card"><div class="metric-label">Total sales TD</div><div class="metric-value">${tot.totalTD.toLocaleString()}</div><div class="metric-sub">units &amp; plots</div></div>
-    <div class="metric-card green-card"><div class="metric-label">New this week</div><div class="metric-value">${tot.weekNew}</div><div class="metric-sub">sales recorded</div></div>
+    <div class="metric-card green-card"><div class="metric-label">Value of sales TD</div><div class="metric-value">${fmtNaira(tot.valueToDate)}</div><div class="metric-sub">total sales value</div></div>
     <div class="metric-card red-card"><div class="metric-label">Incomplete KYC</div><div class="metric-value">${tot.incomplete}</div><div class="metric-sub">pending action</div></div>
     <div class="metric-card"><div class="metric-label">Active offers</div><div class="metric-value">${tot.offers}</div><div class="metric-sub">in pipeline</div></div>`;
 }
@@ -966,9 +990,38 @@ function renderLineChart(){
   lineChart=new Chart(document.getElementById("lineChart"),{type:"line",data:{labels,datasets:[{label:"Weekly inflow",data:weekTotals,borderColor:"#185FA5",backgroundColor:"rgba(24,95,165,0.07)",pointBackgroundColor:"#185FA5",pointBorderColor:"#fff",pointBorderWidth:2,pointRadius:6,tension:.35,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11,family:"DM Sans"}},grid:{display:false}},y:{ticks:{font:{size:11,family:"DM Sans"},callback:v=>"₦"+v+"m"},grid:{color:"rgba(26,25,23,0.05)"}}}}});
 }
 function renderSalesTable(){
-  const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({totalTD:a.totalTD+r.totalTD,completeKYC:a.completeKYC+r.completeKYC,incompleteKYC:a.incompleteKYC+r.incompleteKYC,offers:a.offers+r.offers,weekNew:a.weekNew+r.weekNew}),{totalTD:0,completeKYC:0,incompleteKYC:0,offers:0,weekNew:0});
-  document.getElementById("sales-tbody").innerHTML=sales.map(r=>{const pct=r.totalTD>0?Math.round(r.completeKYC/r.totalTD*100):0,clr=pct>=90?"#1B6B35":pct>=70?"#185FA5":"#ba7517";return`<tr><td style="font-weight:500;color:var(--ink)">${r.name}</td><td>${r.type==="plots"?'<span class="tag tag-plot">Plot</span>':'<span class="tag tag-unit">Unit</span>'}</td><td>${r.totalTD.toLocaleString()}</td><td>${r.completeKYC.toLocaleString()}</td><td>${r.incompleteKYC>0?`<span class="badge badge-red">${r.incompleteKYC}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td><td>${r.offers>0?r.offers:'<span style="color:var(--warm-grey)">—</span>'}</td><td>${r.weekNew>0?`<span class="badge badge-green">+${r.weekNew}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td><td><div class="progress-wrap"><span class="pct-label">${pct}%</span><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${clr}"></div></div></div></td></tr>`}).join("");
-  document.getElementById("sales-tfoot").innerHTML=`<tr><td colspan="2">Total</td><td>${tot.totalTD.toLocaleString()}</td><td>${tot.completeKYC.toLocaleString()}</td><td>${tot.incompleteKYC}</td><td>${tot.offers}</td><td>+${tot.weekNew}</td><td></td></tr>`;
+  const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({
+    totalTD:a.totalTD+r.totalTD,
+    completeKYC:a.completeKYC+r.completeKYC,
+    incompleteKYC:a.incompleteKYC+r.incompleteKYC,
+    offers:a.offers+r.offers,
+    weekNew:a.weekNew+r.weekNew,
+    valueToDate:a.valueToDate+(r.valueToDate||0),
+  }),{totalTD:0,completeKYC:0,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0});
+  document.getElementById("sales-tbody").innerHTML=sales.map(r=>{
+    const pct=r.totalTD>0?Math.round(r.completeKYC/r.totalTD*100):0,clr=pct>=90?"#1B6B35":pct>=70?"#185FA5":"#ba7517";
+    return`<tr>
+      <td style="font-weight:500;color:var(--ink)">${r.name}</td>
+      <td>${r.type==="plots"?'<span class="tag tag-plot">Plot</span>':'<span class="tag tag-unit">Unit</span>'}</td>
+      <td>${r.totalTD.toLocaleString()}</td>
+      <td style="font-weight:500;color:var(--ink)">${fmtNaira(r.valueToDate||0)}</td>
+      <td>${r.completeKYC.toLocaleString()}</td>
+      <td>${r.incompleteKYC>0?`<span class="badge badge-red">${r.incompleteKYC}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td>
+      <td>${r.offers>0?r.offers:'<span style="color:var(--warm-grey)">—</span>'}</td>
+      <td>${r.weekNew>0?`<span class="badge badge-green">+${r.weekNew}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td>
+      <td><div class="progress-wrap"><span class="pct-label">${pct}%</span><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${clr}"></div></div></div></td>
+    </tr>`;
+  }).join("");
+  document.getElementById("sales-tfoot").innerHTML=`<tr>
+    <td colspan="2">Total</td>
+    <td>${tot.totalTD.toLocaleString()}</td>
+    <td style="font-weight:600">${fmtNaira(tot.valueToDate)}</td>
+    <td>${tot.completeKYC.toLocaleString()}</td>
+    <td>${tot.incompleteKYC}</td>
+    <td>${tot.offers}</td>
+    <td>+${tot.weekNew}</td>
+    <td></td>
+  </tr>`;
 }
 function renderInflowTable(){
   const inflow=getFilteredInflow(),grand=Object.values(inflow).reduce((a,mv)=>a+Object.values(mv).reduce((b,v)=>b+v,0),0);
