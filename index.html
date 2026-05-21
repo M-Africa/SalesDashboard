@@ -442,7 +442,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
       <div class="card-title">Active project sales position</div>
       <div class="card-sub">Plots &amp; units sold · KYC status · Active offers · Weekly new sales</div>
       <table class="tbl">
-        <thead><tr><th>Project</th><th>Type</th><th>Total sales TD</th><th>Value of sales TD</th><th>KYC complete</th><th>KYC incomplete</th><th>Active offers</th><th>New this week</th><th>KYC completion</th></tr></thead>
+        <thead><tr><th>Project</th><th>Type</th><th>Total Sales TD</th><th>Value of Sales TD</th><th>Total Sales YTD</th><th>Value of Sales YTD</th><th>KYC complete</th><th>KYC incomplete</th><th>Active offers</th><th>New this week</th><th>KYC completion</th></tr></thead>
         <tbody id="sales-tbody"></tbody>
         <tfoot id="sales-tfoot"></tfoot>
       </table>
@@ -824,20 +824,20 @@ const FALLBACK = {
     "RDP":              {Jan:0,Feb:0,Mar:6.58,Apr:0,May:30.0},
   },
   sales:[
-    {name:"Elms Garden",type:"plots",totalTD:181,completeKYC:165,incompleteKYC:16,offers:5,weekNew:4,valueToDate:0},
-    {name:"Lakowe Annexe",type:"plots",totalTD:80,completeKYC:79,incompleteKYC:1,offers:1,weekNew:1,valueToDate:0},
-    {name:"Ibudo Wura",type:"units",totalTD:148,completeKYC:94,incompleteKYC:1,offers:0,weekNew:0,valueToDate:0},
-    {name:"Beechwood Park",type:"plots",totalTD:430,completeKYC:430,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
-    {name:"Park Villas",type:"units",totalTD:24,completeKYC:24,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
-    {name:"Adiva III",type:"units",totalTD:93,completeKYC:92,incompleteKYC:1,offers:0,weekNew:1,valueToDate:0},
-    {name:"Marula Park",type:"plots",totalTD:67,completeKYC:67,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
-    {name:"Lakowe Plots",type:"plots",totalTD:270,completeKYC:270,incompleteKYC:0,offers:1,weekNew:0,valueToDate:0},
-    {name:"The Cove",type:"units",totalTD:131,completeKYC:131,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
-    {name:"Riyom & Wase",type:"plots",totalTD:4,completeKYC:4,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
-    {name:"RDP",type:"plots",totalTD:93,completeKYC:91,incompleteKYC:2,offers:0,weekNew:0,valueToDate:0},
-    {name:"Fara Park II",type:"plots",totalTD:166,completeKYC:166,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
-    {name:"Lakowe Crossing",type:"plots",totalTD:6,completeKYC:6,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
-    {name:"Waterfront Plots",type:"plots",totalTD:21,completeKYC:21,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0},
+    {name:"Elms Garden",type:"plots",totalTD:181,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:165,incompleteKYC:16,offers:5,weekNew:4},
+    {name:"Lakowe Annexe",type:"plots",totalTD:80,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:79,incompleteKYC:1,offers:1,weekNew:1},
+    {name:"Ibudo Wura",type:"units",totalTD:148,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:94,incompleteKYC:1,offers:0,weekNew:0},
+    {name:"Beechwood Park",type:"units",totalTD:430,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:430,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Park Villas",type:"units",totalTD:24,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:24,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Adiva III",type:"plots",totalTD:93,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:92,incompleteKYC:1,offers:0,weekNew:1},
+    {name:"Marula Park",type:"units",totalTD:67,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:67,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Lakowe Plots",type:"plots",totalTD:270,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:270,incompleteKYC:0,offers:1,weekNew:0},
+    {name:"The Cove",type:"units",totalTD:131,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:131,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Riyom & Wase",type:"units",totalTD:4,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:4,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"RDP",type:"units",totalTD:93,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:91,incompleteKYC:2,offers:0,weekNew:0},
+    {name:"Fara Park II",type:"units",totalTD:166,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:166,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Lakowe Crossing",type:"plots",totalTD:6,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:6,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Waterfront Plots",type:"plots",totalTD:21,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:21,incompleteKYC:0,offers:0,weekNew:0},
   ],
   projectTypes:{
     "Beechwood Park":"units",
@@ -914,10 +914,12 @@ function parseSales(table){
       type,
       totalTD:       parseInt(row.c[2]&&row.c[2].v)||0,          // C - Total Sales TD
       valueToDate:   parseFloat((row.c[3]&&row.c[3].v)||0)||0,   // D - Value of Sale To Date
-      completeKYC:   parseInt(row.c[4]&&row.c[4].v)||0,          // E - Complete KYC
-      incompleteKYC: parseInt(row.c[5]&&row.c[5].v)||0,          // F - Incomplete KYC
-      offers:        parseInt(row.c[6]&&row.c[6].v)||0,          // G - Active Offers
-      weekNew:       parseInt(row.c[8]&&row.c[8].v)||0,          // I - New Sales This Week
+      totalYTD:      parseInt(row.c[4]&&row.c[4].v)||0,          // E - Total Sales YTD
+      valueYTD:      parseFloat((row.c[5]&&row.c[5].v)||0)||0,   // F - Value of Sale YTD
+      completeKYC:   parseInt(row.c[6]&&row.c[6].v)||0,          // G - Complete KYC
+      incompleteKYC: parseInt(row.c[7]&&row.c[7].v)||0,          // H - Incomplete KYC
+      offers:        parseInt(row.c[8]&&row.c[8].v)||0,          // I - Active Offers
+      weekNew:       parseInt(row.c[10]&&row.c[10].v)||0,        // K - New Sales This Week
     });
   });
   return sales.length?sales:null;
@@ -947,8 +949,8 @@ function fmt(n){return n>=1000?"₦"+(n/1000).toFixed(2)+"bn":"₦"+n.toFixed(1)
 function fmtNaira(n){
   if(!n||n===0) return "—";
   if(n>=1e9)  return "₦"+(n/1e9).toFixed(2)+"bn";
-  if(n>=1e6)  return "₦"+(n/1e6).toFixed(1)+"m";
-  return "₦"+n.toLocaleString();
+  if(n>=1e6)  return "₦"+(n/1e6).toFixed(2)+"m";
+  return "₦"+n.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 function getFilteredInflow(){
   const months=state.month==="all"?MONTHS:[MONTHS[MONTH_KEYS.indexOf(state.month)]].filter(Boolean);
@@ -968,17 +970,17 @@ function renderMetrics(){
   let curTotal=0,prevTotal=0;Object.values(DATA.inflow).forEach(mv=>{curTotal+=mv[curM]||0;if(prevM)prevTotal+=mv[prevM]||0});
   const pct=prevTotal>0?((curTotal-prevTotal)/prevTotal*100).toFixed(0):null;
   const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({
-    totalTD:a.totalTD+r.totalTD,
-    incomplete:a.incomplete+r.incompleteKYC,
-    weekNew:a.weekNew+r.weekNew,
-    offers:a.offers+r.offers,
-    valueToDate:a.valueToDate+(r.valueToDate||0),
-  }),{totalTD:0,incomplete:0,weekNew:0,offers:0,valueToDate:0});
+    totalYTD:   a.totalYTD  + (r.totalYTD||0),
+    valueYTD:   a.valueYTD  + (r.valueYTD||0),
+    incomplete: a.incomplete + r.incompleteKYC,
+    weekNew:    a.weekNew   + r.weekNew,
+    offers:     a.offers    + r.offers,
+  }),{totalYTD:0,valueYTD:0,incomplete:0,weekNew:0,offers:0});
   document.getElementById("metrics-row").innerHTML=`
     <div class="metric-card"><div class="metric-label">YTD inflow</div><div class="metric-value">${fmt(total)}</div><div class="metric-sub">${state.month==="all"?"Jan–May 2026":state.month+" 2026"}</div></div>
     <div class="metric-card"><div class="metric-label">${curM} inflow</div><div class="metric-value">${fmt(curTotal)}</div>${pct!==null?`<div class="metric-delta ${pct>=0?"delta-up":"delta-down"}">${pct>=0?"▲":"▼"} ${Math.abs(pct)}% vs ${prevM||""}</div>`:""}</div>
-    <div class="metric-card"><div class="metric-label">Total sales TD</div><div class="metric-value">${tot.totalTD.toLocaleString()}</div><div class="metric-sub">units &amp; plots</div></div>
-    <div class="metric-card green-card"><div class="metric-label">Value of sales TD</div><div class="metric-value">${fmtNaira(tot.valueToDate)}</div><div class="metric-sub">total sales value</div></div>
+    <div class="metric-card"><div class="metric-label">Total sales YTD</div><div class="metric-value">${tot.totalYTD.toLocaleString()}</div><div class="metric-sub">units &amp; plots</div></div>
+    <div class="metric-card green-card"><div class="metric-label">Value of sales YTD</div><div class="metric-value">${fmtNaira(tot.valueYTD)}</div><div class="metric-sub">total sales value</div></div>
     <div class="metric-card red-card"><div class="metric-label">Incomplete KYC</div><div class="metric-value">${tot.incomplete}</div><div class="metric-sub">pending action</div></div>
     <div class="metric-card"><div class="metric-label">Active offers</div><div class="metric-value">${tot.offers}</div><div class="metric-sub">in pipeline</div></div>`;
 }
@@ -1006,20 +1008,24 @@ function renderLineChart(){
 }
 function renderSalesTable(){
   const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({
-    totalTD:a.totalTD+r.totalTD,
-    completeKYC:a.completeKYC+r.completeKYC,
-    incompleteKYC:a.incompleteKYC+r.incompleteKYC,
-    offers:a.offers+r.offers,
-    weekNew:a.weekNew+r.weekNew,
-    valueToDate:a.valueToDate+(r.valueToDate||0),
-  }),{totalTD:0,completeKYC:0,incompleteKYC:0,offers:0,weekNew:0,valueToDate:0});
+    totalTD:      a.totalTD      + r.totalTD,
+    valueToDate:  a.valueToDate  + (r.valueToDate||0),
+    totalYTD:     a.totalYTD     + (r.totalYTD||0),
+    valueYTD:     a.valueYTD     + (r.valueYTD||0),
+    completeKYC:  a.completeKYC  + r.completeKYC,
+    incompleteKYC:a.incompleteKYC+ r.incompleteKYC,
+    offers:       a.offers       + r.offers,
+    weekNew:      a.weekNew      + r.weekNew,
+  }),{totalTD:0,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:0,incompleteKYC:0,offers:0,weekNew:0});
   document.getElementById("sales-tbody").innerHTML=sales.map(r=>{
     const pct=r.totalTD>0?Math.round(r.completeKYC/r.totalTD*100):0,clr=pct>=90?"#1B6B35":pct>=70?"#185FA5":"#ba7517";
     return`<tr>
       <td style="font-weight:500;color:var(--ink)">${r.name}</td>
       <td>${r.type==="plots"?'<span class="tag tag-plot">Plot</span>':'<span class="tag tag-unit">Unit</span>'}</td>
       <td>${r.totalTD.toLocaleString()}</td>
-      <td style="font-weight:500;color:var(--ink)">${fmtNaira(r.valueToDate||0)}</td>
+      <td style="color:var(--ink-soft)">${fmtNaira(r.valueToDate||0)}</td>
+      <td style="font-weight:500;color:var(--ink)">${(r.totalYTD||0).toLocaleString()}</td>
+      <td style="font-weight:500;color:var(--ink)">${fmtNaira(r.valueYTD||0)}</td>
       <td>${r.completeKYC.toLocaleString()}</td>
       <td>${r.incompleteKYC>0?`<span class="badge badge-red">${r.incompleteKYC}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td>
       <td>${r.offers>0?r.offers:'<span style="color:var(--warm-grey)">—</span>'}</td>
@@ -1030,7 +1036,9 @@ function renderSalesTable(){
   document.getElementById("sales-tfoot").innerHTML=`<tr>
     <td colspan="2">Total</td>
     <td>${tot.totalTD.toLocaleString()}</td>
-    <td style="font-weight:600">${fmtNaira(tot.valueToDate)}</td>
+    <td>${fmtNaira(tot.valueToDate)}</td>
+    <td style="font-weight:600">${tot.totalYTD.toLocaleString()}</td>
+    <td style="font-weight:600">${fmtNaira(tot.valueYTD)}</td>
     <td>${tot.completeKYC.toLocaleString()}</td>
     <td>${tot.incompleteKYC}</td>
     <td>${tot.offers}</td>
