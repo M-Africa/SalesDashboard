@@ -580,115 +580,87 @@ async function handleSetPassword() {
   errEl.classList.remove("visible");
   errEl.removeAttribute("style");
 
-  if (!pwd1) { errEl.textContent="Please enter a password."; errEl.classList.add("visible"); return; }
-  if (pwd1.length < 8) { errEl.textContent="Password must be at least 8 characters."; errEl.classList.add("visible"); return; }
-  if (pwd1 !== pwd2) { errEl.textContent="Passwords do not match."; errEl.classList.add("visible"); return; }
+  if (!pwd1) { errEl.textContent = "Please enter a password."; errEl.classList.add("visible"); return; }
+  if (pwd1.length < 8) { errEl.textContent = "Password must be at least 8 characters."; errEl.classList.add("visible"); return; }
+  if (pwd1 !== pwd2) { errEl.textContent = "Passwords do not match. Please try again."; errEl.classList.add("visible"); return; }
 
   btn.classList.add("loading"); btn.disabled = true;
 
-  // Netlify Identity has two slightly different verify flows depending on
-  // whether this is an invite (signup) or a password recovery.
-  // Both POST to /verify — but invite uses type:"signup", recovery uses type:"recovery".
-  // The token itself comes from the URL hash as invite_token or recovery_token.
-
-  const verifyType = tokenType === "invite" ? "signup" : "recovery";
-
-  // Strategy: try /verify first (correct flow). If that fails with any error,
-  // fall back to using the token directly as a Bearer token on PUT /user
-  // (some older Netlify Identity versions use this approach).
-  let accessToken = null;
-  let userEmail   = "";
-
   try {
-    // ── Attempt 1: POST /verify ────────────────────────────────────────────
-    const vRes  = await fetch(`${API}/verify`, {
-      method:  "POST",
+    const verifyType = tokenType === "invite" ? "signup" : "recovery";
+    const verifyRes  = await fetch(`${API}/verify`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ token: pendingToken, type: verifyType, password: pwd1 })
+      body: JSON.stringify({ token: pendingToken, type: verifyType })
     });
-    const vText = await vRes.text();
-    let   vData = {};
-    try { vData = JSON.parse(vText); } catch(e) {}
 
-    if (vRes.ok && vData.access_token) {
-      // /verify accepted and returned a token — we're done, just log in
-      accessToken = vData.access_token;
-      userEmail   = vData.email || "";
-      // Save session and open dashboard
-      saveSession(accessToken, vData);
-      pendingToken = null; tokenType = null;
-      errEl.style.background="#F0F7F2"; errEl.style.borderColor="#9ECDB0"; errEl.style.color="#1B6B35";
-      errEl.textContent = "✓ Password set! Signing you in…";
-      errEl.classList.add("visible");
-      setTimeout(() => showDashboard(vData), 1200);
-      btn.classList.remove("loading"); btn.disabled = false;
-      return;
+    const verifyText = await verifyRes.text();
+    let   verifyData = {};
+    try { verifyData = JSON.parse(verifyText); } catch(e) {}
+
+    if (!verifyRes.ok || !verifyData.access_token) {
+      throw new Error("EXPIRED");
     }
 
-    // /verify didn't return a token — try to extract whatever it returned
-    if (vData.email) userEmail = vData.email;
-
-  } catch(e) { /* network error — fall through to attempt 2 */ }
-
-  try {
-    // ── Attempt 2: Use token as Bearer to PUT /user with new password ──────
-    // (works on some Netlify Identity configurations)
-    const uRes  = await fetch(`${API}/user`, {
-      method:  "PUT",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${pendingToken}` },
-      body:    JSON.stringify({ password: pwd1 })
+    const updateRes = await fetch(`${API}/user`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${verifyData.access_token}` },
+      body: JSON.stringify({ password: pwd1 })
     });
-    const uText = await uRes.text();
-    let   uData = {};
-    try { uData = JSON.parse(uText); } catch(e) {}
 
-    if (uRes.ok) {
-      userEmail = uData.email || userEmail;
-      // Now log in with email + new password
-      if (userEmail) {
-        const lRes  = await fetch(`${API}/token`, {
-          method:  "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body:    `grant_type=password&username=${encodeURIComponent(userEmail)}&password=${encodeURIComponent(pwd1)}`
-        });
-        const lData = lRes.ok ? await lRes.json() : {};
-        if (lData.access_token) {
-          saveSession(lData.access_token, uData);
-          pendingToken = null; tokenType = null;
-          errEl.style.background="#F0F7F2"; errEl.style.borderColor="#9ECDB0"; errEl.style.color="#1B6B35";
-          errEl.textContent = "✓ Password set! Signing you in…";
-          errEl.classList.add("visible");
-          setTimeout(() => showDashboard(uData), 1200);
-          btn.classList.remove("loading"); btn.disabled = false;
-          return;
-        }
-      }
-      // Password set but auto-login failed — send to login screen
-      pendingToken = null; tokenType = null;
-      errEl.style.background="#F0F7F2"; errEl.style.borderColor="#9ECDB0"; errEl.style.color="#1B6B35";
+    const updateText = await updateRes.text();
+    let   userData   = {};
+    try { userData = JSON.parse(updateText); } catch(e) {}
+
+    if (!updateRes.ok) {
+      throw new Error("Could not save your password. Please try again or contact your admin.");
+    }
+
+    const email    = userData.email || verifyData.email || "";
+    const loginRes = await fetch(`${API}/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `grant_type=password&username=${encodeURIComponent(email)}&password=${encodeURIComponent(pwd1)}`
+    });
+    const loginData = loginRes.ok ? await loginRes.json() : {};
+
+    pendingToken = null;
+    tokenType    = null;
+
+    errEl.style.background  = "var(--green-lite)";
+    errEl.style.borderColor = "#9ECDB0";
+    errEl.style.color       = "var(--green)";
+
+    if (loginData.access_token) {
+      saveSession(loginData.access_token, userData);
+      errEl.textContent = "✓ Password set! Signing you in…";
+      errEl.classList.add("visible");
+      setTimeout(() => showDashboard(userData), 1200);
+    } else {
       errEl.textContent = "✓ Password set! Please sign in with your email and new password.";
       errEl.classList.add("visible");
       setTimeout(() => {
         document.getElementById("panel-set-password").style.display = "none";
         document.getElementById("panel-login").style.display        = "block";
-        if (userEmail) document.getElementById("email-input").value = userEmail;
+        if (email) document.getElementById("email-input").value = email;
         document.getElementById("password-input").focus();
       }, 2000);
       btn.classList.remove("loading"); btn.disabled = false;
-      return;
     }
 
-  } catch(e) { /* fall through to error */ }
-
-  // ── Both attempts failed — likely expired ──────────────────────────────
-  errEl.innerHTML =
-    "<strong>The invite link has expired or is invalid.</strong><br><br>" +
-    "Netlify invite links expire after 24 hours. Please:<br>" +
-    "• Ask your admin to send a <strong>new invite</strong> from Netlify → Identity → Invite users, <strong>OR</strong><br>" +
-    "• Enter your email on the login screen and click <strong>Forgot your password?</strong> — " +
-    "that reset link will let you set a password and always works.";
-  errEl.classList.add("visible");
-  btn.classList.remove("loading"); btn.disabled = false;
+  } catch(e) {
+    errEl.removeAttribute("style");
+    if (e.message === "EXPIRED") {
+      errEl.innerHTML =
+        "Your invite or reset link has expired.<br><br>" +
+        "• Ask your admin to send a <strong>new invite</strong>, <strong>OR</strong><br>" +
+        "• Use <strong>'Forgot your password?'</strong> on the login screen — that link always works.";
+    } else {
+      errEl.textContent = e.message || "Something went wrong. Please try again.";
+    }
+    errEl.classList.add("visible");
+    btn.classList.remove("loading"); btn.disabled = false;
+  }
 }
 
 // ── Session helpers ───────────────────────────────────────────────────────
