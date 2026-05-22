@@ -149,6 +149,14 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 .filter-select{width:100%;padding:7px 10px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:rgba(255,255,255,.75);font-size:11.5px;font-family:var(--font-body);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.35)'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 .filter-select:focus{outline:none;border-color:var(--red)}
 .filter-select option{background:#2C2A27;color:#fff}
+.multi-select-box{max-height:160px;overflow-y:auto;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);padding:4px 0;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent}
+.multi-select-box::-webkit-scrollbar{width:4px}
+.multi-select-box::-webkit-scrollbar-track{background:transparent}
+.multi-select-box::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
+.chk-item{display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;transition:background .1s;font-size:11.5px;color:rgba(255,255,255,.6)}
+.chk-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9)}
+.chk-item input[type=checkbox]{accent-color:var(--red);width:12px;height:12px;cursor:pointer;flex-shrink:0}
+.chk-item span{line-height:1.3}
 
 #user-bar{display:none;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.55);padding:14px 22px;border-top:1px solid rgba(255,255,255,.06);margin-top:auto}
 #user-bar.visible{display:flex}
@@ -184,11 +192,11 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 .metric-card:nth-child(1){animation-delay:.05s}.metric-card:nth-child(2){animation-delay:.10s}
 .metric-card:nth-child(3){animation-delay:.15s}.metric-card:nth-child(4){animation-delay:.20s}
 .metric-card:nth-child(5){animation-delay:.25s}.metric-card:nth-child(6){animation-delay:.30s}
-.metric-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:500;color:var(--ink-mute);margin-bottom:8px}
-.metric-value{font-family:var(--font-display);font-size:26px;color:var(--ink);line-height:1.1;margin-bottom:4px}
+.metric-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:500;color:var(--ink-mute);margin-bottom:8px;text-align:center}
+.metric-value{font-family:var(--font-display);font-size:26px;color:var(--ink);line-height:1.1;margin-bottom:4px;text-align:center}
 .red-card .metric-value{color:var(--red-dark)}.green-card .metric-value{color:var(--green)}
-.metric-sub{font-size:10.5px;color:var(--ink-mute)}
-.metric-delta{font-size:11px;margin-top:4px;font-weight:500}
+.metric-sub{font-size:10.5px;color:var(--ink-mute);text-align:center}
+.metric-delta{font-size:11px;margin-top:4px;font-weight:500;text-align:center}
 .delta-up{color:var(--green)}.delta-down{color:var(--red)}
 
 .charts-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:16px}
@@ -351,36 +359,41 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
           <button class="fpill" onclick="setType('units',this)">Units</button>
         </div>
       </div>
+
       <div class="filter-group">
-        <label>Project</label>
-        <select class="filter-select" onchange="setProject(this.value)">
-          <option value="all">All projects</option>
-          <option value="Beechwood Park">Beechwood Park</option>
-          <option value="The Cove">The Cove</option>
-          <option value="Lakowe Annexe">Lakowe Annexe</option>
-          <option value="Elms Estate">Elms Estate</option>
-          <option value="Park Villas">Park Villas</option>
-          <option value="Ibudo Wura">Ibudo Wura</option>
-          <option value="Summerville Plots">Summerville Plots</option>
-          <option value="Marula Park">Marula Park</option>
-          <option value="Riyom & Wase">Riyom &amp; Wase</option>
-          <option value="Lakowe Crossing">Lakowe Crossing</option>
-          <option value="Fara Park II">Fara Park II</option>
-          <option value="Waterfront Plots">Waterfront Plots</option>
-          <option value="Adiva III">Adiva III</option>
-          <option value="RDP">RDP</option>
-        </select>
+        <label>Project <span id="proj-count" style="color:var(--red);font-size:9px;margin-left:4px"></span></label>
+        <div class="multi-select-box" id="project-checkboxes">
+          <label class="chk-item"><input type="checkbox" value="all" checked onchange="toggleProject('all',this)"><span>All projects</span></label>
+          <label class="chk-item"><input type="checkbox" value="Beechwood Park" onchange="toggleProject('Beechwood Park',this)"><span>Beechwood Park</span></label>
+          <label class="chk-item"><input type="checkbox" value="The Cove" onchange="toggleProject('The Cove',this)"><span>The Cove</span></label>
+          <label class="chk-item"><input type="checkbox" value="Lakowe Annexe" onchange="toggleProject('Lakowe Annexe',this)"><span>Lakowe Annexe</span></label>
+          <label class="chk-item"><input type="checkbox" value="Elms Estate" onchange="toggleProject('Elms Estate',this)"><span>Elms Estate</span></label>
+          <label class="chk-item"><input type="checkbox" value="Park Villas" onchange="toggleProject('Park Villas',this)"><span>Park Villas</span></label>
+          <label class="chk-item"><input type="checkbox" value="Ibudo Wura" onchange="toggleProject('Ibudo Wura',this)"><span>Ibudo Wura</span></label>
+          <label class="chk-item"><input type="checkbox" value="Summerville Plots" onchange="toggleProject('Summerville Plots',this)"><span>Summerville Plots</span></label>
+          <label class="chk-item"><input type="checkbox" value="Marula Park" onchange="toggleProject('Marula Park',this)"><span>Marula Park</span></label>
+          <label class="chk-item"><input type="checkbox" value="Riyom & Wase" onchange="toggleProject('Riyom & Wase',this)"><span>Riyom &amp; Wase</span></label>
+          <label class="chk-item"><input type="checkbox" value="Lakowe Crossing" onchange="toggleProject('Lakowe Crossing',this)"><span>Lakowe Crossing</span></label>
+          <label class="chk-item"><input type="checkbox" value="Lakowe Plots" onchange="toggleProject('Lakowe Plots',this)"><span>Lakowe Plots</span></label>
+          <label class="chk-item"><input type="checkbox" value="Fara Park II" onchange="toggleProject('Fara Park II',this)"><span>Fara Park II</span></label>
+          <label class="chk-item"><input type="checkbox" value="Waterfront Plots" onchange="toggleProject('Waterfront Plots',this)"><span>Waterfront Plots</span></label>
+          <label class="chk-item"><input type="checkbox" value="Adiva III" onchange="toggleProject('Adiva III',this)"><span>Adiva III</span></label>
+          <label class="chk-item"><input type="checkbox" value="RDP" onchange="toggleProject('RDP',this)"><span>RDP</span></label>
+          <label class="chk-item"><input type="checkbox" value="Lakowe Heights" onchange="toggleProject('Lakowe Heights',this)"><span>Lakowe Heights</span></label>
+          <label class="chk-item"><input type="checkbox" value="Ule" onchange="toggleProject('Ule',this)"><span>Ule</span></label>
+        </div>
       </div>
+
       <div class="filter-group">
-        <label>Period</label>
-        <select class="filter-select" onchange="setMonth(this.value)">
-          <option value="all">All (YTD)</option>
-          <option value="January">January 2026</option>
-          <option value="February">February 2026</option>
-          <option value="March">March 2026</option>
-          <option value="April">April 2026</option>
-          <option value="May">May 2026</option>
-        </select>
+        <label>Month <span id="month-count" style="color:var(--red);font-size:9px;margin-left:4px"></span></label>
+        <div class="multi-select-box" id="month-checkboxes">
+          <label class="chk-item"><input type="checkbox" value="all" checked onchange="toggleMonth('all',this)"><span>All months (YTD)</span></label>
+          <label class="chk-item"><input type="checkbox" value="January" onchange="toggleMonth('January',this)"><span>January 2026</span></label>
+          <label class="chk-item"><input type="checkbox" value="February" onchange="toggleMonth('February',this)"><span>February 2026</span></label>
+          <label class="chk-item"><input type="checkbox" value="March" onchange="toggleMonth('March',this)"><span>March 2026</span></label>
+          <label class="chk-item"><input type="checkbox" value="April" onchange="toggleMonth('April',this)"><span>April 2026</span></label>
+          <label class="chk-item"><input type="checkbox" value="May" onchange="toggleMonth('May',this)"><span>May 2026</span></label>
+        </div>
       </div>
     </div>
 
@@ -435,6 +448,12 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
         <div class="card-title">Weekly inflow trend — May 2026</div>
         <div class="card-sub">₦ millions collected per week</div>
         <div style="position:relative;width:100%;height:180px"><canvas id="lineChart"></canvas></div>
+      </div>
+      <div class="chart-card full">
+        <div class="card-title">Monthly sales trend</div>
+        <div class="card-sub">Total sales YTD per project per month — responds to project &amp; month filters</div>
+        <div class="legend-wrap" id="sales-bar-legend"></div>
+        <div style="position:relative;width:100%;height:220px"><canvas id="salesBarChart"></canvas></div>
       </div>
     </div>
 
@@ -873,9 +892,9 @@ const FALLBACK = {
 const COLORS=["#185FA5","#0F6E56","#993C1D","#993556","#3B6D11","#854F0B","#534AB7","#A32D2D","#0C447C","#085041","#71271F","#3C3489","#639922","#5F5E5A","#632222","#0d5c63"];
 const MONTHS=["Jan","Feb","Mar","Apr","May"];
 const MONTH_KEYS=["January","February","March","April","May"];
-let state={type:"all",project:"all",month:"all"};
+let state={type:"all",projects:[],months:[]};
 let DATA={...FALLBACK};
-let barChart,donutChart,lineChart;
+let barChart,donutChart,lineChart,salesBarChart;
 
 // ══════════════════════════════════════════════════════════════════════════
 //  GOOGLE SHEETS
@@ -952,40 +971,64 @@ function fmtNaira(n){
   if(n>=1e6)  return "₦"+(n/1e6).toFixed(2)+"m";
   return "₦"+n.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
+function activeMonths(){
+  if(!state.months||state.months.length===0)return MONTHS;
+  return state.months.map(mk=>MONTHS[MONTH_KEYS.indexOf(mk)]).filter(Boolean);
+}
+function projectActive(proj){
+  if(!state.projects||state.projects.length===0)return true;
+  return state.projects.includes(proj);
+}
 function getFilteredInflow(){
-  const months=state.month==="all"?MONTHS:[MONTHS[MONTH_KEYS.indexOf(state.month)]].filter(Boolean);
+  const months=activeMonths();
   const result={};
   Object.entries(DATA.inflow).forEach(([proj,vals])=>{
-    if(state.project!=="all"&&proj!==state.project)return;
+    if(!projectActive(proj))return;
     if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return;
-    result[proj]={};months.forEach(m=>{result[proj][m]=vals[m]||0});
+    result[proj]={};months.forEach(m=>{result[proj][m]=vals[m]||0;});
   });
   return result;
 }
-function getFilteredSales(){return DATA.sales.filter(r=>{if(state.type!=="all"&&r.type!==state.type)return false;if(state.project!=="all"&&r.name!==state.project)return false;return true})}
+function getFilteredSales(){
+  return DATA.sales.filter(r=>{
+    if(state.type!=="all"&&r.type!==state.type)return false;
+    if(!projectActive(r.name))return false;
+    return true;
+  });
+}
 function renderMetrics(){
-  const inflow=getFilteredInflow(),months=state.month==="all"?MONTHS:[MONTHS[MONTH_KEYS.indexOf(state.month)]].filter(Boolean);
-  let total=0;Object.values(inflow).forEach(mv=>months.forEach(m=>{total+=mv[m]||0}));
-  const curM=state.month==="all"?"May":MONTHS[MONTH_KEYS.indexOf(state.month)],prevM=MONTHS[MONTHS.indexOf(curM)-1];
-  let curTotal=0,prevTotal=0;Object.values(DATA.inflow).forEach(mv=>{curTotal+=mv[curM]||0;if(prevM)prevTotal+=mv[prevM]||0});
+  const inflow=getFilteredInflow(),months=activeMonths();
+  let total=0;Object.values(inflow).forEach(mv=>months.forEach(m=>{total+=mv[m]||0;}));
+  const curMKey=state.months.length===1?state.months[0]:"May";
+  const curM=MONTHS[MONTH_KEYS.indexOf(curMKey)]||"May",prevM=MONTHS[MONTHS.indexOf(curM)-1];
+  let curTotal=0,prevTotal=0;
+  Object.entries(DATA.inflow).forEach(([proj,mv])=>{
+    if(!projectActive(proj))return;
+    if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return;
+    curTotal+=mv[curM]||0;if(prevM)prevTotal+=mv[prevM]||0;
+  });
   const pct=prevTotal>0?((curTotal-prevTotal)/prevTotal*100).toFixed(0):null;
+  let weekInflow=0;
+  Object.entries(DATA.weeklyMay).forEach(([proj,vals])=>{
+    if(!projectActive(proj))return;
+    if(state.type!=="all"&&DATA.projectTypes[proj]!==state.type)return;
+    weekInflow+=vals[1]||0;
+  });
   const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({
-    totalYTD:   a.totalYTD  + (r.totalYTD||0),
-    valueYTD:   a.valueYTD  + (r.valueYTD||0),
-    incomplete: a.incomplete + r.incompleteKYC,
-    weekNew:    a.weekNew   + r.weekNew,
-    offers:     a.offers    + r.offers,
-  }),{totalYTD:0,valueYTD:0,incomplete:0,weekNew:0,offers:0});
+    totalYTD:a.totalYTD+(r.totalYTD||0),valueYTD:a.valueYTD+(r.valueYTD||0),
+    incomplete:a.incomplete+r.incompleteKYC,offers:a.offers+r.offers,
+  }),{totalYTD:0,valueYTD:0,incomplete:0,offers:0});
+  const periodLabel=state.months.length===0?"Jan–May 2026":state.months.length===1?state.months[0]+" 2026":state.months.length+" months selected";
   document.getElementById("metrics-row").innerHTML=`
-    <div class="metric-card"><div class="metric-label">YTD inflow</div><div class="metric-value">${fmt(total)}</div><div class="metric-sub">${state.month==="all"?"Jan–May 2026":state.month+" 2026"}</div></div>
+    <div class="metric-card"><div class="metric-label">YTD inflow</div><div class="metric-value">${fmt(total)}</div><div class="metric-sub">${periodLabel}</div></div>
     <div class="metric-card"><div class="metric-label">${curM} inflow</div><div class="metric-value">${fmt(curTotal)}</div>${pct!==null?`<div class="metric-delta ${pct>=0?"delta-up":"delta-down"}">${pct>=0?"▲":"▼"} ${Math.abs(pct)}% vs ${prevM||""}</div>`:""}</div>
+    <div class="metric-card green-card"><div class="metric-label">This week's inflow</div><div class="metric-value">${fmt(weekInflow)}</div><div class="metric-sub">most recent week</div></div>
     <div class="metric-card"><div class="metric-label">Total sales YTD</div><div class="metric-value">${tot.totalYTD.toLocaleString()}</div><div class="metric-sub">units &amp; plots</div></div>
     <div class="metric-card green-card"><div class="metric-label">Value of sales YTD</div><div class="metric-value">${fmtNaira(tot.valueYTD)}</div><div class="metric-sub">total sales value</div></div>
-    <div class="metric-card red-card"><div class="metric-label">Incomplete KYC</div><div class="metric-value">${tot.incomplete}</div><div class="metric-sub">pending action</div></div>
-    <div class="metric-card"><div class="metric-label">Active offers</div><div class="metric-value">${tot.offers}</div><div class="metric-sub">in pipeline</div></div>`;
+    <div class="metric-card red-card"><div class="metric-label">Incomplete KYC</div><div class="metric-value">${tot.incomplete}</div><div class="metric-sub">pending action</div></div>`;
 }
 function renderBarChart(){
-  const inflow=getFilteredInflow(),months=state.month==="all"?MONTHS:[MONTHS[MONTH_KEYS.indexOf(state.month)]].filter(Boolean);
+  const inflow=getFilteredInflow(),months=activeMonths();
   const projects=Object.keys(inflow).filter(p=>Object.values(inflow[p]).reduce((a,b)=>a+b,0)>0);
   const datasets=projects.map((proj,i)=>({label:proj,data:months.map(m=>parseFloat((inflow[proj][m]||0).toFixed(2))),backgroundColor:COLORS[i%COLORS.length],stack:"s",borderRadius:2}));
   document.getElementById("bar-legend").innerHTML=projects.map((p,i)=>`<span class="leg-item"><span class="leg-swatch" style="background:${COLORS[i%COLORS.length]}"></span>${p}</span>`).join("");
@@ -993,7 +1036,7 @@ function renderBarChart(){
   barChart=new Chart(document.getElementById("barChart"),{type:"bar",data:{labels:months,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,ticks:{font:{size:11,family:"DM Sans"}},grid:{display:false}},y:{stacked:true,ticks:{font:{size:11,family:"DM Sans"},callback:v=>"₦"+v+"m"},grid:{color:"rgba(26,25,23,0.05)"}}}}});
 }
 function renderDonutChart(){
-  const inflow=getFilteredInflow(),months=state.month==="all"?MONTHS:[MONTHS[MONTH_KEYS.indexOf(state.month)]].filter(Boolean);
+  const inflow=getFilteredInflow(),months=activeMonths();
   const projs=Object.keys(inflow),totals=projs.map(p=>months.reduce((a,m)=>a+(inflow[p][m]||0),0));
   const grand=totals.reduce((a,b)=>a+b,0);
   const filt=projs.map((p,i)=>({name:p,val:totals[i]})).filter(x=>x.val>0).sort((a,b)=>b.val-a.val).slice(0,9);
@@ -1002,61 +1045,48 @@ function renderDonutChart(){
   donutChart=new Chart(document.getElementById("donutChart"),{type:"doughnut",data:{labels:filt.map(p=>p.name),datasets:[{data:filt.map(p=>parseFloat(p.val.toFixed(2))),backgroundColor:filt.map((_,i)=>COLORS[i%COLORS.length]),borderWidth:2,borderColor:"#fff"}]},options:{responsive:true,maintainAspectRatio:false,cutout:"66%",plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>" "+fmt(ctx.parsed)+" ("+(ctx.parsed/grand*100).toFixed(1)+"%)"}}}}});
 }
 function renderLineChart(){
-  const labels=["Week 1","Week 2"],weekTotals=labels.map((_,wi)=>{let sum=0;Object.entries(DATA.weeklyMay).forEach(([proj,vals])=>{if(state.project!=="all"&&proj!==state.project)return;if(state.type!=="all"&&DATA.projectTypes[proj]!==state.type)return;sum+=vals[wi]||0});return parseFloat(sum.toFixed(1))});
+  const labels=["Week 1","Week 2"],weekTotals=labels.map((_,wi)=>{let sum=0;Object.entries(DATA.weeklyMay).forEach(([proj,vals])=>{if(!projectActive(proj))return;if(state.type!=="all"&&DATA.projectTypes[proj]!==state.type)return;sum+=vals[wi]||0});return parseFloat(sum.toFixed(1))});
   if(lineChart)lineChart.destroy();
   lineChart=new Chart(document.getElementById("lineChart"),{type:"line",data:{labels,datasets:[{label:"Weekly inflow",data:weekTotals,borderColor:"#185FA5",backgroundColor:"rgba(24,95,165,0.07)",pointBackgroundColor:"#185FA5",pointBorderColor:"#fff",pointBorderWidth:2,pointRadius:6,tension:.35,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11,family:"DM Sans"}},grid:{display:false}},y:{ticks:{font:{size:11,family:"DM Sans"},callback:v=>"₦"+v+"m"},grid:{color:"rgba(26,25,23,0.05)"}}}}});
 }
+function renderSalesBarChart(){
+  const inflow=getFilteredInflow(),months=activeMonths();
+  const projects=Object.keys(inflow).filter(p=>Object.values(inflow[p]).reduce((a,b)=>a+b,0)>0);
+  const datasets=projects.map((proj,i)=>({label:proj,data:months.map(m=>parseFloat((inflow[proj][m]||0).toFixed(2))),backgroundColor:COLORS[i%COLORS.length],borderRadius:3}));
+  document.getElementById("sales-bar-legend").innerHTML=projects.map((p,i)=>`<span class="leg-item"><span class="leg-swatch" style="background:${COLORS[i%COLORS.length]}"></span>${p}</span>`).join("");
+  if(salesBarChart)salesBarChart.destroy();
+  salesBarChart=new Chart(document.getElementById("salesBarChart"),{type:"bar",data:{labels:months,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₦${ctx.parsed.y.toFixed(1)}m`}}},scales:{x:{ticks:{font:{size:11,family:"DM Sans"}},grid:{display:false}},y:{ticks:{font:{size:11,family:"DM Sans"},callback:v=>"₦"+v+"m"},grid:{color:"rgba(26,25,23,0.05)"}}}}});
+}
 function renderSalesTable(){
-  const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({
-    totalTD:      a.totalTD      + r.totalTD,
-    valueToDate:  a.valueToDate  + (r.valueToDate||0),
-    totalYTD:     a.totalYTD     + (r.totalYTD||0),
-    valueYTD:     a.valueYTD     + (r.valueYTD||0),
-    completeKYC:  a.completeKYC  + r.completeKYC,
-    incompleteKYC:a.incompleteKYC+ r.incompleteKYC,
-    offers:       a.offers       + r.offers,
-    weekNew:      a.weekNew      + r.weekNew,
-  }),{totalTD:0,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:0,incompleteKYC:0,offers:0,weekNew:0});
+  const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({totalTD:a.totalTD+r.totalTD,valueToDate:a.valueToDate+(r.valueToDate||0),totalYTD:a.totalYTD+(r.totalYTD||0),valueYTD:a.valueYTD+(r.valueYTD||0),completeKYC:a.completeKYC+r.completeKYC,incompleteKYC:a.incompleteKYC+r.incompleteKYC,offers:a.offers+r.offers,weekNew:a.weekNew+r.weekNew}),{totalTD:0,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:0,incompleteKYC:0,offers:0,weekNew:0});
   document.getElementById("sales-tbody").innerHTML=sales.map(r=>{
     const pct=r.totalTD>0?Math.round(r.completeKYC/r.totalTD*100):0,clr=pct>=90?"#1B6B35":pct>=70?"#185FA5":"#ba7517";
-    return`<tr>
-      <td style="font-weight:500;color:var(--ink)">${r.name}</td>
-      <td>${r.type==="plots"?'<span class="tag tag-plot">Plot</span>':'<span class="tag tag-unit">Unit</span>'}</td>
-      <td>${r.totalTD.toLocaleString()}</td>
-      <td style="color:var(--ink-soft)">${fmtNaira(r.valueToDate||0)}</td>
-      <td style="font-weight:500;color:var(--ink)">${(r.totalYTD||0).toLocaleString()}</td>
-      <td style="font-weight:500;color:var(--ink)">${fmtNaira(r.valueYTD||0)}</td>
-      <td>${r.completeKYC.toLocaleString()}</td>
-      <td>${r.incompleteKYC>0?`<span class="badge badge-red">${r.incompleteKYC}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td>
-      <td>${r.offers>0?r.offers:'<span style="color:var(--warm-grey)">—</span>'}</td>
-      <td>${r.weekNew>0?`<span class="badge badge-green">+${r.weekNew}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td>
-      <td><div class="progress-wrap"><span class="pct-label">${pct}%</span><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${clr}"></div></div></div></td>
-    </tr>`;
+    return`<tr><td style="font-weight:500;color:var(--ink)">${r.name}</td><td>${r.type==="plots"?'<span class="tag tag-plot">Plot</span>':'<span class="tag tag-unit">Unit</span>'}</td><td>${r.totalTD.toLocaleString()}</td><td style="color:var(--ink-soft)">${fmtNaira(r.valueToDate||0)}</td><td style="font-weight:500;color:var(--ink)">${(r.totalYTD||0).toLocaleString()}</td><td style="font-weight:500;color:var(--ink)">${fmtNaira(r.valueYTD||0)}</td><td>${r.completeKYC.toLocaleString()}</td><td>${r.incompleteKYC>0?`<span class="badge badge-red">${r.incompleteKYC}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td><td>${r.offers>0?r.offers:'<span style="color:var(--warm-grey)">—</span>'}</td><td>${r.weekNew>0?`<span class="badge badge-green">+${r.weekNew}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td><td><div class="progress-wrap"><span class="pct-label">${pct}%</span><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${clr}"></div></div></div></td></tr>`;
   }).join("");
-  document.getElementById("sales-tfoot").innerHTML=`<tr>
-    <td colspan="2">Total</td>
-    <td>${tot.totalTD.toLocaleString()}</td>
-    <td>${fmtNaira(tot.valueToDate)}</td>
-    <td style="font-weight:600">${tot.totalYTD.toLocaleString()}</td>
-    <td style="font-weight:600">${fmtNaira(tot.valueYTD)}</td>
-    <td>${tot.completeKYC.toLocaleString()}</td>
-    <td>${tot.incompleteKYC}</td>
-    <td>${tot.offers}</td>
-    <td>+${tot.weekNew}</td>
-    <td></td>
-  </tr>`;
+  document.getElementById("sales-tfoot").innerHTML=`<tr><td colspan="2">Total</td><td>${tot.totalTD.toLocaleString()}</td><td>${fmtNaira(tot.valueToDate)}</td><td style="font-weight:600">${tot.totalYTD.toLocaleString()}</td><td style="font-weight:600">${fmtNaira(tot.valueYTD)}</td><td>${tot.completeKYC.toLocaleString()}</td><td>${tot.incompleteKYC}</td><td>${tot.offers}</td><td>+${tot.weekNew}</td><td></td></tr>`;
 }
 function renderInflowTable(){
   const inflow=getFilteredInflow(),grand=Object.values(inflow).reduce((a,mv)=>a+Object.values(mv).reduce((b,v)=>b+v,0),0);
   const rows=Object.entries(inflow).map(([proj,mv])=>({proj,mv,ytd:Object.values(mv).reduce((a,b)=>a+b,0)})).filter(r=>r.ytd>0).sort((a,b)=>b.ytd-a.ytd);
-  const mTots=MONTHS.map(m=>Object.values(inflow).reduce((a,mv)=>a+(mv[m]||0),0));
-  document.getElementById("inflow-tbody").innerHTML=rows.map(r=>`<tr><td style="font-weight:500;color:var(--ink)">${r.proj}</td>${MONTHS.map(m=>`<td>${r.mv[m]>0?"₦"+r.mv[m].toFixed(1)+"m":'<span style="color:var(--warm-grey)">—</span>'}</td>`).join("")}<td style="font-weight:600">₦${r.ytd.toFixed(1)}m</td><td>${(r.ytd/grand*100).toFixed(1)}%</td></tr>`).join("");
+  const months=activeMonths();
+  const mTots=months.map(m=>Object.values(inflow).reduce((a,mv)=>a+(mv[m]||0),0));
+  document.getElementById("inflow-tbody").innerHTML=rows.map(r=>`<tr><td style="font-weight:500;color:var(--ink)">${r.proj}</td>${months.map(m=>`<td>${r.mv[m]>0?"₦"+r.mv[m].toFixed(1)+"m":'<span style="color:var(--warm-grey)">—</span>'}</td>`).join("")}<td style="font-weight:600">₦${r.ytd.toFixed(1)}m</td><td>${grand>0?(r.ytd/grand*100).toFixed(1):0}%</td></tr>`).join("");
   document.getElementById("inflow-tfoot").innerHTML=`<tr><td>Total</td>${mTots.map(t=>`<td>₦${t.toFixed(1)}m</td>`).join("")}<td>₦${grand.toFixed(1)}m</td><td>100%</td></tr>`;
 }
-function render(){renderMetrics();renderBarChart();renderDonutChart();renderLineChart();renderSalesTable();renderInflowTable()}
+function render(){renderMetrics();renderBarChart();renderDonutChart();renderLineChart();renderSalesBarChart();renderSalesTable();renderInflowTable()}
 function setType(t,el){state.type=t;document.querySelectorAll(".fpill").forEach(p=>p.classList.remove("active"));el.classList.add("active");render()}
-function setProject(v){state.project=v;render()}
-function setMonth(v){state.month=v;render()}
+function toggleProject(val,el){
+  const allBox=document.querySelector('#project-checkboxes input[value="all"]');
+  if(val==="all"){document.querySelectorAll('#project-checkboxes input[type=checkbox]').forEach(cb=>{cb.checked=cb.value==="all"});state.projects=[];}
+  else{allBox.checked=false;if(el.checked){state.projects.push(val);}else{state.projects=state.projects.filter(p=>p!==val);}if(state.projects.length===0)allBox.checked=true;}
+  const c=state.projects.length;document.getElementById("proj-count").textContent=c>0?c+" selected":"";render();
+}
+function toggleMonth(val,el){
+  const allBox=document.querySelector('#month-checkboxes input[value="all"]');
+  if(val==="all"){document.querySelectorAll('#month-checkboxes input[type=checkbox]').forEach(cb=>{cb.checked=cb.value==="all"});state.months=[];}
+  else{allBox.checked=false;if(el.checked){state.months.push(val);}else{state.months=state.months.filter(m=>m!==val);}if(state.months.length===0)allBox.checked=true;}
+  const c=state.months.length;document.getElementById("month-count").textContent=c>0?c+" selected":"";render();
+}
 function setView(v,el){document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));el.classList.add("active")}
 
 // ══════════════════════════════════════════════════════════════════════════
