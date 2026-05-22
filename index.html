@@ -789,9 +789,11 @@ function showDashboard(user) {
   refreshData();
 }
 
-// Enter key support
-document.getElementById("password-input").addEventListener("keydown", e => { if(e.key==="Enter") handleLogin(); });
-document.getElementById("email-input").addEventListener("keydown",    e => { if(e.key==="Enter") document.getElementById("password-input").focus(); });
+// Enter key support — wrapped in null checks to prevent crashes
+const pwdInputEl   = document.getElementById("password-input");
+const emailInputEl = document.getElementById("email-input");
+if (pwdInputEl)   pwdInputEl.addEventListener("keydown",   e => { if(e.key==="Enter") handleLogin(); });
+if (emailInputEl) emailInputEl.addEventListener("keydown", e => { if(e.key==="Enter") { if(pwdInputEl) pwdInputEl.focus(); } });
 
 // ══════════════════════════════════════════════════════════════════════════
 //  FALLBACK DATA
@@ -1013,6 +1015,7 @@ function renderMetrics(){
     <div class="metric-card"><div class="metric-label">Total sales YTD</div><div class="metric-value">${tot.totalYTD.toLocaleString()}</div><div class="metric-sub">${periodLabel}</div></div>
     <div class="metric-card"><div class="metric-label">Value of sales YTD</div><div class="metric-value">${fmtNaira(tot.valueYTD)}</div><div class="metric-sub">${periodLabel}</div></div>
     <div class="metric-card red-card"><div class="metric-label">Incomplete KYC</div><div class="metric-value">${tot.incomplete}</div><div class="metric-sub">pending action</div></div>`;
+}
 function renderBarChart(){
   const inflow=getFilteredInflow(),months=activeMonths();
   const projects=Object.keys(inflow).filter(p=>Object.values(inflow[p]).reduce((a,b)=>a+b,0)>0);
