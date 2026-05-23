@@ -387,7 +387,8 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
       </div>
 
       <div class="filter-group">
-        <label>Month <span id="month-count" style="color:var(--red);font-size:9px;margin-left:4px"></span></label>
+        <label>Inflow period <span id="month-count" style="color:var(--red);font-size:9px;margin-left:4px"></span></label>
+        <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:5px">Affects inflow charts &amp; cards only</div>
         <div class="multi-select-box" id="month-checkboxes">
           <label class="chk-item"><input type="checkbox" value="all" checked onchange="toggleMonth('all',this)"><span>All months (YTD)</span></label>
           <label class="chk-item"><input type="checkbox" value="January" onchange="toggleMonth('January',this)"><span>January 2026</span></label>
@@ -395,6 +396,9 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
           <label class="chk-item"><input type="checkbox" value="March" onchange="toggleMonth('March',this)"><span>March 2026</span></label>
           <label class="chk-item"><input type="checkbox" value="April" onchange="toggleMonth('April',this)"><span>April 2026</span></label>
           <label class="chk-item"><input type="checkbox" value="May" onchange="toggleMonth('May',this)"><span>May 2026</span></label>
+        </div>
+        <div style="font-size:9.5px;color:var(--warm-grey);margin-top:6px;padding:0 2px;line-height:1.5">
+          Filters inflow charts &amp; cards only. Sales YTD figures are cumulative Jan–May.
         </div>
       </div>
     </div>
@@ -471,9 +475,9 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 
     <div class="table-card">
       <div class="card-title">Monthly inflow summary</div>
-      <div class="card-sub">Total cash collected per project · ₦ millions</div>
+      <div class="card-sub">Cash collected per project · ₦ millions · responds to inflow period &amp; project filters</div>
       <table class="tbl">
-        <thead><tr><th>Project</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>YTD Total</th><th>Share</th></tr></thead>
+        <thead id="inflow-thead"><tr><th>Project</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th><th>Share</th></tr></thead>
         <tbody id="inflow-tbody"></tbody>
         <tfoot id="inflow-tfoot"></tfoot>
       </table>
@@ -973,48 +977,83 @@ function getFilteredSales(){
   });
 }
 function renderMetrics(){
-  const inflow=getFilteredInflow(),months=activeMonths();
-  let total=0;Object.values(inflow).forEach(mv=>months.forEach(m=>{total+=mv[m]||0;}));
-  const curMKey=state.months.length===1?state.months[0]:"May";
-  const curM=MONTHS[MONTH_KEYS.indexOf(curMKey)]||"May",prevM=MONTHS[MONTHS.indexOf(curM)-1];
-  let curTotal=0,prevTotal=0;
+  // ── INFLOW (responds to month + project + type filter) ───────────────────
+  const inflow  = getFilteredInflow();
+  const months  = activeMonths();
+  let ytdInflow = 0;
+  Object.values(inflow).forEach(mv => months.forEach(m => { ytdInflow += mv[m]||0; }));
+
+  // Latest selected month for the single-month inflow card
+  const latestMonthKey = state.months.length > 0 ? state.months[state.months.length-1] : "May";
+  const latestM = MONTHS[MONTH_KEYS.indexOf(latestMonthKey)] || "May";
+  const prevM   = MONTHS[MONTHS.indexOf(latestM) - 1];
+
+  let monthInflow=0, prevInflow=0;
   Object.entries(DATA.inflow).forEach(([proj,mv])=>{
     if(!projectActive(proj))return;
     if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return;
-    curTotal+=mv[curM]||0;if(prevM)prevTotal+=mv[prevM]||0;
+    monthInflow+=mv[latestM]||0;
+    if(prevM)prevInflow+=mv[prevM]||0;
   });
-  const pct=prevTotal>0?((curTotal-prevTotal)/prevTotal*100).toFixed(0):null;
+  const pct=prevInflow>0?((monthInflow-prevInflow)/prevInflow*100).toFixed(0):null;
+
+  // This week's inflow (project + type filter)
   let weekInflow=0;
   Object.entries(DATA.weeklyMay).forEach(([proj,vals])=>{
     if(!projectActive(proj))return;
     if(state.type!=="all"&&DATA.projectTypes[proj]!==state.type)return;
     weekInflow+=vals[1]||0;
   });
-  // Sales: filter by project AND type (for YTD cards and weekNew card)
+
+  const inflowPeriod = state.months.length===0?"Jan\u2013May 2026":state.months.length===1?state.months[0]+" 2026":state.months.length+" months";
+
+  // ── SALES (responds to project + type filter ONLY) ────────────────────────
   const sales=getFilteredSales();
-  // For YTD values — also filter by selected months using a month-weighted approach
-  // Since YTD columns come from the sheet (already YTD), we scale by month fraction
-  const totalMonths=MONTHS.length;
-  const selMonths=activeMonths().length;
-  const monthFraction = selMonths/totalMonths;
-  const tot=sales.reduce((a,r)=>({
-    totalYTD:  a.totalYTD  + Math.round((r.totalYTD||0) * monthFraction),
-    valueYTD:  a.valueYTD  + ((r.valueYTD||0) * monthFraction),
-    incomplete:a.incomplete+ r.incompleteKYC,
-    offers:    a.offers    + r.offers,
-    weekNew:   a.weekNew   + (r.weekNew||0),
-  }),{totalYTD:0,valueYTD:0,incomplete:0,offers:0,weekNew:0});
-  const periodLabel=state.months.length===0?"Jan\u2013May 2026":state.months.length===1?state.months[0]+" 2026":state.months.length+" months selected";
-  // weekNew type label for the card subtitle
   const typeLabel=state.type==="plots"?"plots":state.type==="units"?"units":"units & plots";
+  const tot=sales.reduce((a,r)=>({
+    totalYTD:  a.totalYTD +(r.totalYTD||0),
+    valueYTD:  a.valueYTD +(r.valueYTD||0),
+    incomplete:a.incomplete+r.incompleteKYC,
+    offers:    a.offers   +r.offers,
+    weekNew:   a.weekNew  +(r.weekNew||0),
+  }),{totalYTD:0,valueYTD:0,incomplete:0,offers:0,weekNew:0});
+
   document.getElementById("metrics-row").innerHTML=`
-    <div class="metric-card"><div class="metric-label">YTD inflow</div><div class="metric-value">${fmt(total)}</div><div class="metric-sub">${periodLabel}</div></div>
-    <div class="metric-card"><div class="metric-label">${curM} inflow</div><div class="metric-value">${fmt(curTotal)}</div>${pct!==null?`<div class="metric-delta ${pct>=0?"delta-up":"delta-down"}">${pct>=0?"\u25b2":"\u25bc"} ${Math.abs(pct)}% vs ${prevM||""}</div>`:""}</div>
-    <div class="metric-card green-card"><div class="metric-label">This week's inflow</div><div class="metric-value">${fmt(weekInflow)}</div><div class="metric-sub">most recent week</div></div>
-    <div class="metric-card blue-card"><div class="metric-label">This week's sales</div><div class="metric-value">${tot.weekNew}</div><div class="metric-sub">${typeLabel}</div></div>
-    <div class="metric-card"><div class="metric-label">Total sales YTD</div><div class="metric-value">${tot.totalYTD.toLocaleString()}</div><div class="metric-sub">${periodLabel}</div></div>
-    <div class="metric-card"><div class="metric-label">Value of sales YTD</div><div class="metric-value">${fmtNaira(tot.valueYTD)}</div><div class="metric-sub">${periodLabel}</div></div>
-    <div class="metric-card red-card"><div class="metric-label">Incomplete KYC</div><div class="metric-value">${tot.incomplete}</div><div class="metric-sub">pending action</div></div>`;
+    <div class="metric-card">
+      <div class="metric-label">Inflow — ${inflowPeriod}</div>
+      <div class="metric-value">${fmt(ytdInflow)}</div>
+      <div class="metric-sub">filtered period total</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">${latestMonthKey} inflow</div>
+      <div class="metric-value">${fmt(monthInflow)}</div>
+      ${pct!==null?`<div class="metric-delta ${pct>=0?"delta-up":"delta-down"}">${pct>=0?"▲":"▼"} ${Math.abs(pct)}% vs ${prevM||""}</div>`:""}
+    </div>
+    <div class="metric-card green-card">
+      <div class="metric-label">This week's inflow</div>
+      <div class="metric-value">${fmt(weekInflow)}</div>
+      <div class="metric-sub">most recent week · May</div>
+    </div>
+    <div class="metric-card blue-card">
+      <div class="metric-label">This week's sales</div>
+      <div class="metric-value">${tot.weekNew}</div>
+      <div class="metric-sub">${typeLabel}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Total sales YTD</div>
+      <div class="metric-value">${tot.totalYTD.toLocaleString()}</div>
+      <div class="metric-sub">Jan–May · ${typeLabel}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Value of sales YTD</div>
+      <div class="metric-value">${fmtNaira(tot.valueYTD)}</div>
+      <div class="metric-sub">Jan–May · ${typeLabel}</div>
+    </div>
+    <div class="metric-card red-card">
+      <div class="metric-label">Incomplete KYC</div>
+      <div class="metric-value">${tot.incomplete}</div>
+      <div class="metric-sub">pending action</div>
+    </div>`;
 }
 function renderBarChart(){
   const inflow=getFilteredInflow(),months=activeMonths();
@@ -1055,10 +1094,14 @@ function renderSalesTable(){
   document.getElementById("sales-tfoot").innerHTML=`<tr><td colspan="2">Total</td><td>${tot.totalTD.toLocaleString()}</td><td>${fmtNaira(tot.valueToDate)}</td><td style="font-weight:600">${tot.totalYTD.toLocaleString()}</td><td style="font-weight:600">${fmtNaira(tot.valueYTD)}</td><td>${tot.completeKYC.toLocaleString()}</td><td>${tot.incompleteKYC}</td><td>${tot.offers}</td><td>+${tot.weekNew}</td><td></td></tr>`;
 }
 function renderInflowTable(){
-  const inflow=getFilteredInflow(),grand=Object.values(inflow).reduce((a,mv)=>a+Object.values(mv).reduce((b,v)=>b+v,0),0);
+  const inflow=getFilteredInflow();
+  const grand=Object.values(inflow).reduce((a,mv)=>a+Object.values(mv).reduce((b,v)=>b+v,0),0);
   const rows=Object.entries(inflow).map(([proj,mv])=>({proj,mv,ytd:Object.values(mv).reduce((a,b)=>a+b,0)})).filter(r=>r.ytd>0).sort((a,b)=>b.ytd-a.ytd);
   const months=activeMonths();
   const mTots=months.map(m=>Object.values(inflow).reduce((a,mv)=>a+(mv[m]||0),0));
+  const totalLabel=state.months.length===0?"YTD Total":state.months.length===1?state.months[0]+" Total":"Period Total";
+  // Update header dynamically
+  document.getElementById("inflow-thead").innerHTML=`<tr><th>Project</th>${months.map(m=>`<th>${m}</th>`).join("")}<th>${totalLabel}</th><th>Share</th></tr>`;
   document.getElementById("inflow-tbody").innerHTML=rows.map(r=>`<tr><td style="font-weight:500;color:var(--ink)">${r.proj}</td>${months.map(m=>`<td>${r.mv[m]>0?"₦"+r.mv[m].toFixed(1)+"m":'<span style="color:var(--warm-grey)">—</span>'}</td>`).join("")}<td style="font-weight:600">₦${r.ytd.toFixed(1)}m</td><td>${grand>0?(r.ytd/grand*100).toFixed(1):0}%</td></tr>`).join("");
   document.getElementById("inflow-tfoot").innerHTML=`<tr><td>Total</td>${mTots.map(t=>`<td>₦${t.toFixed(1)}m</td>`).join("")}<td>₦${grand.toFixed(1)}m</td><td>100%</td></tr>`;
 }
