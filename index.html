@@ -456,8 +456,8 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
         <div style="position:relative;width:100%;height:180px"><canvas id="lineChart"></canvas></div>
       </div>
       <div class="chart-card full">
-        <div class="card-title">Monthly sales trend</div>
-        <div class="card-sub">Total sales YTD per project per month — responds to project &amp; month filters</div>
+        <div class="card-title">Monthly sales trend — units sold</div>
+        <div class="card-sub">Number of units sold per project per month — responds to project, type &amp; month filters</div>
         <div class="legend-wrap" id="sales-bar-legend"></div>
         <div style="position:relative;width:100%;height:220px"><canvas id="salesBarChart"></canvas></div>
       </div>
@@ -498,7 +498,7 @@ const NETLIFY_URL = "https://masalesdash.netlify.app";
 // ══════════════════════════════════════════════════════════════════════════
 const CONFIG = {
   SHEET_ID: "1UsJyJExzdU97oDpALfDzraAhsarpCmESaA4pD2_3zVE",
-  TABS: { SALES:"SALES_DATA", INFLOW:"INFLOW_DATA" },
+  TABS: { SALES:"SALES_DATA", INFLOW:"INFLOW_DATA", SALES_MONTHLY:"SALES_MONTHLY" },
   REFRESH_INTERVAL: 300000,
 };
 
@@ -867,6 +867,8 @@ const FALLBACK = {
     "Ibudo Wura":[64.02,38.84],"Riyom & Wase":[0,67.97],"Lakowe Crossing":[0,45.0],
   },
   lastUpdated:"15 May 2026",
+  // salesMonthly: keyed by project, each with units and value per month
+  salesMonthly:{},
 };
 
 const COLORS=["#185FA5","#0F6E56","#993C1D","#993556","#3B6D11","#854F0B","#534AB7","#A32D2D","#0C447C","#085041","#71271F","#3C3489","#639922","#5F5E5A","#632222","#0d5c63"];
@@ -898,6 +900,31 @@ function parseInflow(table){
   });
   return Object.keys(inflow).length?inflow:null;
 }
+function parseSalesMonthly(table){
+  // Sheet structure (0-indexed):
+  // Col 0=Project, 1=Units YTD, 2=Jan units, 3=Jan value,
+  // 4=Feb units, 5=Feb value, 6=Mar units, 7=Mar value,
+  // 8=Apr units, 9=Apr value, 10=May units, 11=May value
+  // Rows: 0=blank, 1=month headers, 2=col headers, 3+=data
+  if(!table||!table.rows)return null;
+  const result={};
+  const MCOLS={Jan:{u:2,v:3},Feb:{u:4,v:5},Mar:{u:6,v:7},Apr:{u:8,v:9},May:{u:10,v:11}};
+  // Skip first 2 header rows (row index 0 and 1 in gviz = rows 2&3 in sheet)
+  table.rows.forEach((row,ri)=>{
+    if(ri<2)return; // skip month header row + col header row
+    if(!row.c||!row.c[0]||!row.c[0].v)return;
+    const proj=row.c[0].v.toString().trim();
+    if(proj.toUpperCase()==="TOTAL"||proj==="Project")return;
+    result[proj]={ytdUnits:parseFloat((row.c[1]&&row.c[1].v)||0)||0};
+    Object.entries(MCOLS).forEach(([mKey,cols])=>{
+      result[proj][mKey]={
+        units:parseFloat((row.c[cols.u]&&row.c[cols.u].v)||0)||0,
+        value:parseFloat((row.c[cols.v]&&row.c[cols.v].v)||0)||0,
+      };
+    });
+  });
+  return Object.keys(result).length?result:null;
+}
 function parseSales(table){
   if(!table||!table.rows)return null;
   const sales=[];
@@ -927,10 +954,11 @@ async function refreshData(){
   document.getElementById("refresh-btn2").textContent="↻ Loading…";
   if(CONFIG.SHEET_ID !== "UNCONFIGURED"){
     try{
-      const[inflowTbl,salesTbl]=await Promise.all([fetchSheet(CONFIG.TABS.INFLOW),fetchSheet(CONFIG.TABS.SALES)]);
-      const liveInflow=parseInflow(inflowTbl),liveSales=parseSales(salesTbl);
+      const[inflowTbl,salesTbl,salesMonthlyTbl]=await Promise.all([fetchSheet(CONFIG.TABS.INFLOW),fetchSheet(CONFIG.TABS.SALES),fetchSheet(CONFIG.TABS.SALES_MONTHLY)]);
+      const liveInflow=parseInflow(inflowTbl),liveSales=parseSales(salesTbl),liveSalesMonthly=parseSalesMonthly(salesMonthlyTbl);
       if(liveInflow)DATA.inflow=liveInflow;
       if(liveSales)DATA.sales=liveSales;
+      if(liveSalesMonthly)DATA.salesMonthly=liveSalesMonthly;
       DATA.lastUpdated=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
       document.getElementById("error-banner").classList.remove("visible");
     }catch(e){document.getElementById("error-banner").classList.add("visible")}
@@ -1007,16 +1035,31 @@ function renderMetrics(){
 
   const inflowPeriod = state.months.length===0?"Jan\u2013May 2026":state.months.length===1?state.months[0]+" 2026":state.months.length+" months";
 
-  // ── SALES (responds to project + type filter ONLY) ────────────────────────
+  // ── SALES — units & value use SALES_MONTHLY (responds to month + project + type) ──
   const sales=getFilteredSales();
   const typeLabel=state.type==="plots"?"plots":state.type==="units"?"units":"units & plots";
+  const selMonths=activeMonths();
+  const sm=DATA.salesMonthly;
+  const hasMonthly=Object.keys(sm).length>0;
+
+  // Aggregate monthly units and value with all filters applied
+  let mUnits=0, mValue=0;
+  Object.entries(sm).forEach(([proj,data])=>{
+    if(!projectActive(proj))return;
+    if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return;
+    selMonths.forEach(m=>{ if(data[m]){ mUnits+=(data[m].units||0); mValue+=(data[m].value||0); } });
+  });
+
   const tot=sales.reduce((a,r)=>({
-    totalYTD:  a.totalYTD +(r.totalYTD||0),
-    valueYTD:  a.valueYTD +(r.valueYTD||0),
+    // For units/value: use monthly data if available, else fall back to YTD totals
+    totalYTD:  hasMonthly ? mUnits : a.totalYTD+(r.totalYTD||0),
+    valueYTD:  hasMonthly ? mValue : a.valueYTD+(r.valueYTD||0),
     incomplete:a.incomplete+r.incompleteKYC,
     offers:    a.offers   +r.offers,
     weekNew:   a.weekNew  +(r.weekNew||0),
   }),{totalYTD:0,valueYTD:0,incomplete:0,offers:0,weekNew:0});
+
+  const salesPeriodLabel = state.months.length===0?"Jan\u2013May":state.months.length===1?state.months[0]:state.months.length+" months";
 
   document.getElementById("metrics-row").innerHTML=`
     <div class="metric-card">
@@ -1040,14 +1083,14 @@ function renderMetrics(){
       <div class="metric-sub">${typeLabel}</div>
     </div>
     <div class="metric-card">
-      <div class="metric-label">Total sales YTD</div>
+      <div class="metric-label">Units sold — ${salesPeriodLabel}</div>
       <div class="metric-value">${tot.totalYTD.toLocaleString()}</div>
-      <div class="metric-sub">Jan–May · ${typeLabel}</div>
+      <div class="metric-sub">${salesPeriodLabel} · ${typeLabel}</div>
     </div>
     <div class="metric-card">
-      <div class="metric-label">Value of sales YTD</div>
+      <div class="metric-label">Value of sales — ${salesPeriodLabel}</div>
       <div class="metric-value">${fmtNaira(tot.valueYTD)}</div>
-      <div class="metric-sub">Jan–May · ${typeLabel}</div>
+      <div class="metric-sub">${salesPeriodLabel} · ${typeLabel}</div>
     </div>
     <div class="metric-card red-card">
       <div class="metric-label">Incomplete KYC</div>
@@ -1078,12 +1121,52 @@ function renderLineChart(){
   lineChart=new Chart(document.getElementById("lineChart"),{type:"line",data:{labels,datasets:[{label:"Weekly inflow",data:weekTotals,borderColor:"#185FA5",backgroundColor:"rgba(24,95,165,0.07)",pointBackgroundColor:"#185FA5",pointBorderColor:"#fff",pointBorderWidth:2,pointRadius:6,tension:.35,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11,family:"DM Sans"}},grid:{display:false}},y:{ticks:{font:{size:11,family:"DM Sans"},callback:v=>"₦"+v+"m"},grid:{color:"rgba(26,25,23,0.05)"}}}}});
 }
 function renderSalesBarChart(){
-  const inflow=getFilteredInflow(),months=activeMonths();
-  const projects=Object.keys(inflow).filter(p=>Object.values(inflow[p]).reduce((a,b)=>a+b,0)>0);
-  const datasets=projects.map((proj,i)=>({label:proj,data:months.map(m=>parseFloat((inflow[proj][m]||0).toFixed(2))),backgroundColor:COLORS[i%COLORS.length],borderRadius:3}));
+  const months=activeMonths();
+  const sm=DATA.salesMonthly;
+  const hasMonthly=Object.keys(sm).length>0;
+
+  // Get projects that pass current filters
+  const projects=Object.keys(hasMonthly?sm:DATA.projectTypes).filter(proj=>{
+    if(!projectActive(proj))return false;
+    if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return false;
+    if(hasMonthly){
+      const total=months.reduce((a,m)=>a+(sm[proj]&&sm[proj][m]?sm[proj][m].units:0),0);
+      return total>0;
+    }
+    return true;
+  });
+
+  const datasets=projects.map((proj,i)=>({
+    label:proj,
+    data:months.map(m=>{
+      if(hasMonthly&&sm[proj]&&sm[proj][m])return sm[proj][m].units||0;
+      return 0;
+    }),
+    backgroundColor:COLORS[i%COLORS.length],
+    borderRadius:3,
+  }));
+
   document.getElementById("sales-bar-legend").innerHTML=projects.map((p,i)=>`<span class="leg-item"><span class="leg-swatch" style="background:${COLORS[i%COLORS.length]}"></span>${p}</span>`).join("");
   if(salesBarChart)salesBarChart.destroy();
-  salesBarChart=new Chart(document.getElementById("salesBarChart"),{type:"bar",data:{labels:months,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₦${ctx.parsed.y.toFixed(1)}m`}}},scales:{x:{ticks:{font:{size:11,family:"DM Sans"}},grid:{display:false}},y:{ticks:{font:{size:11,family:"DM Sans"},callback:v=>"₦"+v+"m"},grid:{color:"rgba(26,25,23,0.05)"}}}}});
+  salesBarChart=new Chart(document.getElementById("salesBarChart"),{
+    type:"bar",
+    data:{labels:months,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y} unit${ctx.parsed.y!==1?"s":""}`}}
+      },
+      scales:{
+        x:{ticks:{font:{size:11,family:"DM Sans"}},grid:{display:false}},
+        y:{
+          ticks:{font:{size:11,family:"DM Sans"},stepSize:1,callback:v=>Number.isInteger(v)?v:""},
+          grid:{color:"rgba(26,25,23,0.05)"},
+          title:{display:true,text:"Units sold",font:{size:10,family:"DM Sans"},color:"#6B6861"}
+        }
+      }
+    }
+  });
 }
 function renderSalesTable(){
   const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({totalTD:a.totalTD+r.totalTD,valueToDate:a.valueToDate+(r.valueToDate||0),totalYTD:a.totalYTD+(r.totalYTD||0),valueYTD:a.valueYTD+(r.valueYTD||0),completeKYC:a.completeKYC+r.completeKYC,incompleteKYC:a.incompleteKYC+r.incompleteKYC,offers:a.offers+r.offers,weekNew:a.weekNew+r.weekNew}),{totalTD:0,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:0,incompleteKYC:0,offers:0,weekNew:0});
