@@ -491,7 +491,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 //  e.g. "https://mixta-dashboard.netlify.app"
 //  Do NOT include a trailing slash
 // ══════════════════════════════════════════════════════════════════════════
-const NETLIFY_URL = "https://masalesdash.netlify.app";
+const NETLIFY_URL = "https://mixtadash.netlify.app";
 
 // ══════════════════════════════════════════════════════════════════════════
 //  CONFIGURATION
@@ -1035,31 +1035,35 @@ function renderMetrics(){
 
   const inflowPeriod = state.months.length===0?"Jan\u2013May 2026":state.months.length===1?state.months[0]+" 2026":state.months.length+" months";
 
-  // ── SALES — units & value use SALES_MONTHLY (responds to month + project + type) ──
+  // ── SALES — project + type filter ────────────────────────────────────────
   const sales=getFilteredSales();
   const typeLabel=state.type==="plots"?"plots":state.type==="units"?"units":"units & plots";
   const selMonths=activeMonths();
   const sm=DATA.salesMonthly;
   const hasMonthly=Object.keys(sm).length>0;
+  const monthsSelected=state.months.length>0; // true = user picked specific months
 
-  // Aggregate monthly units and value with all filters applied
-  let mUnits=0, mValue=0;
-  Object.entries(sm).forEach(([proj,data])=>{
-    if(!projectActive(proj))return;
-    if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return;
-    selMonths.forEach(m=>{ if(data[m]){ mUnits+=(data[m].units||0); mValue+=(data[m].value||0); } });
-  });
+  let displayUnits=0, displayValue=0;
+
+  if(monthsSelected && hasMonthly){
+    // User selected specific months — aggregate from SALES_MONTHLY
+    Object.entries(sm).forEach(([proj,data])=>{
+      if(!projectActive(proj))return;
+      if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return;
+      selMonths.forEach(m=>{ if(data[m]){ displayUnits+=(data[m].units||0); displayValue+=(data[m].value||0); } });
+    });
+  } else {
+    // No month filter (YTD view) — always use SALES_DATA YTD columns
+    sales.forEach(r=>{ displayUnits+=(r.totalYTD||0); displayValue+=(r.valueYTD||0); });
+  }
 
   const tot=sales.reduce((a,r)=>({
-    // For units/value: use monthly data if available, else fall back to YTD totals
-    totalYTD:  hasMonthly ? mUnits : a.totalYTD+(r.totalYTD||0),
-    valueYTD:  hasMonthly ? mValue : a.valueYTD+(r.valueYTD||0),
     incomplete:a.incomplete+r.incompleteKYC,
     offers:    a.offers   +r.offers,
     weekNew:   a.weekNew  +(r.weekNew||0),
-  }),{totalYTD:0,valueYTD:0,incomplete:0,offers:0,weekNew:0});
+  }),{incomplete:0,offers:0,weekNew:0});
 
-  const salesPeriodLabel = state.months.length===0?"Jan\u2013May":state.months.length===1?state.months[0]:state.months.length+" months";
+  const salesPeriodLabel=state.months.length===0?"Jan\u2013May":state.months.length===1?state.months[0]:state.months.length+" months";
 
   document.getElementById("metrics-row").innerHTML=`
     <div class="metric-card">
@@ -1084,12 +1088,12 @@ function renderMetrics(){
     </div>
     <div class="metric-card">
       <div class="metric-label">Units sold — ${salesPeriodLabel}</div>
-      <div class="metric-value">${tot.totalYTD.toLocaleString()}</div>
+      <div class="metric-value">${displayUnits.toLocaleString()}</div>
       <div class="metric-sub">${salesPeriodLabel} · ${typeLabel}</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Value of sales — ${salesPeriodLabel}</div>
-      <div class="metric-value">${fmtNaira(tot.valueYTD)}</div>
+      <div class="metric-value">${fmtNaira(displayValue)}</div>
       <div class="metric-sub">${salesPeriodLabel} · ${typeLabel}</div>
     </div>
     <div class="metric-card red-card">
