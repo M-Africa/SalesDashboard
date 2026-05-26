@@ -488,10 +488,10 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 <script>
 // ══════════════════════════════════════════════════════════════════════════
 //  !! IMPORTANT: REPLACE THIS WITH YOUR NETLIFY SITE URL !!
-//  e.g. "https://https://mixtadashboard.netlify.app"
+//  e.g. "https://mixtadashboard.netlify.app"
 //  Do NOT include a trailing slash
 // ══════════════════════════════════════════════════════════════════════════
-const NETLIFY_URL = "https://mixtadash.netlify.app";
+const NETLIFY_URL = "https://mixtadashboard.netlify.app";
 
 // ══════════════════════════════════════════════════════════════════════════
 //  CONFIGURATION
@@ -590,12 +590,31 @@ async function handleSetPassword() {
 
   btn.classList.add("loading"); btn.disabled = true;
 
+  // Diagnose before attempting — check that Identity is reachable at all
+  try {
+    const pingRes = await fetch(`${API}/settings`, { method: "GET" });
+    if (!pingRes.ok && pingRes.status !== 200) {
+      throw new Error("ping_failed");
+    }
+  } catch(pingErr) {
+    errEl.innerHTML =
+      "<strong>Cannot reach Netlify Identity.</strong><br><br>" +
+      "This is almost always one of these causes:<br>" +
+      "1. <strong>Identity not enabled</strong> — go to Netlify → your site → Identity → Enable Identity<br>" +
+      "2. <strong>Site URL mismatch</strong> — go to Netlify → Site settings → General → Site URL and make sure it shows <code>https://mixtadashboard.netlify.app</code><br>" +
+      "3. <strong>Git Gateway not enabled</strong> — go to Netlify → Identity → Services → Enable Git Gateway<br><br>" +
+      "After fixing, try again. If still failing use <strong>Forgot your password?</strong> from the login screen.";
+    errEl.classList.add("visible");
+    btn.classList.remove("loading"); btn.disabled = false;
+    return;
+  }
+
   try {
     const verifyType = tokenType === "invite" ? "signup" : "recovery";
     const verifyRes  = await fetch(`${API}/verify`, {
-      method: "POST",
+      method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: pendingToken, type: verifyType })
+      body:    JSON.stringify({ token: pendingToken, type: verifyType })
     });
 
     const verifyText = await verifyRes.text();
@@ -607,9 +626,9 @@ async function handleSetPassword() {
     }
 
     const updateRes = await fetch(`${API}/user`, {
-      method: "PUT",
+      method:  "PUT",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${verifyData.access_token}` },
-      body: JSON.stringify({ password: pwd1 })
+      body:    JSON.stringify({ password: pwd1 })
     });
 
     const updateText = await updateRes.text();
@@ -622,9 +641,9 @@ async function handleSetPassword() {
 
     const email    = userData.email || verifyData.email || "";
     const loginRes = await fetch(`${API}/token`, {
-      method: "POST",
+      method:  "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `grant_type=password&username=${encodeURIComponent(email)}&password=${encodeURIComponent(pwd1)}`
+      body:    `grant_type=password&username=${encodeURIComponent(email)}&password=${encodeURIComponent(pwd1)}`
     });
     const loginData = loginRes.ok ? await loginRes.json() : {};
 
@@ -659,6 +678,14 @@ async function handleSetPassword() {
         "Your invite or reset link has expired.<br><br>" +
         "• Ask your admin to send a <strong>new invite</strong>, <strong>OR</strong><br>" +
         "• Use <strong>'Forgot your password?'</strong> on the login screen — that link always works.";
+    } else if (e.message && e.message.toLowerCase().includes("failed to fetch")) {
+      errEl.innerHTML =
+        "<strong>Network error — cannot reach Netlify Identity.</strong><br><br>" +
+        "Please check:<br>" +
+        "1. Netlify → your site → <strong>Identity is enabled</strong><br>" +
+        "2. Netlify → Site settings → General → <strong>Site URL = https://mixtadashboard.netlify.app</strong><br>" +
+        "3. Netlify → Identity → Services → <strong>Git Gateway is enabled</strong><br><br>" +
+        "Then request a fresh invite and try again.";
     } else {
       errEl.textContent = e.message || "Something went wrong. Please try again.";
     }
