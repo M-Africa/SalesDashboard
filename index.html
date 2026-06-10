@@ -396,9 +396,16 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
           <label class="chk-item"><input type="checkbox" value="March" onchange="toggleMonth('March',this)"><span>March 2026</span></label>
           <label class="chk-item"><input type="checkbox" value="April" onchange="toggleMonth('April',this)"><span>April 2026</span></label>
           <label class="chk-item"><input type="checkbox" value="May" onchange="toggleMonth('May',this)"><span>May 2026</span></label>
+          <label class="chk-item"><input type="checkbox" value="June" onchange="toggleMonth('June',this)"><span>June 2026</span></label>
+          <label class="chk-item"><input type="checkbox" value="July" onchange="toggleMonth('July',this)"><span>July 2026</span></label>
+          <label class="chk-item"><input type="checkbox" value="August" onchange="toggleMonth('August',this)"><span>August 2026</span></label>
+          <label class="chk-item"><input type="checkbox" value="September" onchange="toggleMonth('September',this)"><span>September 2026</span></label>
+          <label class="chk-item"><input type="checkbox" value="October" onchange="toggleMonth('October',this)"><span>October 2026</span></label>
+          <label class="chk-item"><input type="checkbox" value="November" onchange="toggleMonth('November',this)"><span>November 2026</span></label>
+          <label class="chk-item"><input type="checkbox" value="December" onchange="toggleMonth('December',this)"><span>December 2026</span></label>
         </div>
         <div style="font-size:9.5px;color:var(--warm-grey);margin-top:6px;padding:0 2px;line-height:1.5">
-          Filters inflow charts &amp; cards only. Sales YTD figures are cumulative Jan–May.
+          Filters inflow charts &amp; cards only. Sales YTD figures are cumulative.
         </div>
       </div>
     </div>
@@ -414,7 +421,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
     <div class="page-header">
       <div>
         <h1 class="page-title">Sales &amp; Inflow Dashboard</h1>
-        <p class="page-sub">As of <span id="as-of-date">—</span> · Reporting period: Jan–May 2026</p>
+        <p class="page-sub">As of <span id="as-of-date">—</span> · Reporting period: Jan–Jun 2026</p>
       </div>
       <div class="header-actions">
         <button class="btn-secondary" onclick="refreshData()">↻ Refresh</button>
@@ -477,7 +484,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
       <div class="card-title">Monthly inflow summary</div>
       <div class="card-sub">Cash collected per project · ₦ millions · responds to inflow period &amp; project filters</div>
       <table class="tbl">
-        <thead id="inflow-thead"><tr><th>Project</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th><th>Share</th></tr></thead>
+        <thead id="inflow-thead"><tr><th>Project</th><th>Month</th><th>Total</th><th>Share</th></tr></thead>
         <tbody id="inflow-tbody"></tbody>
         <tfoot id="inflow-tfoot"></tfoot>
       </table>
@@ -831,23 +838,23 @@ if (emailInputEl) emailInputEl.addEventListener("keydown", e => { if(e.key==="En
 // ══════════════════════════════════════════════════════════════════════════
 const FALLBACK = {
   inflow:{
-    "Beechwood Park":   {Jan:20.63,Feb:120.25,Mar:18.10,Apr:162.45,May:37.78},
-    "The Cove":         {Jan:270.92,Feb:700.57,Mar:335.63,Apr:0,May:132.55},
-    "Express view":     {Jan:32.87,Feb:20.19,Mar:14.04,Apr:5.0,May:36.0},
-    "Lakowe Annexe":    {Jan:83.01,Feb:127.23,Mar:139.51,Apr:116.15,May:136.43},
-    "Summerville Plots":{Jan:450.5,Feb:46.0,Mar:253.32,Apr:0,May:0},
-    "Lakowe Heights":   {Jan:50.5,Feb:10.0,Mar:0,Apr:0,May:0},
-    "Elms Estate":      {Jan:164.96,Feb:54.81,Mar:145.74,Apr:393.06,May:231.79},
-    "Park Villas":      {Jan:196.01,Feb:171.07,Mar:483.46,Apr:96.0,May:134.84},
-    "Ibudo Wura":       {Jan:257.21,Feb:313.39,Mar:75.86,Apr:306.31,May:102.86},
-    "Lakowe Crossing":  {Jan:364.78,Feb:0,Mar:308.25,Apr:56.0,May:45.0},
-    "Fara Park II":     {Jan:0,Feb:159.75,Mar:0,Apr:0,May:0},
-    "Ule":              {Jan:0,Feb:100.81,Mar:0,Apr:0,May:0},
-    "Marula Park":      {Jan:0,Feb:0,Mar:2.33,Apr:0,May:9.91},
-    "Adiva III":        {Jan:0,Feb:0,Mar:0,Apr:0,May:19.38},
-    "Riyom & Wase":     {Jan:0,Feb:0,Mar:0,Apr:424.1,May:67.97},
-    "Waterfront Plots": {Jan:0,Feb:0,Mar:270.0,Apr:246.93,May:0},
-    "RDP":              {Jan:0,Feb:0,Mar:6.58,Apr:0,May:30.0},
+    "Beechwood Park":   {Jan:20.63,Feb:120.25,Mar:18.10,Apr:162.45,May:37.78,Jun:38.82,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "The Cove":         {Jan:270.92,Feb:700.57,Mar:335.63,Apr:0,May:132.55,Jun:72.28,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Express view":     {Jan:32.87,Feb:20.19,Mar:14.04,Apr:5.0,May:36.0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Lakowe Annexe":    {Jan:83.01,Feb:127.23,Mar:139.51,Apr:116.15,May:136.43,Jun:90.21,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Summerville Plots":{Jan:450.5,Feb:46.0,Mar:253.32,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Lakowe Heights":   {Jan:50.5,Feb:10.0,Mar:0,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Elms Estate":      {Jan:164.96,Feb:54.81,Mar:145.74,Apr:393.06,May:231.79,Jun:14.66,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Park Villas":      {Jan:196.01,Feb:171.07,Mar:483.46,Apr:96.0,May:134.84,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Ibudo Wura":       {Jan:257.21,Feb:313.39,Mar:75.86,Apr:306.31,May:102.86,Jun:41.23,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Lakowe Crossing":  {Jan:364.78,Feb:0,Mar:308.25,Apr:56.0,May:45.0,Jun:50.71,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Fara Park II":     {Jan:0,Feb:159.75,Mar:0,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Ule":              {Jan:0,Feb:100.81,Mar:0,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Marula Park":      {Jan:0,Feb:0,Mar:2.33,Apr:0,May:9.91,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Adiva III":        {Jan:0,Feb:0,Mar:0,Apr:0,May:19.38,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Riyom & Wase":     {Jan:0,Feb:0,Mar:0,Apr:424.1,May:67.97,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Waterfront Plots": {Jan:0,Feb:0,Mar:270.0,Apr:246.93,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "RDP":              {Jan:0,Feb:0,Mar:6.58,Apr:0,May:30.0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
   },
   sales:[
     {name:"Elms Garden",type:"plots",totalTD:181,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:165,incompleteKYC:16,offers:5,weekNew:4},
@@ -899,8 +906,8 @@ const FALLBACK = {
 };
 
 const COLORS=["#185FA5","#0F6E56","#993C1D","#993556","#3B6D11","#854F0B","#534AB7","#A32D2D","#0C447C","#085041","#71271F","#3C3489","#639922","#5F5E5A","#632222","#0d5c63"];
-const MONTHS=["Jan","Feb","Mar","Apr","May"];
-const MONTH_KEYS=["January","February","March","April","May"];
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTH_KEYS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 let state={type:"all",projects:[],months:[]};
 let DATA={...FALLBACK};
 let barChart,donutChart,lineChart,salesBarChart;
@@ -1060,7 +1067,7 @@ function renderMetrics(){
     weekInflow+=vals[1]||0;
   });
 
-  const inflowPeriod = state.months.length===0?"Jan\u2013May 2026":state.months.length===1?state.months[0]+" 2026":state.months.length+" months";
+  const inflowPeriod = state.months.length===0?"Jan\u2013Jun 2026":state.months.length===1?state.months[0]+" 2026":state.months.length+" months";
 
   // ── SALES — project + type filter ────────────────────────────────────────
   const sales=getFilteredSales();
@@ -1090,13 +1097,16 @@ function renderMetrics(){
     weekNew:   a.weekNew  +(r.weekNew||0),
   }),{incomplete:0,offers:0,weekNew:0});
 
-  const salesPeriodLabel=state.months.length===0?"Jan\u2013May":state.months.length===1?state.months[0]:state.months.length+" months";
+  const salesPeriodLabel=state.months.length===0?"Jan\u2013Jun":state.months.length===1?state.months[0]:state.months.length+" months";
 
   document.getElementById("metrics-row").innerHTML=`
     <div class="metric-card">
       <div class="metric-label">Inflow — ${inflowPeriod}</div>
       <div class="metric-value">${fmt(ytdInflow)}</div>
-      <div class="metric-sub">filtered period total</div>
+      <div class="metric-sub" style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
+        <span>Budget: ₦51.93bn</span>
+        <span style="font-weight:600;color:${ytdInflow>=51930?'var(--green)':'var(--red-dark)'}">${((ytdInflow/51930)*100).toFixed(1)}% achieved</span>
+      </div>
     </div>
     <div class="metric-card">
       <div class="metric-label">${latestMonthKey} inflow</div>
@@ -1106,7 +1116,7 @@ function renderMetrics(){
     <div class="metric-card green-card">
       <div class="metric-label">This week's inflow</div>
       <div class="metric-value">${fmt(weekInflow)}</div>
-      <div class="metric-sub">most recent week · May</div>
+      <div class="metric-sub">most recent week · Jun</div>
     </div>
     <div class="metric-card blue-card">
       <div class="metric-label">This week's sales</div>
@@ -1116,12 +1126,18 @@ function renderMetrics(){
     <div class="metric-card">
       <div class="metric-label">Units sold — ${salesPeriodLabel}</div>
       <div class="metric-value">${displayUnits.toLocaleString()}</div>
-      <div class="metric-sub">${salesPeriodLabel} · ${typeLabel}</div>
+      <div class="metric-sub" style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
+        <span>Budget: 877 units</span>
+        <span style="font-weight:600;color:${displayUnits>=877?'var(--green)':'var(--red-dark)'}">${((displayUnits/877)*100).toFixed(1)}% achieved</span>
+      </div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Value of sales — ${salesPeriodLabel}</div>
       <div class="metric-value">${fmtNaira(displayValue)}</div>
-      <div class="metric-sub">${salesPeriodLabel} · ${typeLabel}</div>
+      <div class="metric-sub" style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
+        <span>Budget: ₦104.43bn</span>
+        <span style="font-weight:600;color:${displayValue>=104430000000?'var(--green)':'var(--red-dark)'}">${((displayValue/104430000000)*100).toFixed(1)}% achieved</span>
+      </div>
     </div>
     <div class="metric-card red-card">
       <div class="metric-label">Incomplete KYC</div>
