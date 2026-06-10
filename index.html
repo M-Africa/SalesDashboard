@@ -926,10 +926,16 @@ function parseInflow(table){
   if(!table||!table.rows)return null;
   table.rows.forEach(row=>{
     if(!row.c||!row.c[3]||!row.c[1]||!row.c[5])return;
-    const proj=row.c[3].v,month=row.c[1].v,amt=parseFloat(row.c[5].v)||0;
+    const proj=row.c[3].v;
+    const month=row.c[1].v ? row.c[1].v.toString().trim() : "";
+    const amt=parseFloat(row.c[5].v)||0;
+    if(!proj||!month||amt===0)return;
     const mKey=MONTHS[MONTH_KEYS.indexOf(month)];
-    if(!mKey)return;
-    if(!inflow[proj])inflow[proj]={Jan:0,Feb:0,Mar:0,Apr:0,May:0};
+    if(!mKey)return; // month not recognised — skip
+    if(!inflow[proj]){
+      // Initialise ALL 12 months to zero so none are missed
+      inflow[proj]={Jan:0,Feb:0,Mar:0,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0};
+    }
     inflow[proj][mKey]+=amt/1e6;
   });
   return Object.keys(inflow).length?inflow:null;
@@ -1045,9 +1051,13 @@ function renderMetrics(){
   let ytdInflow = 0;
   Object.values(inflow).forEach(mv => months.forEach(m => { ytdInflow += mv[m]||0; }));
 
-  // Latest selected month for the single-month inflow card
-  const latestMonthKey = state.months.length > 0 ? state.months[state.months.length-1] : "May";
-  const latestM = MONTHS[MONTH_KEYS.indexOf(latestMonthKey)] || "May";
+  // Latest month: use last selected, or derive from most recent data in inflow
+  const allActiveMonths = MONTHS.filter(m =>
+    Object.values(DATA.inflow).some(mv => (mv[m]||0) > 0)
+  );
+  const mostRecentDataMonth = allActiveMonths.length > 0 ? allActiveMonths[allActiveMonths.length-1] : "Jun";
+  const latestMonthKey = state.months.length > 0 ? state.months[state.months.length-1] : MONTH_KEYS[MONTHS.indexOf(mostRecentDataMonth)];
+  const latestM = MONTHS[MONTH_KEYS.indexOf(latestMonthKey)] || mostRecentDataMonth;
   const prevM   = MONTHS[MONTHS.indexOf(latestM) - 1];
 
   let monthInflow=0, prevInflow=0;
@@ -1116,7 +1126,7 @@ function renderMetrics(){
     <div class="metric-card green-card">
       <div class="metric-label">This week's inflow</div>
       <div class="metric-value">${fmt(weekInflow)}</div>
-      <div class="metric-sub">most recent week · Jun</div>
+      <div class="metric-sub">most recent week · ${mostRecentDataMonth}</div>
     </div>
     <div class="metric-card blue-card">
       <div class="metric-label">This week's sales</div>
