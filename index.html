@@ -198,6 +198,14 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 .red-card .metric-value{color:var(--red-dark)}.green-card .metric-value{color:var(--green)}.blue-card .metric-value{color:var(--blue)}
 .metric-sub{font-size:10.5px;color:var(--ink-mute);text-align:center}
 .metric-delta{font-size:11px;margin-top:4px;font-weight:500;text-align:center}
+.metric-budget{font-size:10px;margin-top:6px;padding-top:6px;border-top:1px solid var(--stone);display:none;text-align:center}
+.metric-budget.show{display:block}
+.budget-row{display:flex;justify-content:space-between;align-items:center;gap:4px}
+.budget-target{color:var(--ink-mute)}
+.budget-pct{font-weight:600}
+.budget-toggle{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:5px 12px;border-radius:999px;border:1px solid var(--stone);background:var(--cream);color:var(--ink-soft);cursor:pointer;transition:all .15s;font-family:var(--font-body)}
+.budget-toggle:hover{background:var(--stone)}
+.budget-toggle.active{background:var(--red);color:#fff;border-color:var(--red)}
 .delta-up{color:var(--green)}.delta-down{color:var(--red)}
 
 .charts-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:16px}
@@ -421,9 +429,10 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
     <div class="page-header">
       <div>
         <h1 class="page-title">Sales &amp; Inflow Dashboard</h1>
-        <p class="page-sub">As of <span id="as-of-date">—</span> · Reporting period: Jan–Jun 2026</p>
+        <p class="page-sub">As of <span id="as-of-date">—</span> · Reporting period: Jan–Dec 2026</p>
       </div>
       <div class="header-actions">
+        <button class="budget-toggle" id="budget-toggle-btn" onclick="toggleBudget(this)">Show budget targets</button>
         <button class="btn-secondary" onclick="refreshData()">↻ Refresh</button>
         <a href="#" class="btn-primary" id="dashboard-link" target="_blank">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 11L11 2M11 2H6M11 2V7" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -459,7 +468,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
       </div>
       <div class="chart-card full">
         <div class="card-title">Weekly inflow trend — May 2026</div>
-        <div class="card-sub">₦ millions collected per week</div>
+        <div class="card-sub">₦ millions collected per week · responds to month &amp; project filters</div>
         <div style="position:relative;width:100%;height:180px"><canvas id="lineChart"></canvas></div>
       </div>
       <div class="chart-card full">
@@ -873,26 +882,31 @@ const FALLBACK = {
     {name:"Waterfront Plots",type:"plots",totalTD:21,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:21,incompleteKYC:0,offers:0,weekNew:0},
   ],
   projectTypes:{
-    "Beechwood Park":"units",
-    "The Cove":"units",
-    "Lakowe Annexe":"plots",
-    "Elms Estate":"plots",
+    // Source of truth: SALES_DATA col B — updated dynamically on refresh
+    // Fallback matches current sheet values exactly
     "Elms Garden":"plots",
-    "Park Villas":"units",
+    "Lakowe Annexe":"plots",
     "Ibudo Wura":"units",
-    "Summerville Plots":"plots",
-    "Marula Park":"units",
-    "Riyom & Wase":"units",
-    "Lakowe Crossing":"plots",
-    "Lakowe Plots":"plots",
-    "Lakowe Heights":"units",
-    "Fara Park II":"units",
-    "Ule":"units",
-    "Express view":"units",
-    "Waterfront Plots":"plots",
-    "RDP":"units",
+    "Beechwood Park":"units",
+    "Park Villas":"units",
     "Adiva III":"plots",
+    "Marula Park":"units",
+    "Lakowe Plots":"plots",
+    "The Cove":"units",
+    "Riyom & Wase":"units",
+    "RDP":"units",
+    "Fara Park II":"units",
+    "Lakowe Crossing":"plots",
+    "Waterfront Plots":"plots",
+    "Express view":"units",
+    "Ule":"units",
+    "Lakowe Heights":"units",
+    "Duo (Marula Park)":"units",
+    "Village":"units",
+    "Eco Villas":"units",
+    "Elms Estate":"plots",
     "Adiva":"plots",
+    "Summerville Plots":"plots",
   },
   weeklyMay:{
     "Beechwood Park":[34.67,3.11],"Marula Park":[0,9.91],"The Cove":[80.61,51.94],
@@ -901,6 +915,17 @@ const FALLBACK = {
     "Ibudo Wura":[64.02,38.84],"Riyom & Wase":[0,67.97],"Lakowe Crossing":[0,45.0],
   },
   lastUpdated:"15 May 2026",
+  weeklyDataByProject:{
+    // Populated from INFLOW_DATA on refresh — fallback has May weeks
+    "Beechwood Park":{"May_1":34.67,"May_2":3.11,"May_3":0,"May_4":0},
+    "The Cove":{"May_1":80.61,"May_2":51.94,"May_3":0,"May_4":0},
+    "Lakowe Annexe":{"May_1":55.67,"May_2":80.77,"May_3":0,"May_4":0},
+    "Elms Estate":{"May_1":66.48,"May_2":165.31,"May_3":0,"May_4":0},
+    "Park Villas":{"May_1":0,"May_2":134.84,"May_3":0,"May_4":0},
+    "Ibudo Wura":{"May_1":64.02,"May_2":38.84,"May_3":0,"May_4":0},
+    "Riyom & Wase":{"May_1":0,"May_2":67.97,"May_3":0,"May_4":0},
+    "Lakowe Crossing":{"May_1":0,"May_2":45.0,"May_3":0,"May_4":0},
+  },
   // salesMonthly: keyed by project, each with units and value per month
   salesMonthly:{},
 };
@@ -920,6 +945,25 @@ async function fetchSheet(tab){
   const res=await fetch(url);
   const text=await res.text();
   return JSON.parse(text.replace(/^.*?({.*}).*$/s,"$1")).table;
+}
+function buildWeeklyData(table){
+  // Build weeklyDataByProject: {proj: {"Jan_1": amt_in_millions, "Jan_2": amt...}}
+  if(!table||!table.rows)return null;
+  const result={};
+  table.rows.forEach(row=>{
+    if(!row.c||!row.c[3]||!row.c[1]||!row.c[5])return;
+    const proj  = row.c[3].v ? row.c[3].v.toString().trim() : "";
+    const month = row.c[1].v ? row.c[1].v.toString().trim() : "";
+    const wkNum = row.c[2] && row.c[2].v ? Math.round(parseFloat(row.c[2].v)) : 0;
+    const amt   = parseFloat(row.c[5].v)||0;
+    if(!proj||!month||!wkNum||amt===0)return;
+    const mKey=MONTHS[MONTH_KEYS.indexOf(month)];
+    if(!mKey)return;
+    const wkKey=mKey+"_"+wkNum;
+    if(!result[proj])result[proj]={};
+    result[proj][wkKey]=(result[proj][wkKey]||0)+(amt/1e6);
+  });
+  return Object.keys(result).length?result:null;
 }
 function parseInflow(table){
   const inflow={};
@@ -941,26 +985,40 @@ function parseInflow(table){
   return Object.keys(inflow).length?inflow:null;
 }
 function parseSalesMonthly(table){
-  // Sheet structure (0-indexed):
-  // Col 0=Project, 1=Units YTD, 2=Jan units, 3=Jan value,
-  // 4=Feb units, 5=Feb value, 6=Mar units, 7=Mar value,
-  // 8=Apr units, 9=Apr value, 10=May units, 11=May value
-  // Rows: 0=blank, 1=month headers, 2=col headers, 3+=data
+  // Sheet: Row1=blank, Row2=month headers, Row3=col headers, Row4+=data
+  // gviz table.rows maps to ALL rows including headers
+  // Col layout: 0=Project, 1=YTD, then pairs: (units,value) per month
+  // Jan=cols2,3 | Feb=cols4,5 | Mar=cols6,7 | Apr=cols8,9 | May=cols10,11
+  // Jun=cols12,13 | Jul=cols14,15 | Aug=cols16,17 | Sep=cols18,19
+  // Oct=cols20,21 | Nov=cols22,23 | Dec=cols24,25
   if(!table||!table.rows)return null;
+  const MONTH_COLS={
+    Jan:{u:2,v:3},Feb:{u:4,v:5},Mar:{u:6,v:7},
+    Apr:{u:8,v:9},May:{u:10,v:11},Jun:{u:12,v:13},
+    Jul:{u:14,v:15},Aug:{u:16,v:17},Sep:{u:18,v:19},
+    Oct:{u:20,v:21},Nov:{u:22,v:23},Dec:{u:24,v:25}
+  };
   const result={};
-  const MCOLS={Jan:{u:2,v:3},Feb:{u:4,v:5},Mar:{u:6,v:7},Apr:{u:8,v:9},May:{u:10,v:11}};
-  // Skip first 2 header rows (row index 0 and 1 in gviz = rows 2&3 in sheet)
+  let headerRowsSkipped=0;
   table.rows.forEach((row,ri)=>{
-    if(ri<2)return; // skip month header row + col header row
-    if(!row.c||!row.c[0]||!row.c[0].v)return;
-    const proj=row.c[0].v.toString().trim();
-    if(proj.toUpperCase()==="TOTAL"||proj==="Project")return;
-    result[proj]={ytdUnits:parseFloat((row.c[1]&&row.c[1].v)||0)||0};
-    Object.entries(MCOLS).forEach(([mKey,cols])=>{
-      result[proj][mKey]={
-        units:parseFloat((row.c[cols.u]&&row.c[cols.u].v)||0)||0,
-        value:parseFloat((row.c[cols.v]&&row.c[cols.v].v)||0)||0,
-      };
+    if(!row.c||!row.c[0])return;
+    const firstVal = row.c[0].v ? row.c[0].v.toString().trim() : "";
+    // Skip header rows: blank row, month-name row, col-header row
+    if(!firstVal || firstVal==="Project" || firstVal.toLowerCase().includes("january")
+       || firstVal.toLowerCase().includes("january") ){
+      headerRowsSkipped++;
+      return;
+    }
+    // Skip TOTAL row
+    if(firstVal.toUpperCase()==="TOTAL")return;
+    const proj=firstVal;
+    result[proj]={};
+    Object.entries(MONTH_COLS).forEach(([mKey,cols])=>{
+      const uCell=row.c[cols.u];
+      const vCell=row.c[cols.v];
+      const units=uCell&&uCell.v!==null?parseFloat(uCell.v)||0:0;
+      const value=vCell&&vCell.v!==null?parseFloat(vCell.v)||0:0;
+      result[proj][mKey]={units,value};
     });
   });
   return Object.keys(result).length?result:null;
@@ -990,15 +1048,19 @@ function parseSales(table){
   });
   return sales.length?sales:null;
 }
+function updateProjectTypesFromLiveData(salesArray){
+  salesArray.forEach(p=>{ DATA.projectTypes[p.name]=p.type; });
+}
 async function refreshData(){
   document.getElementById("refresh-btn2").textContent="↻ Loading…";
   if(CONFIG.SHEET_ID !== "UNCONFIGURED"){
     try{
       const[inflowTbl,salesTbl,salesMonthlyTbl]=await Promise.all([fetchSheet(CONFIG.TABS.INFLOW),fetchSheet(CONFIG.TABS.SALES),fetchSheet(CONFIG.TABS.SALES_MONTHLY)]);
-      const liveInflow=parseInflow(inflowTbl),liveSales=parseSales(salesTbl),liveSalesMonthly=parseSalesMonthly(salesMonthlyTbl);
+      const liveInflow=parseInflow(inflowTbl),liveSales=parseSales(salesTbl),liveSalesMonthly=parseSalesMonthly(salesMonthlyTbl),liveWeekly=buildWeeklyData(inflowTbl);
       if(liveInflow)DATA.inflow=liveInflow;
-      if(liveSales)DATA.sales=liveSales;
+      if(liveSales){DATA.sales=liveSales;updateProjectTypesFromLiveData(liveSales);}
       if(liveSalesMonthly)DATA.salesMonthly=liveSalesMonthly;
+      if(liveWeekly)DATA.weeklyDataByProject=liveWeekly;
       DATA.lastUpdated=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
       document.getElementById("error-banner").classList.remove("visible");
     }catch(e){document.getElementById("error-banner").classList.add("visible")}
@@ -1109,13 +1171,20 @@ function renderMetrics(){
 
   const salesPeriodLabel=state.months.length===0?"Jan\u2013Jun":state.months.length===1?state.months[0]:state.months.length+" months";
 
+  // Preserve budget toggle state across re-renders
+  const budgetActive = document.getElementById("budget-toggle-btn") &&
+                       document.getElementById("budget-toggle-btn").classList.contains("active");
   document.getElementById("metrics-row").innerHTML=`
     <div class="metric-card">
       <div class="metric-label">Inflow — ${inflowPeriod}</div>
       <div class="metric-value">${fmt(ytdInflow)}</div>
-      <div class="metric-sub" style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
-        <span>Budget: ₦51.93bn</span>
-        <span style="font-weight:600;color:${ytdInflow>=51930?'var(--green)':'var(--red-dark)'}">${((ytdInflow/51930)*100).toFixed(1)}% achieved</span>
+      <div class="metric-sub">${inflowPeriod}</div>
+      <div class="metric-budget" id="budget-inflow">
+        <div class="budget-row">
+          <span class="budget-target">Budget: ₦51.93bn</span>
+          <span class="budget-pct" style="color:${ytdInflow>=51930?'var(--green)':'var(--red-dark)'}">${((ytdInflow/51930)*100).toFixed(1)}%</span>
+        </div>
+        <div style="margin-top:3px;font-size:9.5px;color:var(--ink-mute)">Variance: ${ytdInflow>=51930?'+':''}₦${Math.abs(ytdInflow-51930).toFixed(1)}m</div>
       </div>
     </div>
     <div class="metric-card">
@@ -1136,17 +1205,25 @@ function renderMetrics(){
     <div class="metric-card">
       <div class="metric-label">Units sold — ${salesPeriodLabel}</div>
       <div class="metric-value">${displayUnits.toLocaleString()}</div>
-      <div class="metric-sub" style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
-        <span>Budget: 877 units</span>
-        <span style="font-weight:600;color:${displayUnits>=877?'var(--green)':'var(--red-dark)'}">${((displayUnits/877)*100).toFixed(1)}% achieved</span>
+      <div class="metric-sub">${salesPeriodLabel} · ${typeLabel}</div>
+      <div class="metric-budget" id="budget-units">
+        <div class="budget-row">
+          <span class="budget-target">Budget: 877 units</span>
+          <span class="budget-pct" style="color:${displayUnits>=877?'var(--green)':'var(--red-dark)'}">${((displayUnits/877)*100).toFixed(1)}%</span>
+        </div>
+        <div style="margin-top:3px;font-size:9.5px;color:var(--ink-mute)">Variance: ${displayUnits>=877?'+':''}${(displayUnits-877).toFixed(0)} units</div>
       </div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Value of sales — ${salesPeriodLabel}</div>
       <div class="metric-value">${fmtNaira(displayValue)}</div>
-      <div class="metric-sub" style="display:flex;justify-content:space-between;align-items:center;gap:4px;">
-        <span>Budget: ₦104.43bn</span>
-        <span style="font-weight:600;color:${displayValue>=104430000000?'var(--green)':'var(--red-dark)'}">${((displayValue/104430000000)*100).toFixed(1)}% achieved</span>
+      <div class="metric-sub">${salesPeriodLabel} · ${typeLabel}</div>
+      <div class="metric-budget" id="budget-value">
+        <div class="budget-row">
+          <span class="budget-target">Budget: ₦104.43bn</span>
+          <span class="budget-pct" style="color:${displayValue>=104430000000?'var(--green)':'var(--red-dark)'}">${((displayValue/104430000000)*100).toFixed(1)}%</span>
+        </div>
+        <div style="margin-top:3px;font-size:9.5px;color:var(--ink-mute)">Variance: ${displayValue>=104430000000?'+':''}${fmtNaira(Math.abs(displayValue-104430000000))}</div>
       </div>
     </div>
     <div class="metric-card red-card">
@@ -1154,6 +1231,10 @@ function renderMetrics(){
       <div class="metric-value">${tot.incomplete}</div>
       <div class="metric-sub">pending action</div>
     </div>`;
+  // Re-apply budget toggle visibility after re-render
+  if(budgetActive){
+    document.querySelectorAll(".metric-budget").forEach(el=>el.classList.add("show"));
+  }
 }
 function renderBarChart(){
   const inflow=getFilteredInflow(),months=activeMonths();
@@ -1173,9 +1254,64 @@ function renderDonutChart(){
   donutChart=new Chart(document.getElementById("donutChart"),{type:"doughnut",data:{labels:filt.map(p=>p.name),datasets:[{data:filt.map(p=>parseFloat(p.val.toFixed(2))),backgroundColor:filt.map((_,i)=>COLORS[i%COLORS.length]),borderWidth:2,borderColor:"#fff"}]},options:{responsive:true,maintainAspectRatio:false,cutout:"66%",plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>" "+fmt(ctx.parsed)+" ("+(ctx.parsed/grand*100).toFixed(1)+"%)"}}}}});
 }
 function renderLineChart(){
-  const labels=["Week 1","Week 2"],weekTotals=labels.map((_,wi)=>{let sum=0;Object.entries(DATA.weeklyMay).forEach(([proj,vals])=>{if(!projectActive(proj))return;if(state.type!=="all"&&DATA.projectTypes[proj]!==state.type)return;sum+=vals[wi]||0});return parseFloat(sum.toFixed(1))});
+  // Build weekly totals dynamically from DATA.inflow
+  // Group by project+month then week number
+  // We use the weeklyData object built from INFLOW_DATA during refresh
+  const wd=DATA.weeklyData||{};
+  // Get active months from filter
+  const activeMths=activeMonths();
+  // Find all unique weeks across filtered months
+  const weekMap={}; // "Month Wk N" -> total
+  Object.entries(wd).forEach(([key,amt])=>{
+    // key format: "Jan_1", "Jan_2", "Feb_1" etc.
+    const [mKey,wkNum]=key.split("_");
+    if(!activeMths.includes(mKey))return;
+    // Filter by project and type
+    // amt is already project-aggregated per week
+    // We need project-level data — use weeklyDataByProject
+  });
+  // Use weeklyDataByProject for filtering
+  const wdp=DATA.weeklyDataByProject||{};
+  const weekTotals={};
+  Object.entries(wdp).forEach(([proj,weeks])=>{
+    if(!projectActive(proj))return;
+    if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return;
+    Object.entries(weeks).forEach(([wkKey,amt])=>{
+      const [mKey]=wkKey.split("_");
+      if(!activeMths.includes(mKey))return;
+      weekTotals[wkKey]=(weekTotals[wkKey]||0)+amt;
+    });
+  });
+  // Sort weeks and build chart labels + data
+  const sortedWeeks=Object.keys(weekTotals).sort((a,b)=>{
+    const [am,aw]=a.split("_");const [bm,bw]=b.split("_");
+    const mi=MONTHS.indexOf(am),mj=MONTHS.indexOf(bm);
+    if(mi!==mj)return mi-mj;
+    return parseInt(aw)-parseInt(bw);
+  });
+  const labels=sortedWeeks.map(k=>{
+    const [m,w]=k.split("_");
+    return m+" Wk"+w;
+  });
+  const data=sortedWeeks.map(k=>parseFloat((weekTotals[k]/1).toFixed(1)));
+  if(!labels.length){
+    // Fallback if no data
+    if(lineChart)lineChart.destroy();
+    lineChart=null;
+    return;
+  }
   if(lineChart)lineChart.destroy();
-  lineChart=new Chart(document.getElementById("lineChart"),{type:"line",data:{labels,datasets:[{label:"Weekly inflow",data:weekTotals,borderColor:"#185FA5",backgroundColor:"rgba(24,95,165,0.07)",pointBackgroundColor:"#185FA5",pointBorderColor:"#fff",pointBorderWidth:2,pointRadius:6,tension:.35,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11,family:"DM Sans"}},grid:{display:false}},y:{ticks:{font:{size:11,family:"DM Sans"},callback:v=>"₦"+v+"m"},grid:{color:"rgba(26,25,23,0.05)"}}}}});
+  lineChart=new Chart(document.getElementById("lineChart"),{
+    type:"line",
+    data:{labels,datasets:[{label:"Weekly inflow (₦m)",data,borderColor:"#185FA5",
+      backgroundColor:"rgba(24,95,165,0.07)",pointBackgroundColor:"#185FA5",
+      pointBorderColor:"#fff",pointBorderWidth:2,pointRadius:5,tension:.35,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>"₦"+ctx.parsed.y.toFixed(1)+"m"}}},
+      scales:{x:{ticks:{font:{size:10,family:"DM Sans"},maxRotation:45},grid:{display:false}},
+              y:{ticks:{font:{size:11,family:"DM Sans"},callback:v=>"₦"+v+"m"},
+                 grid:{color:"rgba(26,25,23,0.05)"}}}}
+  });
 }
 function renderSalesBarChart(){
   const months=activeMonths();
@@ -1203,6 +1339,11 @@ function renderSalesBarChart(){
     borderRadius:3,
   }));
 
+  if(projects.length===0){
+    document.getElementById("sales-bar-legend").innerHTML='<span style="font-size:11px;color:var(--warm-grey)">No sales data available for selected filters</span>';
+    if(salesBarChart)salesBarChart.destroy();salesBarChart=null;
+    return;
+  }
   document.getElementById("sales-bar-legend").innerHTML=projects.map((p,i)=>`<span class="leg-item"><span class="leg-swatch" style="background:${COLORS[i%COLORS.length]}"></span>${p}</span>`).join("");
   if(salesBarChart)salesBarChart.destroy();
   salesBarChart=new Chart(document.getElementById("salesBarChart"),{
@@ -1246,6 +1387,14 @@ function renderInflowTable(){
   document.getElementById("inflow-tfoot").innerHTML=`<tr><td>Total</td>${mTots.map(t=>`<td>₦${t.toFixed(1)}m</td>`).join("")}<td>₦${grand.toFixed(1)}m</td><td>100%</td></tr>`;
 }
 function render(){renderMetrics();renderBarChart();renderDonutChart();renderLineChart();renderSalesBarChart();renderSalesTable();renderInflowTable()}
+function toggleBudget(btn){
+  const show = btn.classList.toggle("active");
+  btn.textContent = show ? "Hide budget targets" : "Show budget targets";
+  document.querySelectorAll(".metric-budget").forEach(el=>{
+    if(show) el.classList.add("show");
+    else     el.classList.remove("show");
+  });
+}
 function setType(t,el){state.type=t;document.querySelectorAll(".fpill").forEach(p=>p.classList.remove("active"));el.classList.add("active");render()}
 function toggleProject(val,el){
   const allBox=document.querySelector('#project-checkboxes input[value="all"]');
