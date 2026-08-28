@@ -1016,11 +1016,11 @@ const FALLBACK = {
     "RDP":              {Jan:0,Feb:0,Mar:6.58,Apr:0,May:30.0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
   },
   sales:[
-    {name:"Elms Garden",type:"plots",totalTD:181,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:165,incompleteKYC:16,offers:5,weekNew:4},
-    {name:"Lakowe Annexe",type:"plots",totalTD:80,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:79,incompleteKYC:1,offers:1,weekNew:1},
-    {name:"Ibudo Wura",type:"units",totalTD:148,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:94,incompleteKYC:1,offers:0,weekNew:0},
+    {name:"Elms Garden",type:"plots",totalTD:207,valueToDate:5591208247,totalYTD:181,valueYTD:5401208247,completeKYC:165,incompleteKYC:16,offers:5,weekNew:4},
+    {name:"Lakowe Annexe",type:"plots",totalTD:84,valueToDate:6942852448,totalYTD:80,valueYTD:6642852448,completeKYC:79,incompleteKYC:1,offers:1,weekNew:1},
+    {name:"Ibudo Wura",type:"units",totalTD:95,valueToDate:4110023608,totalYTD:95,valueYTD:3910023608,completeKYC:94,incompleteKYC:1,offers:0,weekNew:0},
     {name:"Beechwood Park",type:"units",totalTD:430,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:430,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Park Villas",type:"units",totalTD:24,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:24,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Park Villas",type:"units",totalTD:24,valueToDate:7168623120,totalYTD:24,valueYTD:6968623120,completeKYC:24,incompleteKYC:0,offers:0,weekNew:0},
     {name:"Adiva III",type:"plots",totalTD:93,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:92,incompleteKYC:1,offers:0,weekNew:1},
     {name:"Marula Park",type:"units",totalTD:67,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:67,incompleteKYC:0,offers:0,weekNew:0},
     {name:"Lakowe Plots",type:"plots",totalTD:270,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:270,incompleteKYC:0,offers:1,weekNew:0},
@@ -1091,14 +1091,26 @@ let barChart,donutChart,lineChart,salesBarChart;
 //  GOOGLE SHEETS
 // ══════════════════════════════════════════════════════════════════════════
 async function fetchSheet(tab){
-  const url=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}&headers=0`;
-  const res=await fetch(url);
-  if(!res.ok) throw new Error("Sheet returned "+res.status);
-  const text=await res.text();
-  const match=text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
-  if(!match) throw new Error("Invalid sheet response");
-  return JSON.parse(match[1]).table;
+  const url=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),8000);
+  try{
+    const res=await fetch(url,{signal:controller.signal});
+    clearTimeout(timeout);
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    const text=await res.text();
+    // Google wraps: google.visualization.Query.setResponse({...});
+    const match=text.match(/setResponse\((\{[\s\S]*\})\)/);
+    if(!match)throw new Error("Unexpected response format");
+    const json=JSON.parse(match[1]);
+    if(json.status==="error")throw new Error(json.errors?.[0]?.detailed_message||"Sheet error");
+    return json.table;
+  }catch(e){
+    clearTimeout(timeout);
+    throw e;
+  }
 }
+
 function buildWeeklyData(table){
   // Build weeklyDataByProject: {proj: {"Jan_1": amt_in_millions, "Jan_2": amt...}}
   if(!table||!table.rows)return null;
@@ -1236,8 +1248,10 @@ async function refreshData(){
       document.getElementById("last-updated").textContent=DATA.lastUpdated;
       render();
     }catch(e){
-      document.getElementById("error-banner").classList.add("visible");
-      console.warn("Sheet fetch failed or timed out:",e.message);
+      const banner=document.getElementById("error-banner");
+      banner.textContent="⚠ Could not load live data: "+e.message+". Showing cached data. Make sure your Google Sheet is shared publicly (Anyone with link can view).";
+      banner.classList.add("visible");
+      console.warn("Sheet fetch failed:",e.message);
     }
   }
   document.getElementById("refresh-btn2").textContent="↻ Refresh data";
