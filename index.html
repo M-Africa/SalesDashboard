@@ -995,44 +995,54 @@ if (emailInputEl) emailInputEl.addEventListener("keydown", e => { if(e.key==="En
 // ══════════════════════════════════════════════════════════════════════════
 //  FALLBACK DATA
 // ══════════════════════════════════════════════════════════════════════════
-const FALLBACK = {
+const FALLBACK={
   inflow:{
-    "Beechwood Park":   {Jan:20.63,Feb:120.25,Mar:18.10,Apr:162.45,May:37.78,Jun:38.82,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "The Cove":         {Jan:270.92,Feb:700.57,Mar:335.63,Apr:0,May:132.55,Jun:72.28,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Express view":     {Jan:32.87,Feb:20.19,Mar:14.04,Apr:5.0,May:36.0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Lakowe Annexe":    {Jan:83.01,Feb:127.23,Mar:139.51,Apr:116.15,May:136.43,Jun:90.21,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Summerville Plots":{Jan:450.5,Feb:46.0,Mar:253.32,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Lakowe Heights":   {Jan:50.5,Feb:10.0,Mar:0,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Elms Estate":      {Jan:164.96,Feb:54.81,Mar:145.74,Apr:393.06,May:231.79,Jun:14.66,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Park Villas":      {Jan:196.01,Feb:171.07,Mar:483.46,Apr:96.0,May:134.84,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Ibudo Wura":       {Jan:257.21,Feb:313.39,Mar:75.86,Apr:306.31,May:102.86,Jun:41.23,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Lakowe Crossing":  {Jan:364.78,Feb:0,Mar:308.25,Apr:56.0,May:45.0,Jun:50.71,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Fara Park II":     {Jan:0,Feb:159.75,Mar:0,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Ule":              {Jan:0,Feb:100.81,Mar:0,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Marula Park":      {Jan:0,Feb:0,Mar:2.33,Apr:0,May:9.91,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Adiva III":        {Jan:0,Feb:0,Mar:0,Apr:0,May:19.38,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Riyom & Wase":     {Jan:0,Feb:0,Mar:0,Apr:424.1,May:67.97,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Waterfront Plots": {Jan:0,Feb:0,Mar:270.0,Apr:246.93,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "RDP":              {Jan:0,Feb:0,Mar:6.58,Apr:0,May:30.0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Beechwood Park":{"Jan":20.63,"Feb":120.25,"Mar":18.1,"Apr":17.48,"May":246.27,"Jun":71.25,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "The Cove":{"Jan":270.92,"Feb":700.57,"Mar":335.63,"Apr":0,"May":132.55,"Jun":117.89,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Elms Garden":{"Jan":164.96,"Feb":54.81,"Mar":145.75,"Apr":356.06,"May":330.01,"Jun":300.81,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Lakowe Annexe":{"Jan":83.01,"Feb":127.23,"Mar":139.51,"Apr":116.15,"May":246.68,"Jun":291.31,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Ibudo Wura":{"Jan":257.21,"Feb":313.39,"Mar":75.87,"Apr":293.33,"May":249.54,"Jun":228.88,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Park Villas":{"Jan":196.01,"Feb":171.08,"Mar":483.46,"Apr":96.0,"May":134.84,"Jun":150.0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Adiva III":{"Jan":0,"Feb":68.01,"Mar":0,"Apr":0,"May":93.92,"Jun":151.04,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Lakowe Plots":{"Jan":450.5,"Feb":46.0,"Mar":132.57,"Apr":292.59,"May":159.83,"Jun":165.8,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Lakowe Crossing":{"Jan":364.78,"Feb":0,"Mar":308.25,"Apr":56.0,"May":45.0,"Jun":400.55,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Riyom & Wase":{"Jan":0,"Feb":0,"Mar":0,"Apr":424.1,"May":340.11,"Jun":40.71,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Waterfront Plots":{"Jan":0,"Feb":0,"Mar":270.0,"Apr":246.93,"May":0,"Jun":99.0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Fara Park II":{"Jan":0,"Feb":159.75,"Mar":0,"Apr":0,"May":0,"Jun":0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Express view":{"Jan":32.87,"Feb":20.19,"Mar":14.04,"Apr":5.0,"May":36.0,"Jun":0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Ule":{"Jan":0,"Feb":100.81,"Mar":0,"Apr":0,"May":0,"Jun":0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Lakowe Heights":{"Jan":50.5,"Feb":10.0,"Mar":0,"Apr":0,"May":5.0,"Jun":212.03,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Marula Park":{"Jan":0,"Feb":0,"Mar":2.33,"Apr":0,"May":9.98,"Jun":14.5,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "RDP":{"Jan":0,"Feb":0,"Mar":6.58,"Apr":0,"May":31.48,"Jun":0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Garden City Annexe Ph":{"Jan":0,"Feb":0,"Mar":0,"Apr":0,"May":0,"Jun":412.29,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Duo (Marula Park)":{"Jan":0,"Feb":0,"Mar":0,"Apr":0,"May":0,"Jun":0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Village":{"Jan":0,"Feb":0,"Mar":0,"Apr":0,"May":0,"Jun":0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0},
+    "Eco Villas":{"Jan":0,"Feb":0,"Mar":0,"Apr":0,"May":0,"Jun":0,"Jul":0,"Aug":0,"Sep":0,"Oct":0,"Nov":0,"Dec":0}
   },
   sales:[
-    {name:"Elms Garden",type:"plots",totalTD:207,valueToDate:5591208247,totalYTD:181,valueYTD:5401208247,completeKYC:165,incompleteKYC:16,offers:5,weekNew:4},
-    {name:"Lakowe Annexe",type:"plots",totalTD:84,valueToDate:6942852448,totalYTD:80,valueYTD:6642852448,completeKYC:79,incompleteKYC:1,offers:1,weekNew:1},
-    {name:"Ibudo Wura",type:"units",totalTD:95,valueToDate:4110023608,totalYTD:95,valueYTD:3910023608,completeKYC:94,incompleteKYC:1,offers:0,weekNew:0},
-    {name:"Beechwood Park",type:"units",totalTD:430,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:430,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Park Villas",type:"units",totalTD:24,valueToDate:7168623120,totalYTD:24,valueYTD:6968623120,completeKYC:24,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Adiva III",type:"plots",totalTD:93,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:92,incompleteKYC:1,offers:0,weekNew:1},
-    {name:"Marula Park",type:"units",totalTD:67,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:67,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Lakowe Plots",type:"plots",totalTD:270,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:270,incompleteKYC:0,offers:1,weekNew:0},
-    {name:"The Cove",type:"units",totalTD:131,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:131,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Riyom & Wase",type:"units",totalTD:4,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:4,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"RDP",type:"units",totalTD:93,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:91,incompleteKYC:2,offers:0,weekNew:0},
-    {name:"Fara Park II",type:"units",totalTD:166,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:166,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Lakowe Crossing",type:"plots",totalTD:6,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:6,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Waterfront Plots",type:"plots",totalTD:21,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:21,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Elms Garden",type:"plots",totalTD:210,valueToDate:5993369047,totalYTD:210,valueYTD:5993369047,completeKYC:204,incompleteKYC:6,offers:6,weekNew:0,releasedUnits:340},
+    {name:"Lakowe Annexe",type:"plots",totalTD:85,valueToDate:7704858207,totalYTD:85,valueYTD:7704858207,completeKYC:84,incompleteKYC:1,offers:0,weekNew:0,releasedUnits:105},
+    {name:"Ibudo Wura",type:"units",totalTD:153,valueToDate:7036204983,totalYTD:153,valueYTD:7036204983,completeKYC:149,incompleteKYC:4,offers:10,weekNew:0,releasedUnits:192},
+    {name:"Beechwood Park",type:"units",totalTD:434,valueToDate:9305788041,totalYTD:434,valueYTD:9305788041,completeKYC:434,incompleteKYC:0,offers:3,weekNew:0,releasedUnits:457},
+    {name:"Park Villas",type:"units",totalTD:24,valueToDate:7641632375,totalYTD:24,valueYTD:7641632375,completeKYC:24,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:28},
+    {name:"Adiva III",type:"plots",totalTD:101,valueToDate:2640441781,totalYTD:101,valueYTD:2640441781,completeKYC:101,incompleteKYC:0,offers:2,weekNew:0,releasedUnits:122},
+    {name:"Marula Park",type:"units",totalTD:70,valueToDate:1788679588,totalYTD:70,valueYTD:1788679588,completeKYC:70,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:154},
+    {name:"Lakowe Plots",type:"plots",totalTD:272,valueToDate:29068548863,totalYTD:272,valueYTD:29068548863,completeKYC:272,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:362},
+    {name:"The Cove",type:"units",totalTD:134,valueToDate:11572146396,totalYTD:134,valueYTD:11572146396,completeKYC:133,incompleteKYC:1,offers:1,weekNew:0,releasedUnits:147},
+    {name:"Riyom & Wase",type:"units",totalTD:7,valueToDate:2785529381,totalYTD:7,valueYTD:2785529381,completeKYC:7,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:8},
+    {name:"RDP",type:"units",totalTD:93,valueToDate:1596734365,totalYTD:93,valueYTD:1596734365,completeKYC:93,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:96},
+    {name:"Fara Park II",type:"units",totalTD:165,valueToDate:2932092171,totalYTD:165,valueYTD:2932092171,completeKYC:165,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:186},
+    {name:"Lakowe Crossing",type:"plots",totalTD:10,valueToDate:2919495721,totalYTD:10,valueYTD:2919495721,completeKYC:10,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:37},
+    {name:"Waterfront Plots",type:"plots",totalTD:21,valueToDate:3718493501,totalYTD:21,valueYTD:3718493501,completeKYC:21,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:22},
+    {name:"Express view",type:"units",totalTD:10,valueToDate:644935109,totalYTD:10,valueYTD:644935109,completeKYC:10,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:58},
+    {name:"Ule",type:"units",totalTD:9,valueToDate:1836426399,totalYTD:9,valueYTD:1836426399,completeKYC:9,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:14},
+    {name:"Lakowe Heights",type:"units",totalTD:23,valueToDate:2275492934,totalYTD:23,valueYTD:2275492934,completeKYC:23,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:34},
+    {name:"Duo (Marula Park)",type:"units",totalTD:28,valueToDate:1678741727,totalYTD:28,valueYTD:1678741727,completeKYC:28,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:0},
+    {name:"Village",type:"units",totalTD:18,valueToDate:3899036491,totalYTD:18,valueYTD:3899036491,completeKYC:18,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:18},
+    {name:"Eco Villas",type:"units",totalTD:0,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:0,incompleteKYC:0,offers:0,weekNew:0,releasedUnits:0},
+    {name:"Garden City Annexe Ph",type:"units",totalTD:9,valueToDate:412294930,totalYTD:9,valueYTD:412294930,completeKYC:10,incompleteKYC:0,offers:5,weekNew:0,releasedUnits:101}
   ],
   projectTypes:{
-    // Dynamically updated from SALES_DATA col B on every refresh
     "Elms Garden":"plots",
     "Lakowe Annexe":"plots",
     "Ibudo Wura":"units",
@@ -1053,39 +1063,12 @@ const FALLBACK = {
     "Duo (Marula Park)":"units",
     "Village":"units",
     "Eco Villas":"units",
-    "Garden City Annexe Ph":"units",
-    "Elms Estate":"plots",
-    "Adiva":"plots",
-    "Summerville Plots":"plots",
+    "Garden City Annexe Ph":"units"
   },
-  weeklyMay:{
-    "Beechwood Park":[34.67,3.11],"Marula Park":[0,9.91],"The Cove":[80.61,51.94],
-    "Express view":[10.0,26.0],"Lakowe Annexe":[55.67,80.77],"Adiva III":[19.38,0],
-    "Elms Estate":[66.48,165.31],"Park Villas":[0,134.84],"RDP":[30.0,0],
-    "Ibudo Wura":[64.02,38.84],"Riyom & Wase":[0,67.97],"Lakowe Crossing":[0,45.0],
-  },
-  lastUpdated:"15 May 2026",
-  weeklyDataByProject:{
-    // Populated from INFLOW_DATA on refresh — fallback has May weeks
-    "Beechwood Park":{"May_1":34.67,"May_2":3.11,"May_3":0,"May_4":0},
-    "The Cove":{"May_1":80.61,"May_2":51.94,"May_3":0,"May_4":0},
-    "Lakowe Annexe":{"May_1":55.67,"May_2":80.77,"May_3":0,"May_4":0},
-    "Elms Estate":{"May_1":66.48,"May_2":165.31,"May_3":0,"May_4":0},
-    "Park Villas":{"May_1":0,"May_2":134.84,"May_3":0,"May_4":0},
-    "Ibudo Wura":{"May_1":64.02,"May_2":38.84,"May_3":0,"May_4":0},
-    "Riyom & Wase":{"May_1":0,"May_2":67.97,"May_3":0,"May_4":0},
-    "Lakowe Crossing":{"May_1":0,"May_2":45.0,"May_3":0,"May_4":0},
-  },
-  // salesMonthly: keyed by project, each with units and value per month
+  weeklyDataByProject:{},
   salesMonthly:{},
+  lastUpdated:"28 Aug 2026",
 };
-
-const COLORS=["#185FA5","#0F6E56","#993C1D","#993556","#3B6D11","#854F0B","#534AB7","#A32D2D","#0C447C","#085041","#71271F","#3C3489","#639922","#5F5E5A","#632222","#0d5c63"];
-const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const MONTH_KEYS=["January","February","March","April","May","June","July","August","September","October","November","December"];
-let state={type:"all",projects:[],months:[]};
-let DATA={...FALLBACK};
-let barChart,donutChart,lineChart,salesBarChart;
 
 // ══════════════════════════════════════════════════════════════════════════
 //  GOOGLE SHEETS
@@ -1130,12 +1113,23 @@ function buildWeeklyData(table){
   });
   return Object.keys(result).length?result:null;
 }
+// Map INFLOW_DATA project names → canonical SALES_DATA names
+const PROJECT_NAME_MAP={
+  "Elms Estate":"Elms Garden","Elms Garden Estate":"Elms Garden",
+  "Summerville Plots":"Lakowe Plots","Lakowe Lakes Plots":"Lakowe Plots",
+  "Garden City":"Garden City Annexe Ph","Garden City Golf Annexe":"Garden City Annexe Ph",
+  "Adiva":"Adiva III","adiva III":"Adiva III",
+  "BWP":"Beechwood Park","Lakowe Lakes Heights":"Lakowe Heights",
+  "The Village":"Village","Waterfront":"Waterfront Plots",
+};
+function resolveProjectName(n){return PROJECT_NAME_MAP[n.trim()]||n.trim();}
+
 function parseInflow(table){
   const inflow={};
   if(!table||!table.rows)return null;
   table.rows.forEach(row=>{
     if(!row.c||!row.c[3]||!row.c[1]||!row.c[5])return;
-    const proj=row.c[3].v;
+    const proj=resolveProjectName(row.c[3].v.toString());
     const month=row.c[1].v ? row.c[1].v.toString().trim() : "";
     const amt=parseFloat(row.c[5].v)||0;
     if(!proj||!month||amt===0)return;
@@ -1776,7 +1770,7 @@ ${dataContext}`;
         "Authorization": "Bearer " + GROQ_API_KEY
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "llama-3.1-8b-instant",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user",   content: question }
