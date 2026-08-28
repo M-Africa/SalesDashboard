@@ -1192,24 +1192,42 @@ function parseSales(table){
 function updateProjectTypesFromLiveData(salesArray){
   salesArray.forEach(p=>{ DATA.projectTypes[p.name]=p.type; });
 }
+function fetchSheetWithTimeout(tab,ms=8000){
+  return Promise.race([
+    fetchSheet(tab),
+    new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),ms))
+  ]);
+}
+
 async function refreshData(){
   document.getElementById("refresh-btn2").textContent="↻ Loading…";
+  // Show dashboard immediately with fallback/cached data — never hang on loading screen
+  document.getElementById("loading-overlay").classList.add("hidden");
+  document.getElementById("last-updated").textContent=DATA.lastUpdated;
+  render();
   if(CONFIG.SHEET_ID !== "UNCONFIGURED"){
     try{
-      const[inflowTbl,salesTbl,salesMonthlyTbl]=await Promise.all([fetchSheet(CONFIG.TABS.INFLOW),fetchSheet(CONFIG.TABS.SALES),fetchSheet(CONFIG.TABS.SALES_MONTHLY)]);
-      const liveInflow=parseInflow(inflowTbl),liveSales=parseSales(salesTbl),liveSalesMonthly=parseSalesMonthly(salesMonthlyTbl),liveWeekly=buildWeeklyData(inflowTbl);
+      const[inflowTbl,salesTbl,salesMonthlyTbl]=await Promise.all([
+        fetchSheetWithTimeout(CONFIG.TABS.INFLOW),
+        fetchSheetWithTimeout(CONFIG.TABS.SALES),
+        fetchSheetWithTimeout(CONFIG.TABS.SALES_MONTHLY)
+      ]);
+      const liveInflow=parseInflow(inflowTbl),liveSales=parseSales(salesTbl),
+            liveSalesMonthly=parseSalesMonthly(salesMonthlyTbl),liveWeekly=buildWeeklyData(inflowTbl);
       if(liveInflow)DATA.inflow=liveInflow;
       if(liveSales){DATA.sales=liveSales;updateProjectTypesFromLiveData(liveSales);}
       if(liveSalesMonthly)DATA.salesMonthly=liveSalesMonthly;
       if(liveWeekly)DATA.weeklyDataByProject=liveWeekly;
       DATA.lastUpdated=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
       document.getElementById("error-banner").classList.remove("visible");
-    }catch(e){document.getElementById("error-banner").classList.add("visible")}
+      document.getElementById("last-updated").textContent=DATA.lastUpdated;
+      render();
+    }catch(e){
+      document.getElementById("error-banner").classList.add("visible");
+      console.warn("Sheet fetch failed or timed out:",e.message);
+    }
   }
-  document.getElementById("last-updated").textContent=DATA.lastUpdated;
   document.getElementById("refresh-btn2").textContent="↻ Refresh data";
-  document.getElementById("loading-overlay").classList.add("hidden");
-  render();
 }
 
 // ══════════════════════════════════════════════════════════════════════════
