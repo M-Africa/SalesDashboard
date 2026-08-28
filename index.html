@@ -109,7 +109,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   z-index:100;transition:opacity .4s;
 }
-#loading-overlay.hidden{opacity:0;pointer-events:none}
+#loading-overlay.hidden{opacity:0;pointer-events:none;display:none}
 .loader-logo img{height:28px;width:auto;filter:brightness(0);opacity:.5;margin-bottom:10px}
 .loader-sub{font-size:11px;color:var(--ink-mute);margin-bottom:22px}
 .loader-bar{width:160px;height:2px;background:var(--stone);border-radius:999px;overflow:hidden}
@@ -1090,10 +1090,13 @@ let barChart,donutChart,lineChart,salesBarChart;
 //  GOOGLE SHEETS
 // ══════════════════════════════════════════════════════════════════════════
 async function fetchSheet(tab){
-  const url=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;
+  const url=`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}&headers=0`;
   const res=await fetch(url);
+  if(!res.ok) throw new Error("Sheet returned "+res.status);
   const text=await res.text();
-  return JSON.parse(text.replace(/^.*?({.*}).*$/s,"$1")).table;
+  const match=text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
+  if(!match) throw new Error("Invalid sheet response");
+  return JSON.parse(match[1]).table;
 }
 function buildWeeklyData(table){
   // Build weeklyDataByProject: {proj: {"Jan_1": amt_in_millions, "Jan_2": amt...}}
@@ -1807,6 +1810,8 @@ if (chatInputEl) chatInputEl.addEventListener("keydown", e => { if(e.key==="Ente
   }
   // 3. No token, no session — show login
   document.getElementById("loading-overlay").classList.add("hidden");
+  document.getElementById("auth-gate").classList.remove("hidden");
+  document.getElementById("panel-login").style.display = "block";
   setInterval(refreshData, CONFIG.REFRESH_INTERVAL);
 })();
 </script>
