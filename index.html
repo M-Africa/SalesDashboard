@@ -148,15 +148,6 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 .fpill.active{background:var(--red);color:#fff;border-color:var(--red)}
 .filter-select{width:100%;padding:7px 10px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:rgba(255,255,255,.75);font-size:11.5px;font-family:var(--font-body);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.35)'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 .filter-select:focus{outline:none;border-color:var(--red)}
-.filter-select option{background:#2C2A27;color:#fff}
-.multi-select-box{max-height:160px;overflow-y:auto;border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);padding:4px 0;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent}
-.multi-select-box::-webkit-scrollbar{width:4px}
-.multi-select-box::-webkit-scrollbar-track{background:transparent}
-.multi-select-box::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
-.chk-item{display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;transition:background .1s;font-size:11.5px;color:rgba(255,255,255,.6)}
-.chk-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9)}
-.chk-item input[type=checkbox]{accent-color:var(--red);width:12px;height:12px;cursor:pointer;flex-shrink:0}
-.chk-item span{line-height:1.3}
 
 #user-bar{display:none;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.55);padding:14px 22px;border-top:1px solid rgba(255,255,255,.06);margin-top:auto}
 #user-bar.visible{display:flex}
@@ -183,29 +174,20 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 #refresh-btn2{font-size:11px;padding:4px 12px;border-radius:999px;border:1px solid var(--stone);background:var(--cream);color:var(--ink-soft);cursor:pointer;font-family:var(--font-body);transition:all .15s}
 #refresh-btn2:hover{background:var(--stone)}
 
-.metrics-row{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:24px}
+.metrics-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
 .metric-card{background:#fff;border-radius:var(--radius-lg);padding:18px 16px;border:1px solid var(--stone);box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .2s;animation:fadeUp .4s ease both}
 .metric-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
 .metric-card.red-card{background:var(--red-lite);border-color:var(--red-mid)}
 .metric-card.green-card{background:var(--green-lite);border-color:#9ECDB0}
-.metric-card.blue-card{background:var(--blue-lite);border-color:#9ECDB0}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .metric-card:nth-child(1){animation-delay:.05s}.metric-card:nth-child(2){animation-delay:.10s}
 .metric-card:nth-child(3){animation-delay:.15s}.metric-card:nth-child(4){animation-delay:.20s}
 .metric-card:nth-child(5){animation-delay:.25s}.metric-card:nth-child(6){animation-delay:.30s}
-.metric-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:500;color:var(--ink-mute);margin-bottom:8px;text-align:center}
-.metric-value{font-family:var(--font-display);font-size:26px;color:var(--ink);line-height:1.1;margin-bottom:4px;text-align:center}
-.red-card .metric-value{color:var(--red-dark)}.green-card .metric-value{color:var(--green)}.blue-card .metric-value{color:var(--blue)}
-.metric-sub{font-size:10.5px;color:var(--ink-mute);text-align:center}
-.metric-delta{font-size:11px;margin-top:4px;font-weight:500;text-align:center}
-.metric-budget{font-size:10px;margin-top:6px;padding-top:6px;border-top:1px solid var(--stone);display:none;text-align:center}
-.metric-budget.show{display:block}
-.budget-row{display:flex;justify-content:space-between;align-items:center;gap:4px}
-.budget-target{color:var(--ink-mute)}
-.budget-pct{font-weight:600}
-.budget-toggle{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:5px 12px;border-radius:999px;border:1px solid var(--stone);background:var(--cream);color:var(--ink-soft);cursor:pointer;transition:all .15s;font-family:var(--font-body)}
-.budget-toggle:hover{background:var(--stone)}
-.budget-toggle.active{background:var(--red);color:#fff;border-color:var(--red)}
+.metric-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:500;color:var(--ink-mute);margin-bottom:8px}
+.metric-value{font-family:var(--font-display);font-size:26px;color:var(--ink);line-height:1.1;margin-bottom:4px}
+.red-card .metric-value{color:var(--red-dark)}.green-card .metric-value{color:var(--green)}
+.metric-sub{font-size:10.5px;color:var(--ink-mute)}
+.metric-delta{font-size:11px;margin-top:4px;font-weight:500}
 .delta-up{color:var(--green)}.delta-down{color:var(--red)}
 
 .charts-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:16px}
@@ -235,119 +217,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 .error-banner{background:var(--red-lite);border:1px solid var(--red-mid);border-radius:var(--radius-md);padding:12px 16px;font-size:12px;color:var(--red-dark);margin-bottom:20px;display:none}
 .error-banner.visible{display:block}
 
-/* ── CHATBOX ─────────────────────────────────────────────────────────── */
-#chat-btn{
-  position:fixed;bottom:28px;right:28px;z-index:800;
-  width:52px;height:52px;border-radius:50%;
-  background:var(--red);color:#fff;border:none;cursor:pointer;
-  box-shadow:0 4px 20px rgba(176,28,46,0.4);
-  display:flex;align-items:center;justify-content:center;
-  transition:transform .2s,box-shadow .2s;font-size:22px;
-}
-#chat-btn:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(176,28,46,0.5)}
-#chat-btn.open{background:var(--ink)}
-
-#chat-panel{
-  position:fixed;bottom:92px;right:28px;z-index:800;
-  width:380px;max-height:520px;
-  background:#fff;border-radius:16px;
-  box-shadow:0 8px 40px rgba(26,25,23,0.18);
-  display:none;flex-direction:column;overflow:hidden;
-  border:1px solid var(--stone);
-  animation:slideUp .25s ease;
-}
-#chat-panel.open{display:flex}
-@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-
-.chat-header{
-  background:var(--red);color:#fff;
-  padding:14px 18px;display:flex;align-items:center;gap:10px;
-}
-.chat-header-icon{font-size:18px}
-.chat-header-title{font-weight:600;font-size:14px}
-.chat-header-sub{font-size:10px;opacity:.75;margin-top:1px}
-.chat-close{margin-left:auto;background:none;border:none;color:#fff;cursor:pointer;font-size:18px;opacity:.7;line-height:1}
-.chat-close:hover{opacity:1}
-
-.chat-messages{
-  flex:1;overflow-y:auto;padding:14px;
-  display:flex;flex-direction:column;gap:10px;
-  scrollbar-width:thin;scrollbar-color:var(--stone) transparent;
-}
-.chat-msg{max-width:88%;padding:9px 13px;border-radius:12px;font-size:12.5px;line-height:1.55}
-.chat-msg.user{background:var(--red);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
-.chat-msg.bot{background:var(--cream);color:var(--ink);align-self:flex-start;border-bottom-left-radius:3px}
-.chat-msg.loading{background:var(--cream);color:var(--ink-mute);align-self:flex-start}
-.chat-msg.loading::after{content:"...";animation:dots 1.2s infinite}
-@keyframes dots{0%,20%{content:""}40%{content:"."}60%{content:".."}80%,100%{content:"..."}}
-
-.chat-samples{padding:0 14px 10px;display:flex;flex-wrap:wrap;gap:5px}
-.chat-sample{
-  font-size:10.5px;padding:4px 10px;border-radius:999px;
-  border:1px solid var(--stone);background:var(--off-white);
-  color:var(--ink-mute);cursor:pointer;transition:all .15s;
-}
-.chat-sample:hover{background:var(--red-lite);border-color:var(--red-mid);color:var(--red-dark)}
-
-.chat-input-row{
-  display:flex;gap:8px;padding:12px 14px;
-  border-top:1px solid var(--stone);background:#fff;
-}
-#chat-input{
-  flex:1;padding:9px 13px;border-radius:999px;
-  border:1.5px solid var(--stone);font-size:12.5px;
-  font-family:var(--font-body);outline:none;
-  transition:border-color .15s;
-}
-#chat-input:focus{border-color:var(--red)}
-#chat-input::placeholder{color:var(--warm-grey);font-style:italic}
-#chat-send{
-  width:36px;height:36px;border-radius:50%;
-  background:var(--red);color:#fff;border:none;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  transition:background .15s;
-}
-#chat-send:hover{background:var(--red-dark)}
-
-/* ── WHAT'S NEW BANNER ───────────────────────────────────────────────── */
-#whats-new-banner{
-  position:fixed;inset:0;z-index:850;
-  background:rgba(26,25,23,0.5);backdrop-filter:blur(4px);
-  display:flex;align-items:center;justify-content:center;padding:24px;
-}
-#whats-new-banner.hidden{display:none}
-.whats-new-card{
-  background:#fff;border-radius:20px;padding:36px 40px;
-  max-width:480px;width:100%;
-  box-shadow:0 20px 60px rgba(26,25,23,0.25);
-  animation:cardIn .35s cubic-bezier(.16,1,.3,1);
-}
-.wn-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-.wn-badge{
-  background:var(--red);color:#fff;
-  font-size:10px;font-weight:600;padding:3px 10px;
-  border-radius:999px;letter-spacing:.05em;text-transform:uppercase;
-}
-.wn-title{font-family:var(--font-display);font-size:20px;color:var(--ink)}
-.wn-list{list-style:none;margin-bottom:24px}
-.wn-list li{
-  padding:8px 0;border-bottom:1px solid var(--cream);
-  font-size:13px;color:var(--ink-soft);display:flex;gap:10px;
-}
-.wn-list li:last-child{border-bottom:none}
-.wn-list li::before{content:"✦";color:var(--red);flex-shrink:0;font-size:10px;margin-top:2px}
-.wn-footer{display:flex;align-items:center;justify-content:space-between}
-.wn-dismiss{font-size:11px;color:var(--ink-mute)}
-.wn-btn{
-  background:var(--red);color:#fff;border:none;
-  padding:10px 24px;border-radius:var(--radius-md);
-  font-size:13px;font-weight:500;font-family:var(--font-body);
-  cursor:pointer;transition:background .15s;
-}
-.wn-btn:hover{background:var(--red-dark)}
-
-@media(max-width:1200px){.metrics-row{grid-template-columns:repeat(4,1fr)}.charts-grid{grid-template-columns:1fr}.chart-card.full{grid-column:1}}
-@media(max-width:1100px){.metrics-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1100px){.metrics-row{grid-template-columns:repeat(3,1fr)}.charts-grid{grid-template-columns:1fr}.chart-card.full{grid-column:1}}
 @media(max-width:820px){.shell{grid-template-columns:1fr}.sidebar{position:static;height:auto}.main{padding:20px 16px}.metrics-row{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -378,15 +248,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
       </div>
       <div class="auth-field">
         <label for="password-input">Password</label>
-        <div style="position:relative">
-          <input type="password" id="password-input" placeholder="Enter your password" autocomplete="current-password" style="padding-right:40px">
-          <button type="button" onclick="togglePwdVisibility('password-input','eye-icon-1')"
-            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink-mute);padding:4px;display:flex;align-items:center">
-            <svg id="eye-icon-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
+        <input type="password" id="password-input" placeholder="Enter your password" autocomplete="current-password">
       </div>
 
       <button class="auth-btn" id="login-btn" onclick="handleLogin()">
@@ -416,27 +278,11 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 
       <div class="auth-field">
         <label for="new-password-input">New password</label>
-        <div style="position:relative">
-          <input type="password" id="new-password-input" placeholder="Minimum 8 characters" autocomplete="new-password" style="padding-right:40px">
-          <button type="button" onclick="togglePwdVisibility('new-password-input','eye-icon-2')"
-            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink-mute);padding:4px;display:flex;align-items:center">
-            <svg id="eye-icon-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
+        <input type="password" id="new-password-input" placeholder="Minimum 8 characters" autocomplete="new-password">
       </div>
       <div class="auth-field">
         <label for="confirm-password-input">Confirm password</label>
-        <div style="position:relative">
-          <input type="password" id="confirm-password-input" placeholder="Re-enter your password" autocomplete="new-password" style="padding-right:40px">
-          <button type="button" onclick="togglePwdVisibility('confirm-password-input','eye-icon-3')"
-            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink-mute);padding:4px;display:flex;align-items:center">
-            <svg id="eye-icon-3" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
+        <input type="password" id="confirm-password-input" placeholder="Re-enter your password" autocomplete="new-password">
       </div>
 
       <!-- Password strength indicator -->
@@ -504,54 +350,36 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
           <button class="fpill" onclick="setType('units',this)">Units</button>
         </div>
       </div>
-
       <div class="filter-group">
-        <label>Project <span id="proj-count" style="color:var(--red);font-size:9px;margin-left:4px"></span></label>
-        <div class="multi-select-box" id="project-checkboxes">
-          <label class="chk-item"><input type="checkbox" value="all" checked onchange="toggleProject('all',this)"><span>All projects</span></label>
-          <label class="chk-item"><input type="checkbox" value="Elms Garden" onchange="toggleProject('Elms Garden',this)"><span>Elms Garden</span></label>
-          <label class="chk-item"><input type="checkbox" value="Lakowe Annexe" onchange="toggleProject('Lakowe Annexe',this)"><span>Lakowe Annexe</span></label>
-          <label class="chk-item"><input type="checkbox" value="Ibudo Wura" onchange="toggleProject('Ibudo Wura',this)"><span>Ibudo Wura</span></label>
-          <label class="chk-item"><input type="checkbox" value="Beechwood Park" onchange="toggleProject('Beechwood Park',this)"><span>Beechwood Park</span></label>
-          <label class="chk-item"><input type="checkbox" value="Park Villas" onchange="toggleProject('Park Villas',this)"><span>Park Villas</span></label>
-          <label class="chk-item"><input type="checkbox" value="Adiva III" onchange="toggleProject('Adiva III',this)"><span>Adiva III</span></label>
-          <label class="chk-item"><input type="checkbox" value="Marula Park" onchange="toggleProject('Marula Park',this)"><span>Marula Park</span></label>
-          <label class="chk-item"><input type="checkbox" value="Lakowe Plots" onchange="toggleProject('Lakowe Plots',this)"><span>Lakowe Plots</span></label>
-          <label class="chk-item"><input type="checkbox" value="The Cove" onchange="toggleProject('The Cove',this)"><span>The Cove</span></label>
-          <label class="chk-item"><input type="checkbox" value="Riyom & Wase" onchange="toggleProject('Riyom & Wase',this)"><span>Riyom &amp; Wase</span></label>
-          <label class="chk-item"><input type="checkbox" value="RDP" onchange="toggleProject('RDP',this)"><span>RDP</span></label>
-          <label class="chk-item"><input type="checkbox" value="Fara Park II" onchange="toggleProject('Fara Park II',this)"><span>Fara Park II</span></label>
-          <label class="chk-item"><input type="checkbox" value="Lakowe Crossing" onchange="toggleProject('Lakowe Crossing',this)"><span>Lakowe Crossing</span></label>
-          <label class="chk-item"><input type="checkbox" value="Waterfront Plots" onchange="toggleProject('Waterfront Plots',this)"><span>Waterfront Plots</span></label>
-          <label class="chk-item"><input type="checkbox" value="Express view" onchange="toggleProject('Express view',this)"><span>Express view</span></label>
-          <label class="chk-item"><input type="checkbox" value="Ule" onchange="toggleProject('Ule',this)"><span>Ule</span></label>
-          <label class="chk-item"><input type="checkbox" value="Lakowe Heights" onchange="toggleProject('Lakowe Heights',this)"><span>Lakowe Heights</span></label>
-          <label class="chk-item"><input type="checkbox" value="Duo (Marula Park)" onchange="toggleProject('Duo (Marula Park)',this)"><span>Duo (Marula Park)</span></label>
-          <label class="chk-item"><input type="checkbox" value="Village" onchange="toggleProject('Village',this)"><span>Village</span></label>
-          <label class="chk-item"><input type="checkbox" value="Eco Villas" onchange="toggleProject('Eco Villas',this)"><span>Eco Villas</span></label>
-          <label class="chk-item"><input type="checkbox" value="Garden City Annexe Ph" onchange="toggleProject('Garden City Annexe Ph',this)"><span>Garden City Annexe Ph</span></label>
-        </div>
+        <label>Project</label>
+        <select class="filter-select" onchange="setProject(this.value)">
+          <option value="all">All projects</option>
+          <option value="Beechwood Park">Beechwood Park</option>
+          <option value="The Cove">The Cove</option>
+          <option value="Lakowe Annexe">Lakowe Annexe</option>
+          <option value="Elms Estate">Elms Estate</option>
+          <option value="Park Villas">Park Villas</option>
+          <option value="Ibudo Wura">Ibudo Wura</option>
+          <option value="Summerville Plots">Summerville Plots</option>
+          <option value="Marula Park">Marula Park</option>
+          <option value="Riyom & Wase">Riyom &amp; Wase</option>
+          <option value="Lakowe Crossing">Lakowe Crossing</option>
+          <option value="Fara Park II">Fara Park II</option>
+          <option value="Waterfront Plots">Waterfront Plots</option>
+          <option value="Adiva III">Adiva III</option>
+          <option value="RDP">RDP</option>
+        </select>
       </div>
-
       <div class="filter-group">
-        <label>Inflow period <span id="month-count" style="color:var(--red);font-size:9px;margin-left:4px"></span></label>
-        <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:5px"></div>
-        <div class="multi-select-box" id="month-checkboxes">
-          <label class="chk-item"><input type="checkbox" value="all" checked onchange="toggleMonth('all',this)"><span>All months (YTD)</span></label>
-          <label class="chk-item"><input type="checkbox" value="January" onchange="toggleMonth('January',this)"><span>January 2026</span></label>
-          <label class="chk-item"><input type="checkbox" value="February" onchange="toggleMonth('February',this)"><span>February 2026</span></label>
-          <label class="chk-item"><input type="checkbox" value="March" onchange="toggleMonth('March',this)"><span>March 2026</span></label>
-          <label class="chk-item"><input type="checkbox" value="April" onchange="toggleMonth('April',this)"><span>April 2026</span></label>
-          <label class="chk-item"><input type="checkbox" value="May" onchange="toggleMonth('May',this)"><span>May 2026</span></label>
-          <label class="chk-item"><input type="checkbox" value="June" onchange="toggleMonth('June',this)"><span>June 2026</span></label>
-          <label class="chk-item"><input type="checkbox" value="July" onchange="toggleMonth('July',this)"><span>July 2026</span></label>
-          <label class="chk-item"><input type="checkbox" value="August" onchange="toggleMonth('August',this)"><span>August 2026</span></label>
-          <label class="chk-item"><input type="checkbox" value="September" onchange="toggleMonth('September',this)"><span>September 2026</span></label>
-          <label class="chk-item"><input type="checkbox" value="October" onchange="toggleMonth('October',this)"><span>October 2026</span></label>
-          <label class="chk-item"><input type="checkbox" value="November" onchange="toggleMonth('November',this)"><span>November 2026</span></label>
-          <label class="chk-item"><input type="checkbox" value="December" onchange="toggleMonth('December',this)"><span>December 2026</span></label>
-        </div>
-        
+        <label>Period</label>
+        <select class="filter-select" onchange="setMonth(this.value)">
+          <option value="all">All (YTD)</option>
+          <option value="January">January 2026</option>
+          <option value="February">February 2026</option>
+          <option value="March">March 2026</option>
+          <option value="April">April 2026</option>
+          <option value="May">May 2026</option>
+        </select>
       </div>
     </div>
 
@@ -566,10 +394,9 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
     <div class="page-header">
       <div>
         <h1 class="page-title">Sales &amp; Inflow Dashboard</h1>
-        <p class="page-sub">As of <span id="as-of-date">—</span> · Reporting period: Jan–Dec 2026</p>
+        <p class="page-sub">As of <span id="as-of-date">—</span> · Reporting period: Jan–May 2026</p>
       </div>
       <div class="header-actions">
-        <button class="budget-toggle" id="budget-toggle-btn" onclick="toggleBudget(this)">Show budget targets</button>
         <button class="btn-secondary" onclick="refreshData()">↻ Refresh</button>
         <a href="#" class="btn-primary" id="dashboard-link" target="_blank">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 11L11 2M11 2H6M11 2V7" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -605,14 +432,8 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
       </div>
       <div class="chart-card full">
         <div class="card-title">Weekly inflow trend — May 2026</div>
-        <div class="card-sub">₦ millions collected per week · responds to month &amp; project filters</div>
+        <div class="card-sub">₦ millions collected per week</div>
         <div style="position:relative;width:100%;height:180px"><canvas id="lineChart"></canvas></div>
-      </div>
-      <div class="chart-card full">
-        <div class="card-title">Monthly sales trend — units sold</div>
-        <div class="card-sub">Number of units sold per project per month — responds to project, type &amp; month filters</div>
-        <div class="legend-wrap" id="sales-bar-legend"></div>
-        <div style="position:relative;width:100%;height:220px"><canvas id="salesBarChart"></canvas></div>
       </div>
     </div>
 
@@ -620,7 +441,7 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
       <div class="card-title">Active project sales position</div>
       <div class="card-sub">Plots &amp; units sold · KYC status · Active offers · Weekly new sales</div>
       <table class="tbl">
-        <thead><tr><th>Project</th><th>Type</th><th>Total Sales TD</th><th>Value of Sales TD</th><th>Total Sales YTD</th><th>Value of Sales YTD</th><th>KYC complete</th><th>KYC incomplete</th><th>Active offers</th><th>New this week</th><th>KYC completion</th></tr></thead>
+        <thead><tr><th>Project</th><th>Type</th><th>Total sales TD</th><th>KYC complete</th><th>KYC incomplete</th><th>Active offers</th><th>New this week</th><th>KYC completion</th></tr></thead>
         <tbody id="sales-tbody"></tbody>
         <tfoot id="sales-tfoot"></tfoot>
       </table>
@@ -628,9 +449,9 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 
     <div class="table-card">
       <div class="card-title">Monthly inflow summary</div>
-      <div class="card-sub">Cash collected per project · ₦ millions · responds to inflow period &amp; project filters</div>
+      <div class="card-sub">Total cash collected per project · ₦ millions</div>
       <table class="tbl">
-        <thead id="inflow-thead"><tr><th>Project</th><th>Month</th><th>Total</th><th>Share</th></tr></thead>
+        <thead><tr><th>Project</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>YTD Total</th><th>Share</th></tr></thead>
         <tbody id="inflow-tbody"></tbody>
         <tfoot id="inflow-tfoot"></tfoot>
       </table>
@@ -641,17 +462,17 @@ body{font-family:var(--font-body);background:var(--off-white);color:var(--ink);m
 <script>
 // ══════════════════════════════════════════════════════════════════════════
 //  !! IMPORTANT: REPLACE THIS WITH YOUR NETLIFY SITE URL !!
-//  e.g. "https://mixtadashboard.netlify.app"
+//  e.g. "https://mixta-dashboard.netlify.app"
 //  Do NOT include a trailing slash
 // ══════════════════════════════════════════════════════════════════════════
-const NETLIFY_URL = "https://mixtadashboard.netlify.app";
+const NETLIFY_URL = "masalesdash.netlify.app";
 
 // ══════════════════════════════════════════════════════════════════════════
 //  CONFIGURATION
 // ══════════════════════════════════════════════════════════════════════════
 const CONFIG = {
-  SHEET_ID: "1UsJyJExzdU97oDpALfDzraAhsarpCmESaA4pD2_3zVE",
-  TABS: { SALES:"SALES_DATA", INFLOW:"INFLOW_DATA", SALES_MONTHLY:"SALES_MONTHLY" },
+  SHEET_ID: "1j9i2NsCfzkK_i_YqaCV5XPQRl92G9VG5",
+  TABS: { SALES:"SALES_DATA", INFLOW:"INFLOW_DATA" },
   REFRESH_INTERVAL: 300000,
 };
 
@@ -735,113 +556,66 @@ async function handleSetPassword() {
   const btn   = document.getElementById("set-pwd-btn");
   const errEl = document.getElementById("set-pwd-error");
   errEl.classList.remove("visible");
-  errEl.removeAttribute("style");
 
-  if (!pwd1) { errEl.textContent = "Please enter a password."; errEl.classList.add("visible"); return; }
-  if (pwd1.length < 8) { errEl.textContent = "Password must be at least 8 characters."; errEl.classList.add("visible"); return; }
-  if (pwd1 !== pwd2) { errEl.textContent = "Passwords do not match. Please try again."; errEl.classList.add("visible"); return; }
+  if (!pwd1) {
+    errEl.textContent = "Please enter a password.";
+    errEl.classList.add("visible"); return;
+  }
+  if (pwd1.length < 8) {
+    errEl.textContent = "Password must be at least 8 characters.";
+    errEl.classList.add("visible"); return;
+  }
+  if (pwd1 !== pwd2) {
+    errEl.textContent = "Passwords do not match. Please try again.";
+    errEl.classList.add("visible"); return;
+  }
 
   btn.classList.add("loading"); btn.disabled = true;
 
-  // Diagnose before attempting — check that Identity is reachable at all
   try {
-    const pingRes = await fetch(`${API}/settings`, { method: "GET" });
-    if (!pingRes.ok && pingRes.status !== 200) {
-      throw new Error("ping_failed");
-    }
-  } catch(pingErr) {
-    errEl.innerHTML =
-      "<strong>Cannot reach Netlify Identity.</strong><br><br>" +
-      "This is almost always one of these causes:<br>" +
-      "1. <strong>Identity not enabled</strong> — go to Netlify → your site → Identity → Enable Identity<br>" +
-      "2. <strong>Site URL mismatch</strong> — go to Netlify → Site settings → General → Site URL and make sure it shows <code>https://mixtadashboard.netlify.app</code><br>" +
-      "3. <strong>Git Gateway not enabled</strong> — go to Netlify → Identity → Services → Enable Git Gateway<br><br>" +
-      "After fixing, try again. If still failing use <strong>Forgot your password?</strong> from the login screen.";
-    errEl.classList.add("visible");
-    btn.classList.remove("loading"); btn.disabled = false;
-    return;
-  }
-
-  try {
-    const verifyType = tokenType === "invite" ? "signup" : "recovery";
-    const verifyRes  = await fetch(`${API}/verify`, {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ token: pendingToken, type: verifyType })
+    // Exchange the one-time token for an access token
+    const tokenRes = await fetch(`${API}/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `grant_type=authorization_code&code=${encodeURIComponent(pendingToken)}`
     });
+    const tokenData = await tokenRes.json();
 
-    const verifyText = await verifyRes.text();
-    let   verifyData = {};
-    try { verifyData = JSON.parse(verifyText); } catch(e) {}
-
-    if (!verifyRes.ok || !verifyData.access_token) {
-      throw new Error("EXPIRED");
+    if (!tokenRes.ok || !tokenData.access_token) {
+      throw new Error("Your invite or reset link has expired. Please request a new one from the admin.");
     }
 
+    // Use that access token to set the new password
     const updateRes = await fetch(`${API}/user`, {
-      method:  "PUT",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${verifyData.access_token}` },
-      body:    JSON.stringify({ password: pwd1 })
+      method: "PUT",
+      headers: {
+        "Content-Type":  "application/json",
+        "Authorization": `Bearer ${tokenData.access_token}`
+      },
+      body: JSON.stringify({ password: pwd1 })
     });
-
-    const updateText = await updateRes.text();
-    let   userData   = {};
-    try { userData = JSON.parse(updateText); } catch(e) {}
+    const userData = await updateRes.json();
 
     if (!updateRes.ok) {
-      throw new Error("Could not save your password. Please try again or contact your admin.");
+      throw new Error("Could not set password. Please try again or contact your admin.");
     }
 
-    const email    = userData.email || verifyData.email || "";
-    const loginRes = await fetch(`${API}/token`, {
-      method:  "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body:    `grant_type=password&username=${encodeURIComponent(email)}&password=${encodeURIComponent(pwd1)}`
-    });
-    const loginData = loginRes.ok ? await loginRes.json() : {};
-
+    saveSession(tokenData.access_token, userData);
     pendingToken = null;
     tokenType    = null;
 
-    errEl.style.background  = "var(--green-lite)";
-    errEl.style.borderColor = "#9ECDB0";
-    errEl.style.color       = "var(--green)";
+    // Show success briefly then open dashboard
+    errEl.style.background   = "var(--green-lite)";
+    errEl.style.borderColor  = "#9ECDB0";
+    errEl.style.color        = "var(--green)";
+    errEl.textContent        = "✓ Password set successfully! Signing you in…";
+    errEl.classList.add("visible");
 
-    if (loginData.access_token) {
-      saveSession(loginData.access_token, userData);
-      errEl.textContent = "✓ Password set! Signing you in…";
-      errEl.classList.add("visible");
-      setTimeout(() => showDashboard(userData), 1200);
-    } else {
-      errEl.textContent = "✓ Password set! Please sign in with your email and new password.";
-      errEl.classList.add("visible");
-      setTimeout(() => {
-        document.getElementById("panel-set-password").style.display = "none";
-        document.getElementById("panel-login").style.display        = "block";
-        if (email) document.getElementById("email-input").value = email;
-        document.getElementById("password-input").focus();
-      }, 2000);
-      btn.classList.remove("loading"); btn.disabled = false;
-    }
+    setTimeout(() => showDashboard(userData), 1000);
 
   } catch(e) {
-    errEl.removeAttribute("style");
-    if (e.message === "EXPIRED") {
-      errEl.innerHTML =
-        "Your invite or reset link has expired.<br><br>" +
-        "• Ask your admin to send a <strong>new invite</strong>, <strong>OR</strong><br>" +
-        "• Use <strong>'Forgot your password?'</strong> on the login screen — that link always works.";
-    } else if (e.message && e.message.toLowerCase().includes("failed to fetch")) {
-      errEl.innerHTML =
-        "<strong>Network error — cannot reach Netlify Identity.</strong><br><br>" +
-        "Please check:<br>" +
-        "1. Netlify → your site → <strong>Identity is enabled</strong><br>" +
-        "2. Netlify → Site settings → General → <strong>Site URL = https://mixtadashboard.netlify.app</strong><br>" +
-        "3. Netlify → Identity → Services → <strong>Git Gateway is enabled</strong><br><br>" +
-        "Then request a fresh invite and try again.";
-    } else {
-      errEl.textContent = e.message || "Something went wrong. Please try again.";
-    }
+    errEl.style = "";
+    errEl.textContent = e.message || "Something went wrong. Please try again.";
     errEl.classList.add("visible");
     btn.classList.remove("loading"); btn.disabled = false;
   }
@@ -970,83 +744,58 @@ function showDashboard(user) {
   document.getElementById("user-bar").classList.add("visible");
   document.getElementById("as-of-date").textContent = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
   document.getElementById("dashboard-link").href = window.location.href;
-  // Show chatbox button and check what's new banner
-  document.getElementById("chat-btn").style.display = "flex";
-  checkWhatsNew(user.email || "");
   refreshData();
 }
 
-// Enter key support — wrapped in null checks to prevent crashes
-const pwdInputEl   = document.getElementById("password-input");
-const emailInputEl = document.getElementById("email-input");
-if (pwdInputEl)   pwdInputEl.addEventListener("keydown",   e => { if(e.key==="Enter") handleLogin(); });
-if (emailInputEl) emailInputEl.addEventListener("keydown", e => { if(e.key==="Enter") { if(pwdInputEl) pwdInputEl.focus(); } });
+// Enter key support
+document.getElementById("password-input").addEventListener("keydown", e => { if(e.key==="Enter") handleLogin(); });
+document.getElementById("email-input").addEventListener("keydown",    e => { if(e.key==="Enter") document.getElementById("password-input").focus(); });
 
 // ══════════════════════════════════════════════════════════════════════════
 //  FALLBACK DATA
 // ══════════════════════════════════════════════════════════════════════════
 const FALLBACK = {
   inflow:{
-    "Beechwood Park":   {Jan:20.63,Feb:120.25,Mar:18.10,Apr:162.45,May:37.78,Jun:38.82,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "The Cove":         {Jan:270.92,Feb:700.57,Mar:335.63,Apr:0,May:132.55,Jun:72.28,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Express view":     {Jan:32.87,Feb:20.19,Mar:14.04,Apr:5.0,May:36.0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Lakowe Annexe":    {Jan:83.01,Feb:127.23,Mar:139.51,Apr:116.15,May:136.43,Jun:90.21,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Summerville Plots":{Jan:450.5,Feb:46.0,Mar:253.32,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Lakowe Heights":   {Jan:50.5,Feb:10.0,Mar:0,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Elms Estate":      {Jan:164.96,Feb:54.81,Mar:145.74,Apr:393.06,May:231.79,Jun:14.66,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Park Villas":      {Jan:196.01,Feb:171.07,Mar:483.46,Apr:96.0,May:134.84,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Ibudo Wura":       {Jan:257.21,Feb:313.39,Mar:75.86,Apr:306.31,May:102.86,Jun:41.23,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Lakowe Crossing":  {Jan:364.78,Feb:0,Mar:308.25,Apr:56.0,May:45.0,Jun:50.71,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Fara Park II":     {Jan:0,Feb:159.75,Mar:0,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Ule":              {Jan:0,Feb:100.81,Mar:0,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Marula Park":      {Jan:0,Feb:0,Mar:2.33,Apr:0,May:9.91,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Adiva III":        {Jan:0,Feb:0,Mar:0,Apr:0,May:19.38,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Riyom & Wase":     {Jan:0,Feb:0,Mar:0,Apr:424.1,May:67.97,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "Waterfront Plots": {Jan:0,Feb:0,Mar:270.0,Apr:246.93,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
-    "RDP":              {Jan:0,Feb:0,Mar:6.58,Apr:0,May:30.0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0},
+    "Beechwood Park":   {Jan:20.63,Feb:120.25,Mar:18.10,Apr:162.45,May:37.78},
+    "The Cove":         {Jan:270.92,Feb:700.57,Mar:335.63,Apr:0,May:132.55},
+    "Express view":     {Jan:32.87,Feb:20.19,Mar:14.04,Apr:5.0,May:36.0},
+    "Lakowe Annexe":    {Jan:83.01,Feb:127.23,Mar:139.51,Apr:116.15,May:136.43},
+    "Summerville Plots":{Jan:450.5,Feb:46.0,Mar:253.32,Apr:0,May:0},
+    "Lakowe Heights":   {Jan:50.5,Feb:10.0,Mar:0,Apr:0,May:0},
+    "Elms Estate":      {Jan:164.96,Feb:54.81,Mar:145.74,Apr:393.06,May:231.79},
+    "Park Villas":      {Jan:196.01,Feb:171.07,Mar:483.46,Apr:96.0,May:134.84},
+    "Ibudo Wura":       {Jan:257.21,Feb:313.39,Mar:75.86,Apr:306.31,May:102.86},
+    "Lakowe Crossing":  {Jan:364.78,Feb:0,Mar:308.25,Apr:56.0,May:45.0},
+    "Fara Park II":     {Jan:0,Feb:159.75,Mar:0,Apr:0,May:0},
+    "Ule":              {Jan:0,Feb:100.81,Mar:0,Apr:0,May:0},
+    "Marula Park":      {Jan:0,Feb:0,Mar:2.33,Apr:0,May:9.91},
+    "Adiva III":        {Jan:0,Feb:0,Mar:0,Apr:0,May:19.38},
+    "Riyom & Wase":     {Jan:0,Feb:0,Mar:0,Apr:424.1,May:67.97},
+    "Waterfront Plots": {Jan:0,Feb:0,Mar:270.0,Apr:246.93,May:0},
+    "RDP":              {Jan:0,Feb:0,Mar:6.58,Apr:0,May:30.0},
   },
   sales:[
-    {name:"Elms Garden",type:"plots",totalTD:181,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:165,incompleteKYC:16,offers:5,weekNew:4},
-    {name:"Lakowe Annexe",type:"plots",totalTD:80,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:79,incompleteKYC:1,offers:1,weekNew:1},
-    {name:"Ibudo Wura",type:"units",totalTD:148,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:94,incompleteKYC:1,offers:0,weekNew:0},
-    {name:"Beechwood Park",type:"units",totalTD:430,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:430,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Park Villas",type:"units",totalTD:24,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:24,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Adiva III",type:"plots",totalTD:93,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:92,incompleteKYC:1,offers:0,weekNew:1},
-    {name:"Marula Park",type:"units",totalTD:67,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:67,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Lakowe Plots",type:"plots",totalTD:270,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:270,incompleteKYC:0,offers:1,weekNew:0},
-    {name:"The Cove",type:"units",totalTD:131,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:131,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Riyom & Wase",type:"units",totalTD:4,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:4,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"RDP",type:"units",totalTD:93,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:91,incompleteKYC:2,offers:0,weekNew:0},
-    {name:"Fara Park II",type:"units",totalTD:166,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:166,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Lakowe Crossing",type:"plots",totalTD:6,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:6,incompleteKYC:0,offers:0,weekNew:0},
-    {name:"Waterfront Plots",type:"plots",totalTD:21,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:21,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Elms Garden",type:"plots",totalTD:181,completeKYC:165,incompleteKYC:16,offers:5,weekNew:4},
+    {name:"Lakowe Annexe",type:"plots",totalTD:80,completeKYC:79,incompleteKYC:1,offers:1,weekNew:1},
+    {name:"Ibudo Wura",type:"units",totalTD:148,completeKYC:94,incompleteKYC:1,offers:0,weekNew:0},
+    {name:"Beechwood Park",type:"plots",totalTD:430,completeKYC:430,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Park Villas",type:"units",totalTD:24,completeKYC:24,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Adiva III",type:"units",totalTD:93,completeKYC:92,incompleteKYC:1,offers:0,weekNew:1},
+    {name:"Marula Park",type:"plots",totalTD:67,completeKYC:67,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Lakowe Plots",type:"plots",totalTD:270,completeKYC:270,incompleteKYC:0,offers:1,weekNew:0},
+    {name:"The Cove",type:"units",totalTD:131,completeKYC:131,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Riyom & Wase",type:"plots",totalTD:4,completeKYC:4,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"RDP",type:"plots",totalTD:93,completeKYC:91,incompleteKYC:2,offers:0,weekNew:0},
+    {name:"Fara Park II",type:"plots",totalTD:166,completeKYC:166,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Lakowe Crossing",type:"plots",totalTD:6,completeKYC:6,incompleteKYC:0,offers:0,weekNew:0},
+    {name:"Waterfront Plots",type:"plots",totalTD:21,completeKYC:21,incompleteKYC:0,offers:0,weekNew:0},
   ],
   projectTypes:{
-    // Dynamically updated from SALES_DATA col B on every refresh
-    "Elms Garden":"plots",
-    "Lakowe Annexe":"plots",
-    "Ibudo Wura":"units",
-    "Beechwood Park":"units",
-    "Park Villas":"units",
-    "Adiva III":"plots",
-    "Marula Park":"units",
-    "Lakowe Plots":"plots",
-    "The Cove":"units",
-    "Riyom & Wase":"units",
-    "RDP":"units",
-    "Fara Park II":"units",
-    "Lakowe Crossing":"plots",
-    "Waterfront Plots":"plots",
-    "Express view":"units",
-    "Ule":"units",
-    "Lakowe Heights":"units",
-    "Duo (Marula Park)":"units",
-    "Village":"units",
-    "Eco Villas":"units",
-    "Garden City Annexe Ph":"units",
-    "Elms Estate":"plots",
-    "Adiva":"plots",
-    "Summerville Plots":"plots",
+    "Beechwood Park":"plots","The Cove":"units","Lakowe Annexe":"plots","Elms Estate":"plots",
+    "Park Villas":"units","Ibudo Wura":"units","Summerville Plots":"plots","Marula Park":"plots",
+    "Riyom & Wase":"plots","Lakowe Crossing":"plots","Fara Park II":"plots","Ule":"plots",
+    "Express view":"units","Waterfront Plots":"plots","RDP":"plots","Adiva III":"units",
+    "Lakowe Heights":"plots","Elms Garden":"plots","Lakowe Plots":"plots",
   },
   weeklyMay:{
     "Beechwood Park":[34.67,3.11],"Marula Park":[0,9.91],"The Cove":[80.61,51.94],
@@ -1055,27 +804,14 @@ const FALLBACK = {
     "Ibudo Wura":[64.02,38.84],"Riyom & Wase":[0,67.97],"Lakowe Crossing":[0,45.0],
   },
   lastUpdated:"15 May 2026",
-  weeklyDataByProject:{
-    // Populated from INFLOW_DATA on refresh — fallback has May weeks
-    "Beechwood Park":{"May_1":34.67,"May_2":3.11,"May_3":0,"May_4":0},
-    "The Cove":{"May_1":80.61,"May_2":51.94,"May_3":0,"May_4":0},
-    "Lakowe Annexe":{"May_1":55.67,"May_2":80.77,"May_3":0,"May_4":0},
-    "Elms Estate":{"May_1":66.48,"May_2":165.31,"May_3":0,"May_4":0},
-    "Park Villas":{"May_1":0,"May_2":134.84,"May_3":0,"May_4":0},
-    "Ibudo Wura":{"May_1":64.02,"May_2":38.84,"May_3":0,"May_4":0},
-    "Riyom & Wase":{"May_1":0,"May_2":67.97,"May_3":0,"May_4":0},
-    "Lakowe Crossing":{"May_1":0,"May_2":45.0,"May_3":0,"May_4":0},
-  },
-  // salesMonthly: keyed by project, each with units and value per month
-  salesMonthly:{},
 };
 
 const COLORS=["#185FA5","#0F6E56","#993C1D","#993556","#3B6D11","#854F0B","#534AB7","#A32D2D","#0C447C","#085041","#71271F","#3C3489","#639922","#5F5E5A","#632222","#0d5c63"];
-const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const MONTH_KEYS=["January","February","March","April","May","June","July","August","September","October","November","December"];
-let state={type:"all",projects:[],months:[]};
+const MONTHS=["Jan","Feb","Mar","Apr","May"];
+const MONTH_KEYS=["January","February","March","April","May"];
+let state={type:"all",project:"all",month:"all"};
 let DATA={...FALLBACK};
-let barChart,donutChart,lineChart,salesBarChart;
+let barChart,donutChart,lineChart;
 
 // ══════════════════════════════════════════════════════════════════════════
 //  GOOGLE SHEETS
@@ -1086,82 +822,18 @@ async function fetchSheet(tab){
   const text=await res.text();
   return JSON.parse(text.replace(/^.*?({.*}).*$/s,"$1")).table;
 }
-function buildWeeklyData(table){
-  // Build weeklyDataByProject: {proj: {"Jan_1": amt_in_millions, "Jan_2": amt...}}
-  if(!table||!table.rows)return null;
-  const result={};
-  table.rows.forEach(row=>{
-    if(!row.c||!row.c[3]||!row.c[1]||!row.c[5])return;
-    const proj  = row.c[3].v ? row.c[3].v.toString().trim() : "";
-    const month = row.c[1].v ? row.c[1].v.toString().trim() : "";
-    const wkNum = row.c[2] && row.c[2].v ? Math.round(parseFloat(row.c[2].v)) : 0;
-    const amt   = parseFloat(row.c[5].v)||0;
-    if(!proj||!month||!wkNum||amt===0)return;
-    const mKey=MONTHS[MONTH_KEYS.indexOf(month)];
-    if(!mKey)return;
-    const wkKey=mKey+"_"+wkNum;
-    if(!result[proj])result[proj]={};
-    result[proj][wkKey]=(result[proj][wkKey]||0)+(amt/1e6);
-  });
-  return Object.keys(result).length?result:null;
-}
 function parseInflow(table){
   const inflow={};
   if(!table||!table.rows)return null;
   table.rows.forEach(row=>{
     if(!row.c||!row.c[3]||!row.c[1]||!row.c[5])return;
-    const proj=row.c[3].v;
-    const month=row.c[1].v ? row.c[1].v.toString().trim() : "";
-    const amt=parseFloat(row.c[5].v)||0;
-    if(!proj||!month||amt===0)return;
+    const proj=row.c[3].v,month=row.c[1].v,amt=parseFloat(row.c[5].v)||0;
     const mKey=MONTHS[MONTH_KEYS.indexOf(month)];
-    if(!mKey)return; // month not recognised — skip
-    if(!inflow[proj]){
-      // Initialise ALL 12 months to zero so none are missed
-      inflow[proj]={Jan:0,Feb:0,Mar:0,Apr:0,May:0,Jun:0,Jul:0,Aug:0,Sep:0,Oct:0,Nov:0,Dec:0};
-    }
+    if(!mKey)return;
+    if(!inflow[proj])inflow[proj]={Jan:0,Feb:0,Mar:0,Apr:0,May:0};
     inflow[proj][mKey]+=amt/1e6;
   });
   return Object.keys(inflow).length?inflow:null;
-}
-function parseSalesMonthly(table){
-  // Sheet: Row1=blank, Row2=month headers, Row3=col headers, Row4+=data
-  // gviz table.rows maps to ALL rows including headers
-  // Col layout: 0=Project, 1=YTD, then pairs: (units,value) per month
-  // Jan=cols2,3 | Feb=cols4,5 | Mar=cols6,7 | Apr=cols8,9 | May=cols10,11
-  // Jun=cols12,13 | Jul=cols14,15 | Aug=cols16,17 | Sep=cols18,19
-  // Oct=cols20,21 | Nov=cols22,23 | Dec=cols24,25
-  if(!table||!table.rows)return null;
-  const MONTH_COLS={
-    Jan:{u:2,v:3},Feb:{u:4,v:5},Mar:{u:6,v:7},
-    Apr:{u:8,v:9},May:{u:10,v:11},Jun:{u:12,v:13},
-    Jul:{u:14,v:15},Aug:{u:16,v:17},Sep:{u:18,v:19},
-    Oct:{u:20,v:21},Nov:{u:22,v:23},Dec:{u:24,v:25}
-  };
-  const result={};
-  let headerRowsSkipped=0;
-  table.rows.forEach((row,ri)=>{
-    if(!row.c||!row.c[0])return;
-    const firstVal = row.c[0].v ? row.c[0].v.toString().trim() : "";
-    // Skip header rows: blank row, month-name row, col-header row
-    if(!firstVal || firstVal==="Project" || firstVal.toLowerCase().includes("january")
-       || firstVal.toLowerCase().includes("january") ){
-      headerRowsSkipped++;
-      return;
-    }
-    // Skip TOTAL row
-    if(firstVal.toUpperCase()==="TOTAL")return;
-    const proj=firstVal;
-    result[proj]={};
-    Object.entries(MONTH_COLS).forEach(([mKey,cols])=>{
-      const uCell=row.c[cols.u];
-      const vCell=row.c[cols.v];
-      const units=uCell&&uCell.v!==null?parseFloat(uCell.v)||0:0;
-      const value=vCell&&vCell.v!==null?parseFloat(vCell.v)||0:0;
-      result[proj][mKey]={units,value};
-    });
-  });
-  return Object.keys(result).length?result:null;
 }
 function parseSales(table){
   if(!table||!table.rows)return null;
@@ -1170,38 +842,18 @@ function parseSales(table){
     if(!row.c||!row.c[0]||!row.c[0].v)return;
     const name=row.c[0].v.toString().trim();
     if(["TOTAL","PROJECT",""].includes(name.toUpperCase()))return;
-    const rawType=((row.c[1]&&row.c[1].v)||"").toString().toLowerCase().trim();
-    // Accept "unit", "units", "built unit", "built units" → "units"; everything else → "plots"
-    const type = (rawType==="unit"||rawType==="units"||rawType.includes("unit")) ? "units" : "plots";
-    sales.push({
-      name,
-      type,
-      totalTD:       parseInt(row.c[2]&&row.c[2].v)||0,          // C - Total Sales TD
-      valueToDate:   parseFloat((row.c[3]&&row.c[3].v)||0)||0,   // D - Value of Sale To Date
-      totalYTD:      parseInt(row.c[4]&&row.c[4].v)||0,          // E - Total Sales YTD
-      valueYTD:      parseFloat((row.c[5]&&row.c[5].v)||0)||0,   // F - Value of Sale YTD
-      completeKYC:   parseInt(row.c[6]&&row.c[6].v)||0,          // G - Complete KYC
-      incompleteKYC: parseInt(row.c[7]&&row.c[7].v)||0,          // H - Incomplete KYC
-      offers:        parseInt(row.c[8]&&row.c[8].v)||0,          // I - Active Offers
-      weekNew:       parseInt(row.c[10]&&row.c[10].v)||0,        // K - New Sales This Week
-      releasedUnits: parseInt(row.c[13]&&row.c[13].v)||0,        // N - Total Released Units
-    });
+    sales.push({name,type:((row.c[1]&&row.c[1].v)||"").toLowerCase()==="unit"?"units":"plots",totalTD:parseInt(row.c[2]&&row.c[2].v)||0,completeKYC:parseInt(row.c[3]&&row.c[3].v)||0,incompleteKYC:parseInt(row.c[4]&&row.c[4].v)||0,offers:parseInt(row.c[5]&&row.c[5].v)||0,weekNew:parseInt(row.c[7]&&row.c[7].v)||0});
   });
   return sales.length?sales:null;
 }
-function updateProjectTypesFromLiveData(salesArray){
-  salesArray.forEach(p=>{ DATA.projectTypes[p.name]=p.type; });
-}
 async function refreshData(){
   document.getElementById("refresh-btn2").textContent="↻ Loading…";
-  if(CONFIG.SHEET_ID !== "UNCONFIGURED"){
+  if(CONFIG.SHEET_ID!=="YOUR_GOOGLE_SHEET_ID_HERE"){
     try{
-      const[inflowTbl,salesTbl,salesMonthlyTbl]=await Promise.all([fetchSheet(CONFIG.TABS.INFLOW),fetchSheet(CONFIG.TABS.SALES),fetchSheet(CONFIG.TABS.SALES_MONTHLY)]);
-      const liveInflow=parseInflow(inflowTbl),liveSales=parseSales(salesTbl),liveSalesMonthly=parseSalesMonthly(salesMonthlyTbl),liveWeekly=buildWeeklyData(inflowTbl);
+      const[inflowTbl,salesTbl]=await Promise.all([fetchSheet(CONFIG.TABS.INFLOW),fetchSheet(CONFIG.TABS.SALES)]);
+      const liveInflow=parseInflow(inflowTbl),liveSales=parseSales(salesTbl);
       if(liveInflow)DATA.inflow=liveInflow;
-      if(liveSales){DATA.sales=liveSales;updateProjectTypesFromLiveData(liveSales);}
-      if(liveSalesMonthly)DATA.salesMonthly=liveSalesMonthly;
-      if(liveWeekly)DATA.weeklyDataByProject=liveWeekly;
+      if(liveSales)DATA.sales=liveSales;
       DATA.lastUpdated=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
       document.getElementById("error-banner").classList.remove("visible");
     }catch(e){document.getElementById("error-banner").classList.add("visible")}
@@ -1216,169 +868,34 @@ async function refreshData(){
 //  RENDER
 // ══════════════════════════════════════════════════════════════════════════
 function fmt(n){return n>=1000?"₦"+(n/1000).toFixed(2)+"bn":"₦"+n.toFixed(1)+"m"}
-function fmtNaira(n){
-  if(!n||n===0) return "—";
-  if(n>=1e9)  return "₦"+(n/1e9).toFixed(2)+"bn";
-  if(n>=1e6)  return "₦"+(n/1e6).toFixed(2)+"m";
-  return "₦"+n.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
-}
-function activeMonths(){
-  if(!state.months||state.months.length===0)return MONTHS;
-  return state.months.map(mk=>MONTHS[MONTH_KEYS.indexOf(mk)]).filter(Boolean);
-}
-function projectActive(proj){
-  if(!state.projects||state.projects.length===0)return true;
-  return state.projects.includes(proj);
-}
 function getFilteredInflow(){
-  const months=activeMonths();
+  const months=state.month==="all"?MONTHS:[MONTHS[MONTH_KEYS.indexOf(state.month)]].filter(Boolean);
   const result={};
   Object.entries(DATA.inflow).forEach(([proj,vals])=>{
-    if(!projectActive(proj))return;
+    if(state.project!=="all"&&proj!==state.project)return;
     if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return;
-    result[proj]={};months.forEach(m=>{result[proj][m]=vals[m]||0;});
+    result[proj]={};months.forEach(m=>{result[proj][m]=vals[m]||0});
   });
   return result;
 }
-function getFilteredSales(){
-  return DATA.sales.filter(r=>{
-    if(state.type!=="all"&&r.type!==state.type)return false;
-    if(!projectActive(r.name))return false;
-    return true;
-  });
-}
+function getFilteredSales(){return DATA.sales.filter(r=>{if(state.type!=="all"&&r.type!==state.type)return false;if(state.project!=="all"&&r.name!==state.project)return false;return true})}
 function renderMetrics(){
-  // ── INFLOW (responds to month + project + type filter) ───────────────────
-  const inflow  = getFilteredInflow();
-  const months  = activeMonths();
-  let ytdInflow = 0;
-  Object.values(inflow).forEach(mv => months.forEach(m => { ytdInflow += mv[m]||0; }));
-
-  // Latest month: use last selected, or derive from most recent data in inflow
-  const allActiveMonths = MONTHS.filter(m =>
-    Object.values(DATA.inflow).some(mv => (mv[m]||0) > 0)
-  );
-  const mostRecentDataMonth = allActiveMonths.length > 0 ? allActiveMonths[allActiveMonths.length-1] : "Jun";
-  const latestMonthKey = state.months.length > 0 ? state.months[state.months.length-1] : MONTH_KEYS[MONTHS.indexOf(mostRecentDataMonth)];
-  const latestM = MONTHS[MONTH_KEYS.indexOf(latestMonthKey)] || mostRecentDataMonth;
-  const prevM   = MONTHS[MONTHS.indexOf(latestM) - 1];
-
-  let monthInflow=0, prevInflow=0;
-  Object.entries(DATA.inflow).forEach(([proj,mv])=>{
-    if(!projectActive(proj))return;
-    if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return;
-    monthInflow+=mv[latestM]||0;
-    if(prevM)prevInflow+=mv[prevM]||0;
-  });
-  const pct=prevInflow>0?((monthInflow-prevInflow)/prevInflow*100).toFixed(0):null;
-
-  // This week's inflow (project + type filter)
-  let weekInflow=0;
-  Object.entries(DATA.weeklyMay).forEach(([proj,vals])=>{
-    if(!projectActive(proj))return;
-    if(state.type!=="all"&&DATA.projectTypes[proj]!==state.type)return;
-    weekInflow+=vals[1]||0;
-  });
-
-  const inflowPeriod = state.months.length===0?"Jan\u2013Jun 2026":state.months.length===1?state.months[0]+" 2026":state.months.length+" months";
-
-  // ── SALES — project + type filter ────────────────────────────────────────
-  const sales=getFilteredSales();
-  const typeLabel=state.type==="plots"?"plots":state.type==="units"?"units":"units & plots";
-  const selMonths=activeMonths();
-  const sm=DATA.salesMonthly;
-  const hasMonthly=Object.keys(sm).length>0;
-  const monthsSelected=state.months.length>0; // true = user picked specific months
-
-  let displayUnits=0, displayValue=0;
-
-  if(monthsSelected && hasMonthly){
-    // User selected specific months — aggregate from SALES_MONTHLY
-    Object.entries(sm).forEach(([proj,data])=>{
-      if(!projectActive(proj))return;
-      if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return;
-      selMonths.forEach(m=>{ if(data[m]){ displayUnits+=(data[m].units||0); displayValue+=(data[m].value||0); } });
-    });
-  } else {
-    // No month filter (YTD view) — always use SALES_DATA YTD columns
-    sales.forEach(r=>{ displayUnits+=(r.totalYTD||0); displayValue+=(r.valueYTD||0); });
-  }
-
-  const tot=sales.reduce((a,r)=>({
-    incomplete:a.incomplete+r.incompleteKYC,
-    offers:    a.offers   +r.offers,
-    weekNew:   a.weekNew  +(r.weekNew||0),
-  }),{incomplete:0,offers:0,weekNew:0});
-
-  const salesPeriodLabel=state.months.length===0?"Jan\u2013Jun":state.months.length===1?state.months[0]:state.months.length+" months";
-
-  // Preserve budget toggle state across re-renders
-  const budgetActive = document.getElementById("budget-toggle-btn") &&
-                       document.getElementById("budget-toggle-btn").classList.contains("active");
+  const inflow=getFilteredInflow(),months=state.month==="all"?MONTHS:[MONTHS[MONTH_KEYS.indexOf(state.month)]].filter(Boolean);
+  let total=0;Object.values(inflow).forEach(mv=>months.forEach(m=>{total+=mv[m]||0}));
+  const curM=state.month==="all"?"May":MONTHS[MONTH_KEYS.indexOf(state.month)],prevM=MONTHS[MONTHS.indexOf(curM)-1];
+  let curTotal=0,prevTotal=0;Object.values(DATA.inflow).forEach(mv=>{curTotal+=mv[curM]||0;if(prevM)prevTotal+=mv[prevM]||0});
+  const pct=prevTotal>0?((curTotal-prevTotal)/prevTotal*100).toFixed(0):null;
+  const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({totalTD:a.totalTD+r.totalTD,incomplete:a.incomplete+r.incompleteKYC,weekNew:a.weekNew+r.weekNew,offers:a.offers+r.offers}),{totalTD:0,incomplete:0,weekNew:0,offers:0});
   document.getElementById("metrics-row").innerHTML=`
-    <div class="metric-card">
-      <div class="metric-label">Inflow — ${inflowPeriod}</div>
-      <div class="metric-value">${fmt(ytdInflow)}</div>
-      <div class="metric-sub">${inflowPeriod}</div>
-      <div class="metric-budget" id="budget-inflow">
-        <div class="budget-row">
-          <span class="budget-target">Budget: ₦51.93bn</span>
-          <span class="budget-pct" style="color:${ytdInflow>=51930?'var(--green)':'var(--red-dark)'}">${((ytdInflow/51930)*100).toFixed(1)}%</span>
-        </div>
-        <div style="margin-top:3px;font-size:9.5px;color:var(--ink-mute)">Variance: ${ytdInflow>=51930?'+':''}₦${Math.abs(ytdInflow-51930).toFixed(1)}m</div>
-      </div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">${latestMonthKey} inflow</div>
-      <div class="metric-value">${fmt(monthInflow)}</div>
-      ${pct!==null?`<div class="metric-delta ${pct>=0?"delta-up":"delta-down"}">${pct>=0?"▲":"▼"} ${Math.abs(pct)}% vs ${prevM||""}</div>`:""}
-    </div>
-    <div class="metric-card green-card">
-      <div class="metric-label">This week's inflow</div>
-      <div class="metric-value">${fmt(weekInflow)}</div>
-      <div class="metric-sub">most recent week · ${mostRecentDataMonth}</div>
-    </div>
-    <div class="metric-card blue-card">
-      <div class="metric-label">This week's sales</div>
-      <div class="metric-value">${tot.weekNew}</div>
-      <div class="metric-sub">${typeLabel}</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Units sold — ${salesPeriodLabel}</div>
-      <div class="metric-value">${displayUnits.toLocaleString()}</div>
-      <div class="metric-sub">${salesPeriodLabel} · ${typeLabel}</div>
-      <div class="metric-budget" id="budget-units">
-        <div class="budget-row">
-          <span class="budget-target">Budget: 877 units</span>
-          <span class="budget-pct" style="color:${displayUnits>=877?'var(--green)':'var(--red-dark)'}">${((displayUnits/877)*100).toFixed(1)}%</span>
-        </div>
-        <div style="margin-top:3px;font-size:9.5px;color:var(--ink-mute)">Variance: ${displayUnits>=877?'+':''}${(displayUnits-877).toFixed(0)} units</div>
-      </div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Value of sales — ${salesPeriodLabel}</div>
-      <div class="metric-value">${fmtNaira(displayValue)}</div>
-      <div class="metric-sub">${salesPeriodLabel} · ${typeLabel}</div>
-      <div class="metric-budget" id="budget-value">
-        <div class="budget-row">
-          <span class="budget-target">Budget: ₦104.43bn</span>
-          <span class="budget-pct" style="color:${displayValue>=104430000000?'var(--green)':'var(--red-dark)'}">${((displayValue/104430000000)*100).toFixed(1)}%</span>
-        </div>
-        <div style="margin-top:3px;font-size:9.5px;color:var(--ink-mute)">Variance: ${displayValue>=104430000000?'+':''}${fmtNaira(Math.abs(displayValue-104430000000))}</div>
-      </div>
-    </div>
-    <div class="metric-card red-card">
-      <div class="metric-label">Incomplete KYC</div>
-      <div class="metric-value">${tot.incomplete}</div>
-      <div class="metric-sub">pending action</div>
-    </div>`;
-  // Re-apply budget toggle visibility after re-render
-  if(budgetActive){
-    document.querySelectorAll(".metric-budget").forEach(el=>el.classList.add("show"));
-  }
+    <div class="metric-card"><div class="metric-label">YTD inflow</div><div class="metric-value">${fmt(total)}</div><div class="metric-sub">${state.month==="all"?"Jan–May 2026":state.month+" 2026"}</div></div>
+    <div class="metric-card"><div class="metric-label">${curM} inflow</div><div class="metric-value">${fmt(curTotal)}</div>${pct!==null?`<div class="metric-delta ${pct>=0?"delta-up":"delta-down"}">${pct>=0?"▲":"▼"} ${Math.abs(pct)}% vs ${prevM||""}</div>`:""}</div>
+    <div class="metric-card"><div class="metric-label">Total sales TD</div><div class="metric-value">${tot.totalTD.toLocaleString()}</div><div class="metric-sub">units &amp; plots</div></div>
+    <div class="metric-card green-card"><div class="metric-label">New this week</div><div class="metric-value">${tot.weekNew}</div><div class="metric-sub">sales recorded</div></div>
+    <div class="metric-card red-card"><div class="metric-label">Incomplete KYC</div><div class="metric-value">${tot.incomplete}</div><div class="metric-sub">pending action</div></div>
+    <div class="metric-card"><div class="metric-label">Active offers</div><div class="metric-value">${tot.offers}</div><div class="metric-sub">in pipeline</div></div>`;
 }
 function renderBarChart(){
-  const inflow=getFilteredInflow(),months=activeMonths();
+  const inflow=getFilteredInflow(),months=state.month==="all"?MONTHS:[MONTHS[MONTH_KEYS.indexOf(state.month)]].filter(Boolean);
   const projects=Object.keys(inflow).filter(p=>Object.values(inflow[p]).reduce((a,b)=>a+b,0)>0);
   const datasets=projects.map((proj,i)=>({label:proj,data:months.map(m=>parseFloat((inflow[proj][m]||0).toFixed(2))),backgroundColor:COLORS[i%COLORS.length],stack:"s",borderRadius:2}));
   document.getElementById("bar-legend").innerHTML=projects.map((p,i)=>`<span class="leg-item"><span class="leg-swatch" style="background:${COLORS[i%COLORS.length]}"></span>${p}</span>`).join("");
@@ -1386,7 +903,7 @@ function renderBarChart(){
   barChart=new Chart(document.getElementById("barChart"),{type:"bar",data:{labels:months,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,ticks:{font:{size:11,family:"DM Sans"}},grid:{display:false}},y:{stacked:true,ticks:{font:{size:11,family:"DM Sans"},callback:v=>"₦"+v+"m"},grid:{color:"rgba(26,25,23,0.05)"}}}}});
 }
 function renderDonutChart(){
-  const inflow=getFilteredInflow(),months=activeMonths();
+  const inflow=getFilteredInflow(),months=state.month==="all"?MONTHS:[MONTHS[MONTH_KEYS.indexOf(state.month)]].filter(Boolean);
   const projs=Object.keys(inflow),totals=projs.map(p=>months.reduce((a,m)=>a+(inflow[p][m]||0),0));
   const grand=totals.reduce((a,b)=>a+b,0);
   const filt=projs.map((p,i)=>({name:p,val:totals[i]})).filter(x=>x.val>0).sort((a,b)=>b.val-a.val).slice(0,9);
@@ -1395,367 +912,27 @@ function renderDonutChart(){
   donutChart=new Chart(document.getElementById("donutChart"),{type:"doughnut",data:{labels:filt.map(p=>p.name),datasets:[{data:filt.map(p=>parseFloat(p.val.toFixed(2))),backgroundColor:filt.map((_,i)=>COLORS[i%COLORS.length]),borderWidth:2,borderColor:"#fff"}]},options:{responsive:true,maintainAspectRatio:false,cutout:"66%",plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>" "+fmt(ctx.parsed)+" ("+(ctx.parsed/grand*100).toFixed(1)+"%)"}}}}});
 }
 function renderLineChart(){
-  // Build weekly totals dynamically from DATA.inflow
-  // Group by project+month then week number
-  // We use the weeklyData object built from INFLOW_DATA during refresh
-  const wd=DATA.weeklyData||{};
-  // Get active months from filter
-  const activeMths=activeMonths();
-  // Find all unique weeks across filtered months
-  const weekMap={}; // "Month Wk N" -> total
-  Object.entries(wd).forEach(([key,amt])=>{
-    // key format: "Jan_1", "Jan_2", "Feb_1" etc.
-    const [mKey,wkNum]=key.split("_");
-    if(!activeMths.includes(mKey))return;
-    // Filter by project and type
-    // amt is already project-aggregated per week
-    // We need project-level data — use weeklyDataByProject
-  });
-  // Use weeklyDataByProject for filtering
-  const wdp=DATA.weeklyDataByProject||{};
-  const weekTotals={};
-  Object.entries(wdp).forEach(([proj,weeks])=>{
-    if(!projectActive(proj))return;
-    if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return;
-    Object.entries(weeks).forEach(([wkKey,amt])=>{
-      const [mKey]=wkKey.split("_");
-      if(!activeMths.includes(mKey))return;
-      weekTotals[wkKey]=(weekTotals[wkKey]||0)+amt;
-    });
-  });
-  // Sort weeks and build chart labels + data
-  const sortedWeeks=Object.keys(weekTotals).sort((a,b)=>{
-    const [am,aw]=a.split("_");const [bm,bw]=b.split("_");
-    const mi=MONTHS.indexOf(am),mj=MONTHS.indexOf(bm);
-    if(mi!==mj)return mi-mj;
-    return parseInt(aw)-parseInt(bw);
-  });
-  const labels=sortedWeeks.map(k=>{
-    const [m,w]=k.split("_");
-    return m+" Wk"+w;
-  });
-  const data=sortedWeeks.map(k=>parseFloat((weekTotals[k]/1).toFixed(1)));
-  if(!labels.length){
-    // Fallback if no data
-    if(lineChart)lineChart.destroy();
-    lineChart=null;
-    return;
-  }
+  const labels=["Week 1","Week 2"],weekTotals=labels.map((_,wi)=>{let sum=0;Object.entries(DATA.weeklyMay).forEach(([proj,vals])=>{if(state.project!=="all"&&proj!==state.project)return;if(state.type!=="all"&&DATA.projectTypes[proj]!==state.type)return;sum+=vals[wi]||0});return parseFloat(sum.toFixed(1))});
   if(lineChart)lineChart.destroy();
-  lineChart=new Chart(document.getElementById("lineChart"),{
-    type:"line",
-    data:{labels,datasets:[{label:"Weekly inflow (₦m)",data,borderColor:"#185FA5",
-      backgroundColor:"rgba(24,95,165,0.07)",pointBackgroundColor:"#185FA5",
-      pointBorderColor:"#fff",pointBorderWidth:2,pointRadius:5,tension:.35,fill:true}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>"₦"+ctx.parsed.y.toFixed(1)+"m"}}},
-      scales:{x:{ticks:{font:{size:10,family:"DM Sans"},maxRotation:45},grid:{display:false}},
-              y:{ticks:{font:{size:11,family:"DM Sans"},callback:v=>"₦"+v+"m"},
-                 grid:{color:"rgba(26,25,23,0.05)"}}}}
-  });
-}
-function renderSalesBarChart(){
-  const months=activeMonths();
-  const sm=DATA.salesMonthly;
-  const hasMonthly=Object.keys(sm).length>0;
-
-  // Get projects that pass current filters
-  const projects=Object.keys(hasMonthly?sm:DATA.projectTypes).filter(proj=>{
-    if(!projectActive(proj))return false;
-    if(state.type!=="all"&&DATA.projectTypes[proj]&&DATA.projectTypes[proj]!==state.type)return false;
-    if(hasMonthly){
-      const total=months.reduce((a,m)=>a+(sm[proj]&&sm[proj][m]?sm[proj][m].units:0),0);
-      return total>0;
-    }
-    return true;
-  });
-
-  const datasets=projects.map((proj,i)=>({
-    label:proj,
-    data:months.map(m=>{
-      if(hasMonthly&&sm[proj]&&sm[proj][m])return sm[proj][m].units||0;
-      return 0;
-    }),
-    backgroundColor:COLORS[i%COLORS.length],
-    borderRadius:3,
-  }));
-
-  if(projects.length===0){
-    document.getElementById("sales-bar-legend").innerHTML='<span style="font-size:11px;color:var(--warm-grey)">No sales data available for selected filters</span>';
-    if(salesBarChart)salesBarChart.destroy();salesBarChart=null;
-    return;
-  }
-  document.getElementById("sales-bar-legend").innerHTML=projects.map((p,i)=>`<span class="leg-item"><span class="leg-swatch" style="background:${COLORS[i%COLORS.length]}"></span>${p}</span>`).join("");
-  if(salesBarChart)salesBarChart.destroy();
-  salesBarChart=new Chart(document.getElementById("salesBarChart"),{
-    type:"bar",
-    data:{labels:months,datasets},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y} unit${ctx.parsed.y!==1?"s":""}`}}
-      },
-      scales:{
-        x:{ticks:{font:{size:11,family:"DM Sans"}},grid:{display:false}},
-        y:{
-          ticks:{font:{size:11,family:"DM Sans"},stepSize:1,callback:v=>Number.isInteger(v)?v:""},
-          grid:{color:"rgba(26,25,23,0.05)"},
-          title:{display:true,text:"Units sold",font:{size:10,family:"DM Sans"},color:"#6B6861"}
-        }
-      }
-    }
-  });
+  lineChart=new Chart(document.getElementById("lineChart"),{type:"line",data:{labels,datasets:[{label:"Weekly inflow",data:weekTotals,borderColor:"#185FA5",backgroundColor:"rgba(24,95,165,0.07)",pointBackgroundColor:"#185FA5",pointBorderColor:"#fff",pointBorderWidth:2,pointRadius:6,tension:.35,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11,family:"DM Sans"}},grid:{display:false}},y:{ticks:{font:{size:11,family:"DM Sans"},callback:v=>"₦"+v+"m"},grid:{color:"rgba(26,25,23,0.05)"}}}}});
 }
 function renderSalesTable(){
-  const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({totalTD:a.totalTD+r.totalTD,valueToDate:a.valueToDate+(r.valueToDate||0),totalYTD:a.totalYTD+(r.totalYTD||0),valueYTD:a.valueYTD+(r.valueYTD||0),completeKYC:a.completeKYC+r.completeKYC,incompleteKYC:a.incompleteKYC+r.incompleteKYC,offers:a.offers+r.offers,weekNew:a.weekNew+r.weekNew}),{totalTD:0,valueToDate:0,totalYTD:0,valueYTD:0,completeKYC:0,incompleteKYC:0,offers:0,weekNew:0});
-  document.getElementById("sales-tbody").innerHTML=sales.map(r=>{
-    const pct=r.totalTD>0?Math.round(r.completeKYC/r.totalTD*100):0,clr=pct>=90?"#1B6B35":pct>=70?"#185FA5":"#ba7517";
-    return`<tr><td style="font-weight:500;color:var(--ink)">${r.name}</td><td>${r.type==="plots"?'<span class="tag tag-plot">Plot</span>':'<span class="tag tag-unit">Unit</span>'}</td><td>${r.totalTD.toLocaleString()}</td><td style="color:var(--ink-soft)">${fmtNaira(r.valueToDate||0)}</td><td style="font-weight:500;color:var(--ink)">${(r.totalYTD||0).toLocaleString()}</td><td style="font-weight:500;color:var(--ink)">${fmtNaira(r.valueYTD||0)}</td><td>${r.completeKYC.toLocaleString()}</td><td>${r.incompleteKYC>0?`<span class="badge badge-red">${r.incompleteKYC}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td><td>${r.offers>0?r.offers:'<span style="color:var(--warm-grey)">—</span>'}</td><td>${r.weekNew>0?`<span class="badge badge-green">+${r.weekNew}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td><td><div class="progress-wrap"><span class="pct-label">${pct}%</span><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${clr}"></div></div></div></td></tr>`;
-  }).join("");
-  document.getElementById("sales-tfoot").innerHTML=`<tr><td colspan="2">Total</td><td>${tot.totalTD.toLocaleString()}</td><td>${fmtNaira(tot.valueToDate)}</td><td style="font-weight:600">${tot.totalYTD.toLocaleString()}</td><td style="font-weight:600">${fmtNaira(tot.valueYTD)}</td><td>${tot.completeKYC.toLocaleString()}</td><td>${tot.incompleteKYC}</td><td>${tot.offers}</td><td>+${tot.weekNew}</td><td></td></tr>`;
+  const sales=getFilteredSales(),tot=sales.reduce((a,r)=>({totalTD:a.totalTD+r.totalTD,completeKYC:a.completeKYC+r.completeKYC,incompleteKYC:a.incompleteKYC+r.incompleteKYC,offers:a.offers+r.offers,weekNew:a.weekNew+r.weekNew}),{totalTD:0,completeKYC:0,incompleteKYC:0,offers:0,weekNew:0});
+  document.getElementById("sales-tbody").innerHTML=sales.map(r=>{const pct=r.totalTD>0?Math.round(r.completeKYC/r.totalTD*100):0,clr=pct>=90?"#1B6B35":pct>=70?"#185FA5":"#ba7517";return`<tr><td style="font-weight:500;color:var(--ink)">${r.name}</td><td>${r.type==="plots"?'<span class="tag tag-plot">Plot</span>':'<span class="tag tag-unit">Unit</span>'}</td><td>${r.totalTD.toLocaleString()}</td><td>${r.completeKYC.toLocaleString()}</td><td>${r.incompleteKYC>0?`<span class="badge badge-red">${r.incompleteKYC}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td><td>${r.offers>0?r.offers:'<span style="color:var(--warm-grey)">—</span>'}</td><td>${r.weekNew>0?`<span class="badge badge-green">+${r.weekNew}</span>`:'<span style="color:var(--warm-grey)">—</span>'}</td><td><div class="progress-wrap"><span class="pct-label">${pct}%</span><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${clr}"></div></div></div></td></tr>`}).join("");
+  document.getElementById("sales-tfoot").innerHTML=`<tr><td colspan="2">Total</td><td>${tot.totalTD.toLocaleString()}</td><td>${tot.completeKYC.toLocaleString()}</td><td>${tot.incompleteKYC}</td><td>${tot.offers}</td><td>+${tot.weekNew}</td><td></td></tr>`;
 }
 function renderInflowTable(){
-  const inflow=getFilteredInflow();
-  const grand=Object.values(inflow).reduce((a,mv)=>a+Object.values(mv).reduce((b,v)=>b+v,0),0);
+  const inflow=getFilteredInflow(),grand=Object.values(inflow).reduce((a,mv)=>a+Object.values(mv).reduce((b,v)=>b+v,0),0);
   const rows=Object.entries(inflow).map(([proj,mv])=>({proj,mv,ytd:Object.values(mv).reduce((a,b)=>a+b,0)})).filter(r=>r.ytd>0).sort((a,b)=>b.ytd-a.ytd);
-  const months=activeMonths();
-  const mTots=months.map(m=>Object.values(inflow).reduce((a,mv)=>a+(mv[m]||0),0));
-  const totalLabel=state.months.length===0?"YTD Total":state.months.length===1?state.months[0]+" Total":"Period Total";
-  // Update header dynamically
-  document.getElementById("inflow-thead").innerHTML=`<tr><th>Project</th>${months.map(m=>`<th>${m}</th>`).join("")}<th>${totalLabel}</th><th>Share</th></tr>`;
-  document.getElementById("inflow-tbody").innerHTML=rows.map(r=>`<tr><td style="font-weight:500;color:var(--ink)">${r.proj}</td>${months.map(m=>`<td>${r.mv[m]>0?"₦"+r.mv[m].toFixed(1)+"m":'<span style="color:var(--warm-grey)">—</span>'}</td>`).join("")}<td style="font-weight:600">₦${r.ytd.toFixed(1)}m</td><td>${grand>0?(r.ytd/grand*100).toFixed(1):0}%</td></tr>`).join("");
+  const mTots=MONTHS.map(m=>Object.values(inflow).reduce((a,mv)=>a+(mv[m]||0),0));
+  document.getElementById("inflow-tbody").innerHTML=rows.map(r=>`<tr><td style="font-weight:500;color:var(--ink)">${r.proj}</td>${MONTHS.map(m=>`<td>${r.mv[m]>0?"₦"+r.mv[m].toFixed(1)+"m":'<span style="color:var(--warm-grey)">—</span>'}</td>`).join("")}<td style="font-weight:600">₦${r.ytd.toFixed(1)}m</td><td>${(r.ytd/grand*100).toFixed(1)}%</td></tr>`).join("");
   document.getElementById("inflow-tfoot").innerHTML=`<tr><td>Total</td>${mTots.map(t=>`<td>₦${t.toFixed(1)}m</td>`).join("")}<td>₦${grand.toFixed(1)}m</td><td>100%</td></tr>`;
 }
-function render(){renderMetrics();renderBarChart();renderDonutChart();renderLineChart();renderSalesBarChart();renderSalesTable();renderInflowTable()}
-function toggleBudget(btn){
-  const show = btn.classList.toggle("active");
-  btn.textContent = show ? "Hide budget targets" : "Show budget targets";
-  document.querySelectorAll(".metric-budget").forEach(el=>{
-    if(show) el.classList.add("show");
-    else     el.classList.remove("show");
-  });
-}
+function render(){renderMetrics();renderBarChart();renderDonutChart();renderLineChart();renderSalesTable();renderInflowTable()}
 function setType(t,el){state.type=t;document.querySelectorAll(".fpill").forEach(p=>p.classList.remove("active"));el.classList.add("active");render()}
-function toggleProject(val,el){
-  const allBox=document.querySelector('#project-checkboxes input[value="all"]');
-  if(val==="all"){document.querySelectorAll('#project-checkboxes input[type=checkbox]').forEach(cb=>{cb.checked=cb.value==="all"});state.projects=[];}
-  else{allBox.checked=false;if(el.checked){state.projects.push(val);}else{state.projects=state.projects.filter(p=>p!==val);}if(state.projects.length===0)allBox.checked=true;}
-  const c=state.projects.length;document.getElementById("proj-count").textContent=c>0?c+" selected":"";render();
-}
-function toggleMonth(val,el){
-  const allBox=document.querySelector('#month-checkboxes input[value="all"]');
-  if(val==="all"){document.querySelectorAll('#month-checkboxes input[type=checkbox]').forEach(cb=>{cb.checked=cb.value==="all"});state.months=[];}
-  else{allBox.checked=false;if(el.checked){state.months.push(val);}else{state.months=state.months.filter(m=>m!==val);}if(state.months.length===0)allBox.checked=true;}
-  const c=state.months.length;document.getElementById("month-count").textContent=c>0?c+" selected":"";render();
-}
+function setProject(v){state.project=v;render()}
+function setMonth(v){state.month=v;render()}
 function setView(v,el){document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));el.classList.add("active")}
-
-// ══════════════════════════════════════════════════════════════════════════
-//  PASSWORD SHOW/HIDE
-// ══════════════════════════════════════════════════════════════════════════
-function togglePwdVisibility(inputId, iconId) {
-  const input = document.getElementById(inputId);
-  const icon  = document.getElementById(iconId);
-  if (!input || !icon) return;
-  if (input.type === "password") {
-    input.type = "text";
-    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-  } else {
-    input.type = "password";
-    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-//  WHAT'S NEW BANNER
-// ══════════════════════════════════════════════════════════════════════════
-const WN_KEY     = "mixta_wn_v2";  // change version to re-show for all users
-const WN_MAX_SHOWS = 2;
-
-function checkWhatsNew(userEmail) {
-  if (!userEmail) return;
-  const key     = WN_KEY + "_" + userEmail;
-  const showCount = parseInt(localStorage.getItem(key) || "0");
-  if (showCount < WN_MAX_SHOWS) {
-    const remaining = WN_MAX_SHOWS - showCount - 1;
-    const el = document.getElementById("wn-count");
-    if (el) el.textContent = remaining > 0
-      ? "This will show " + remaining + " more time" + (remaining > 1 ? "s" : "")
-      : "Last time this will appear";
-    document.getElementById("whats-new-banner").classList.remove("hidden");
-    localStorage.setItem(key, String(showCount + 1));
-  }
-}
-
-function dismissWhatsNew() {
-  document.getElementById("whats-new-banner").classList.add("hidden");
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-//  INTELLIGENCE ASSISTANT CHATBOX
-// ══════════════════════════════════════════════════════════════════════════
-// !! IMPORTANT: Replace with your Gemini API key from aistudio.google.com
-// For security, ideally call this via a Netlify serverless function instead
-const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
-const GEMINI_URL     = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-
-function toggleChat() {
-  const btn   = document.getElementById("chat-btn");
-  const panel = document.getElementById("chat-panel");
-  const isOpen = panel.classList.toggle("open");
-  btn.classList.toggle("open", isOpen);
-  if (isOpen) {
-    document.getElementById("chat-input").focus();
-    // Hide sample questions after first message
-    const msgs = document.getElementById("chat-messages").children;
-    if (msgs.length <= 1) {
-      document.getElementById("chat-samples").style.display = "flex";
-    }
-  }
-}
-
-function askSample(btn) {
-  document.getElementById("chat-input").value = btn.textContent;
-  sendChat();
-}
-
-function buildDataContext() {
-  const inflow = DATA.inflow;
-  const sales  = DATA.sales;
-  const sm     = DATA.salesMonthly || {};
-  const months = MONTHS.filter(m => Object.values(inflow).some(mv => (mv[m]||0) > 0));
-
-  const lines = [];
-  lines.push("=== MIXTA AFRICA DASHBOARD DATA (live, as of " + new Date().toLocaleDateString("en-GB") + ") ===");
-  lines.push("");
-
-  // Inflow by project and month
-  lines.push("INFLOW DATA (millions Naira):");
-  Object.entries(inflow).forEach(([proj, mv]) => {
-    const total = months.reduce((a,m) => a+(mv[m]||0), 0);
-    if (total > 0) {
-      const monthStr = months.map(m => m+"="+((mv[m]||0).toFixed(1))+"m").join(", ");
-      lines.push("  " + proj + ": " + monthStr + " | YTD=" + total.toFixed(1) + "m");
-    }
-  });
-
-  // Sales by project
-  lines.push("");
-  lines.push("SALES DATA (per project):");
-  sales.forEach(p => {
-    lines.push("  " + p.name + " (" + p.type + "): " +
-      "TotalTD=" + p.totalTD + ", ValueTD=N" + (p.valueToDate/1e9).toFixed(2) + "bn, " +
-      "TotalYTD=" + p.totalYTD + ", ValueYTD=N" + (p.valueYTD/1e9).toFixed(2) + "bn, " +
-      "CompleteKYC=" + p.completeKYC + ", IncompleteKYC=" + p.incompleteKYC + ", " +
-      "Offers=" + p.offers + ", NewThisWeek=" + p.weekNew);
-  });
-
-  // Monthly units sold
-  if (Object.keys(sm).length > 0) {
-    lines.push("");
-    lines.push("MONTHLY UNITS SOLD (from SALES_MONTHLY sheet):");
-    Object.entries(sm).forEach(([proj, data]) => {
-      const parts = Object.entries(data)
-        .filter(([m,v]) => v && v.units > 0)
-        .map(([m,v]) => m + "=" + v.units + "units(N" + (v.value/1e9).toFixed(2) + "bn)");
-      if (parts.length) lines.push("  " + proj + ": " + parts.join(", "));
-    });
-  }
-
-  // Weekly data
-  const wdp = DATA.weeklyDataByProject || {};
-  if (Object.keys(wdp).length > 0) {
-    lines.push("");
-    lines.push("WEEKLY INFLOW (millions Naira, per week key=MonthWkN):");
-    Object.entries(wdp).forEach(([proj, weeks]) => {
-      const parts = Object.entries(weeks)
-        .filter(([k,v]) => v > 0)
-        .map(([k,v]) => k + "=" + v.toFixed(1) + "m");
-      if (parts.length) lines.push("  " + proj + ": " + parts.join(", "));
-    });
-  }
-
-  lines.push("");
-  lines.push("ANNUAL BUDGETS: Inflow=N51.93bn | Value of Sales=N104.43bn | Units=877");
-  lines.push("EXCHANGE: All values in Nigerian Naira (N). m=millions, bn=billions.");
-
-  return lines.join("\n");
-}
-
-async function sendChat() {
-  const input   = document.getElementById("chat-input");
-  const messages = document.getElementById("chat-messages");
-  const samples = document.getElementById("chat-samples");
-  const question = input.value.trim();
-  if (!question) return;
-
-  // Hide samples after first real question
-  samples.style.display = "none";
-
-  // Add user message
-  const userMsg = document.createElement("div");
-  userMsg.className = "chat-msg user";
-  userMsg.textContent = question;
-  messages.appendChild(userMsg);
-  input.value = "";
-  messages.scrollTop = messages.scrollHeight;
-
-  // Add loading indicator
-  const loadMsg = document.createElement("div");
-  loadMsg.className = "chat-msg loading";
-  loadMsg.textContent = "Thinking";
-  messages.appendChild(loadMsg);
-  messages.scrollTop = messages.scrollHeight;
-
-  if (GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
-    loadMsg.className = "chat-msg bot";
-    loadMsg.textContent = "The Intelligence Assistant needs a Gemini API key to work. Please add your key from aistudio.google.com to the GEMINI_API_KEY constant in the dashboard code.";
-    return;
-  }
-
-  try {
-    const dataContext = buildDataContext();
-    const systemPrompt = `You are an intelligent data analyst assistant for Mixta Africa, a real estate developer in Nigeria. 
-You have access to the live dashboard data below. Answer questions accurately, concisely and professionally.
-Use ₦ for Naira amounts. Format large numbers clearly (e.g. ₦2.3bn, 450 units).
-If data for a specific date/week/month is not in the context, say so clearly.
-Always base your answers ONLY on the data provided — do not make up figures.
-
-${dataContext}`;
-
-    const res = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: systemPrompt + "\n\nUser question: " + question }]
-        }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 600 }
-      })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error?.message || "API error " + res.status);
-    }
-
-    const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate an answer. Please try again.";
-    loadMsg.className = "chat-msg bot";
-    loadMsg.textContent = answer;
-
-  } catch(e) {
-    loadMsg.className = "chat-msg bot";
-    loadMsg.textContent = "Sorry, I encountered an error: " + e.message + ". Please check your Gemini API key.";
-  }
-
-  messages.scrollTop = messages.scrollHeight;
-}
-
-// Allow Enter key in chat input
-const chatInputEl = document.getElementById("chat-input");
-if (chatInputEl) chatInputEl.addEventListener("keydown", e => { if(e.key==="Enter") sendChat(); });
 
 // ══════════════════════════════════════════════════════════════════════════
 //  INIT — check for existing session, else show login
@@ -1777,63 +954,5 @@ if (chatInputEl) chatInputEl.addEventListener("keydown", e => { if(e.key==="Ente
   setInterval(refreshData, CONFIG.REFRESH_INTERVAL);
 })();
 </script>
-
-<!-- ── WHAT'S NEW BANNER ──────────────────────────────────────────────── -->
-<div id="whats-new-banner" class="hidden">
-  <div class="whats-new-card">
-    <div class="wn-header">
-      <span class="wn-badge">What's new</span>
-      <div class="wn-title">Dashboard updates</div>
-    </div>
-    <ul class="wn-list">
-      <li>Intelligence Assistant chatbox — ask any question about your data</li>
-      <li>All 21 projects now in the project filter</li>
-      <li>Password show/hide toggle on login</li>
-      <li>Total Released Units added to email reports &amp; dashboard</li>
-      <li>Monthly filters no longer show misleading notice</li>
-    </ul>
-    <div class="wn-footer">
-      <span class="wn-dismiss" id="wn-count"></span>
-      <button class="wn-btn" onclick="dismissWhatsNew()">Got it, thanks!</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── INTELLIGENCE ASSISTANT CHATBOX ────────────────────────────────── -->
-<button id="chat-btn" onclick="toggleChat()" title="Intelligence Assistant" style="display:none">
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-  </svg>
-</button>
-
-<div id="chat-panel">
-  <div class="chat-header">
-    <div class="chat-header-icon">✦</div>
-    <div>
-      <div class="chat-header-title">Intelligence Assistant</div>
-      <div class="chat-header-sub">Ask anything about your sales &amp; inflow data</div>
-    </div>
-    <button class="chat-close" onclick="toggleChat()">✕</button>
-  </div>
-  <div class="chat-messages" id="chat-messages">
-    <div class="chat-msg bot">Hello! I'm your Intelligence Assistant. Ask me anything about Mixta Africa's sales and inflow data — I have access to all live dashboard figures.</div>
-  </div>
-  <div class="chat-samples" id="chat-samples">
-    <button class="chat-sample" onclick="askSample(this)">Highest selling project this year?</button>
-    <button class="chat-sample" onclick="askSample(this)">Which project had no inflow this month?</button>
-    <button class="chat-sample" onclick="askSample(this)">Total units sold YTD?</button>
-    <button class="chat-sample" onclick="askSample(this)">KYC completion rate?</button>
-    <button class="chat-sample" onclick="askSample(this)">Projects below inflow budget?</button>
-  </div>
-  <div class="chat-input-row">
-    <input type="text" id="chat-input" placeholder="e.g. What was the highest inflow week in May?" maxlength="300">
-    <button id="chat-send" onclick="sendChat()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-      </svg>
-    </button>
-  </div>
-</div>
-
 </body>
 </html>
