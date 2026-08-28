@@ -1071,6 +1071,25 @@ const FALLBACK={
 };
 
 // ══════════════════════════════════════════════════════════════════════════
+//  STATE & DATA
+// ══════════════════════════════════════════════════════════════════════════
+
+let state = { type:"all", projects:[], months:[] };
+
+let DATA = {
+  inflow:             JSON.parse(JSON.stringify(FALLBACK.inflow)),
+  sales:              JSON.parse(JSON.stringify(FALLBACK.sales)),
+  salesMonthly:       {},
+  projectTypes:       JSON.parse(JSON.stringify(FALLBACK.projectTypes)),
+  weeklyDataByProject:{},
+  lastUpdated:        FALLBACK.lastUpdated,
+};
+
+let barChart, donutChart, lineChart, salesBarChart;
+
+
+
+// ══════════════════════════════════════════════════════════════════════════
 //  GOOGLE SHEETS
 // ══════════════════════════════════════════════════════════════════════════
 async function fetchSheet(tab){
