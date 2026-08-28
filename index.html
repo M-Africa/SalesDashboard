@@ -970,9 +970,18 @@ function showDashboard(user) {
   document.getElementById("user-bar").classList.add("visible");
   document.getElementById("as-of-date").textContent = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
   document.getElementById("dashboard-link").href = window.location.href;
+
+  // Hide loading overlay IMMEDIATELY — render with fallback data right away
+  // Live data loads silently in the background via refreshData()
+  document.getElementById("loading-overlay").classList.add("hidden");
+  document.getElementById("last-updated").textContent = DATA.lastUpdated;
+  render();
+
   // Show chatbox button and check what's new banner
   document.getElementById("chat-btn").style.display = "flex";
   checkWhatsNew(user.email || "");
+
+  // Now fetch live data in background — re-renders automatically when done
   refreshData();
 }
 
