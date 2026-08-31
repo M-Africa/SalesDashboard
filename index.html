@@ -508,8 +508,6 @@ const NETLIFY_URL  = "https://mixtadashboard.netlify.app";
 const API          = NETLIFY_URL + "/.netlify/identity";
 const SHEET_ID     = "1UsJyJExzdU97oDpALfDzraAhsarpCmESaA4pD2_3zVE";
 const SHEET_TABS   = { SALES:"SALES_DATA", INFLOW:"INFLOW_DATA", MONTHLY:"SALES_MONTHLY" };
-const GROQ_URL     = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_KEY     = "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";
 const REFRESH_MS   = 300000;
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -646,20 +644,47 @@ async function handleSetPassword() {
   clearError('set-error');
   const pwd1 = document.getElementById('new-pwd').value;
   const pwd2 = document.getElementById('confirm-pwd').value;
-  if (pwd1.length < 8) { showError('set-error','Password must be at least 8 characters.'); return; }
-  if (pwd1 !== pwd2)   { showError('set-error','Passwords do not match.'); return; }
+  if (pwd1.length < 8) { showError('set-error', 'Password must be at least 8 characters.'); return; }
+  if (pwd1 !== pwd2)   { showError('set-error', 'Passwords do not match.'); return; }
   const btn = document.getElementById('set-btn');
   btn.classList.add('loading'); btn.textContent = 'Setting password…';
   try {
-    const res = await fetch(`${API}/user`, {
-      method:'PUT',
-      headers:{'Authorization':'Bearer '+pendingToken,'Content-Type':'application/json'},
-      body:JSON.stringify({password:pwd1})
+    // Step 1: Exchange invite/recovery token for access token
+    let accessToken = null;
+    // Try invitation grant first
+    const invRes = await fetch(API + '/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'grant_type=invitation&token=' + encodeURIComponent(pendingToken)
     });
-    if (!res.ok) throw new Error('Could not set password. Please try again.');
-    const user = await res.json();
-    saveSession(pendingToken, user);
-    showDashboard(user);
+    if (invRes.ok) {
+      const invData = await invRes.json();
+      accessToken = invData.access_token;
+    } else {
+      // Fall back to recovery grant (for password reset links)
+      const recRes = await fetch(API + '/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'grant_type=recovery&token=' + encodeURIComponent(pendingToken)
+      });
+      if (recRes.ok) {
+        const recData = await recRes.json();
+        accessToken = recData.access_token;
+      }
+    }
+    if (!accessToken) throw new Error('Invite link is invalid or expired. Please ask for a new invitation link.');
+
+    // Step 2: Set password using the access token
+    const pwdRes = await fetch(API + '/user', {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd1 })
+    });
+    const pwdData = await pwdRes.json();
+    if (!pwdRes.ok) throw new Error(pwdData.msg || 'Could not set password. Please try again.');
+
+    saveSession(accessToken, pwdData);
+    showDashboard(pwdData);
   } catch(e) {
     showError('set-error', e.message);
   } finally {
@@ -958,10 +983,28 @@ function renderMetrics() {
   let ytdInflow = 0;
   Object.values(inflow).forEach(mv => months.forEach(m => { ytdInflow += mv[m]||0; }));
 
-  // Latest month for current inflow
+  // Latest month for current inflow + MoM change
   const latestM = months.filter(m => Object.values(inflow).some(mv=>(mv[m]||0)>0)).pop() || months[months.length-1];
   let curInflow = 0;
   Object.values(inflow).forEach(mv => { curInflow += mv[latestM]||0; });
+  // Previous month inflow for MoM %
+  const latestMIdx = MONTHS.indexOf(latestM);
+  const prevM = latestMIdx > 0 ? MONTHS[latestMIdx-1] : null;
+  let prevInflow = 0;
+  if (prevM) Object.values(inflow).forEach(mv => { prevInflow += mv[prevM]||0; });
+  const momChange = prevInflow > 0 ? ((curInflow - prevInflow) / prevInflow * 100) : null;
+  // Week-on-week change for weekly sales
+  const allWeeks = [];
+  Object.values(DATA.weeklyDataByProject).forEach(wdp => {
+    Object.keys(wdp).forEach(k => { if (!allWeeks.includes(k)) allWeeks.push(k); });
+  });
+  allWeeks.sort((a,b)=>{ const [ma,wa]=a.split('_'); const [mb,wb]=b.split('_'); return (MONTHS.indexOf(ma)-MONTHS.indexOf(mb))||parseInt(wa)-parseInt(wb); });
+  const lastWk  = allWeeks[allWeeks.length-1];
+  const prevWk  = allWeeks[allWeeks.length-2];
+  let thisWkTotal = 0, prevWkTotal = 0;
+  if (lastWk) Object.values(DATA.weeklyDataByProject).forEach(wdp => { thisWkTotal += wdp[lastWk]||0; });
+  if (prevWk) Object.values(DATA.weeklyDataByProject).forEach(wdp => { prevWkTotal += wdp[prevWk]||0; });
+  const wowChange = prevWkTotal > 0 ? ((thisWkTotal - prevWkTotal) / prevWkTotal * 100) : null;
 
   // Units sold & value
   let displayUnits = 0, displayValue = 0;
@@ -999,7 +1042,10 @@ function renderMetrics() {
     <div class="metric-card">
       <div class="metric-label">${latestM} Inflow</div>
       <div class="metric-value">${fmtM(curInflow)}</div>
-      <div class="metric-sub">Current month</div>
+      <div class="metric-sub" style="display:flex;align-items:center;justify-content:center;gap:4px;">
+        ${momChange!==null?`<span style="font-size:11px;font-weight:600;padding:1px 6px;border-radius:999px;background:${momChange>=0?'var(--green-lite)':'var(--red-lite)'};color:${momChange>=0?'var(--green)':'var(--red-dark)'};">${momChange>=0?'+':''}${momChange.toFixed(1)}% MoM</span>`:''}
+        <span>vs prior month</span>
+      </div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Units sold ${monthsSel?'(selected)':'YTD'}</div>
@@ -1029,7 +1075,10 @@ function renderMetrics() {
     <div class="metric-card green-card">
       <div class="metric-label">New this week</div>
       <div class="metric-value">${weekNew}</div>
-      <div class="metric-sub">sales recorded</div>
+      <div class="metric-sub" style="display:flex;align-items:center;justify-content:center;gap:4px;">
+        ${wowChange!==null?`<span style="font-size:11px;font-weight:600;padding:1px 6px;border-radius:999px;background:${wowChange>=0?'rgba(27,107,53,.15)':'rgba(176,28,46,.1)'};color:${wowChange>=0?'var(--green)':'var(--red-dark)'};">${wowChange>=0?'+':''}${wowChange.toFixed(1)}% WoW</span>`:''}
+        <span>sales recorded</span>
+      </div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Active offers</div>
@@ -1293,7 +1342,8 @@ async function sendChat() {
   const q = input.value.trim();
   if (!q) return;
   input.value = '';
-  document.querySelector('.chat-samples').style.display = 'none';
+  const samplesEl = document.querySelector('.chat-samples');
+  if (samplesEl) samplesEl.style.display = 'none';
   const userEl = document.createElement('div');
   userEl.className = 'chat-msg user';
   userEl.textContent = q;
@@ -1304,27 +1354,23 @@ async function sendChat() {
   msgs.appendChild(botEl);
   msgs.scrollTop = msgs.scrollHeight;
   try {
-    const res = await fetch(GROQ_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
-      body:JSON.stringify({
-        model:'openai/gpt-oss-20b',
-        messages:[
-          {role:'system',content:'You are an intelligence assistant for the Mixta Africa Operations Dashboard. Answer concisely using the data provided. Format numbers clearly.\n\n'+buildContext()},
-          {role:'user',content:q}
-        ],
-        temperature:0.2, max_tokens:600,
+    // Call our Netlify serverless proxy — key never exposed in browser
+    const res = await fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question: q,
+        context: buildContext()
       })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message||'API error '+res.status);
-    botEl.textContent = data.choices?.[0]?.message?.content || 'No response received.';
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    botEl.textContent = data.answer || 'No response received.';
   } catch(e) {
-    botEl.textContent = 'Sorry, I encountered an error: '+e.message;
+    botEl.textContent = 'Sorry, I encountered an error: ' + e.message + '. Please try again.';
   }
   msgs.scrollTop = msgs.scrollHeight;
 }
-
 // ══════════════════════════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════════════════════════
