@@ -1039,13 +1039,11 @@ function renderMetrics() {
         <div class="budget-bar"><div class="budget-fill" style="width:${Math.min(pctInflow,100)}%"></div></div>
       </div>
     </div>
-    <div class="metric-card">
+    <div class="metric-card" style="position:relative;">
+      ${momChange!==null?`<span style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:999px;background:${momChange>=0?'var(--green-lite)':'var(--red-lite)'};color:${momChange>=0?'var(--green)':'var(--red-dark)'};">${momChange>=0?'▲':' ▼'} ${Math.abs(momChange).toFixed(1)}%</span>`:''}
       <div class="metric-label">${latestM} Inflow</div>
       <div class="metric-value">${fmtM(curInflow)}</div>
-      <div class="metric-sub" style="display:flex;align-items:center;justify-content:center;gap:4px;">
-        ${momChange!==null?`<span style="font-size:11px;font-weight:600;padding:1px 6px;border-radius:999px;background:${momChange>=0?'var(--green-lite)':'var(--red-lite)'};color:${momChange>=0?'var(--green)':'var(--red-dark)'};">${momChange>=0?'+':''}${momChange.toFixed(1)}% MoM</span>`:''}
-        <span>vs prior month</span>
-      </div>
+      <div class="metric-sub">vs ${prevM||'prior month'}</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Units sold ${monthsSel?'(selected)':'YTD'}</div>
@@ -1072,13 +1070,11 @@ function renderMetrics() {
       <div class="metric-value">${incKYC}</div>
       <div class="metric-sub">pending action</div>
     </div>
-    <div class="metric-card green-card">
+    <div class="metric-card green-card" style="position:relative;">
+      ${wowChange!==null?`<span style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:999px;background:${wowChange>=0?'rgba(27,107,53,.15)':'rgba(176,28,46,.1)'};color:${wowChange>=0?'var(--green)':'var(--red-dark)'};">${wowChange>=0?'▲':'▼'} ${Math.abs(wowChange).toFixed(1)}%</span>`:''}
       <div class="metric-label">New this week</div>
       <div class="metric-value">${weekNew}</div>
-      <div class="metric-sub" style="display:flex;align-items:center;justify-content:center;gap:4px;">
-        ${wowChange!==null?`<span style="font-size:11px;font-weight:600;padding:1px 6px;border-radius:999px;background:${wowChange>=0?'rgba(27,107,53,.15)':'rgba(176,28,46,.1)'};color:${wowChange>=0?'var(--green)':'var(--red-dark)'};">${wowChange>=0?'+':''}${wowChange.toFixed(1)}% WoW</span>`:''}
-        <span>sales recorded</span>
-      </div>
+      <div class="metric-sub">vs prior week</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Active offers</div>
