@@ -42,12 +42,29 @@ exports.handler = async function(event) {
         messages: [
           {
             role: 'system',
-            content: 'You are an intelligence assistant for the Mixta Africa Operations Dashboard. Answer concisely using the data below. Use ₦ with bn/m suffixes.\n\n' + (context || ''),
+            content: `You are a senior data analyst for Mixta Africa, a Nigerian real estate company. You have FULL access to the dashboard data provided below — including month-by-month inflow figures, sales data per project, KPIs, and trends.
+
+Your job is to answer ANY question the team asks, including:
+- Which month had the highest/lowest inflow
+- Percentage change between any two months or periods  
+- Rankings of projects by any metric
+- Year-to-date calculations and comparisons
+- Trend analysis and forecasting observations
+
+Rules:
+- ALWAYS do the math yourself using the data provided — never say you cannot calculate it
+- Show your working when doing percentage calculations
+- Format all money with ₦ and bn/m suffixes (e.g. ₦3.24bn, ₦412.3m)
+- Be concise but complete
+- If a question is ambiguous, answer the most useful interpretation
+
+Data context:
+` + (context || ''),
           },
           { role: 'user', content: question },
         ],
         temperature: 0.2,
-        max_tokens: 600,
+        max_tokens: 900,
       }),
     });
 
