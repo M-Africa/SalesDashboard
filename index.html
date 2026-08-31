@@ -1322,17 +1322,87 @@ function askSample(btn) {
 }
 
 function buildContext() {
-  const sales   = DATA.sales;
-  const inflow  = DATA.inflow;
-  const months  = MONTHS;
-  let ctx = 'Mixta Africa Operations Dashboard Data:\n\n';
-  ctx += 'SALES DATA (all projects):\n';
-  sales.forEach(s => {
-    const ytdInf = months.reduce((a,m)=>{const v=inflow[s.name]; return a+(v?v[m]||0:0);},0);
-    ctx += `${s.name} (${s.type}): TD=${s.totalTD}, YTD=${s.totalYTD}, ValYTD=${fmtN(s.valueYTD)}, YTDInflow=${fmtM(ytdInf)}, KYCinc=${s.incompleteKYC}, Offers=${s.offers}\n`;
+  const sales  = DATA.sales;
+  const inflow = DATA.inflow;
+  const sm     = DATA.salesMonthly;
+  const months = MONTHS;
+  const hasSm  = Object.keys(sm).length > 0;
+  const N      = '\u20a6'; // Naira symbol
+
+  // Monthly totals
+  const mTot = {};
+  months.forEach(m => { mTot[m] = 0; });
+  Object.values(inflow).forEach(mv => { months.forEach(m => { mTot[m] += mv[m]||0; }); });
+  const grandYTD = months.reduce((a,m) => a + mTot[m], 0);
+
+  let ctx = 'MIXTA AFRICA OPERATIONS DASHBOARD — Complete data for AI analysis\n';
+  ctx += 'As of: ' + DATA.lastUpdated + '\n';
+  ctx += 'Currency: Nigerian Naira. Inflow figures in millions unless stated.\n\n';
+
+  // Monthly totals summary
+  ctx += '=== MONTHLY INFLOW TOTALS (all projects combined, Nm) ===\n';
+  let prev = 0;
+  months.forEach(m => {
+    const v = mTot[m];
+    if (v === 0 && prev === 0) return;
+    const chg = prev > 0 ? ' (' + (v >= prev ? '+' : '') + ((v - prev)/prev*100).toFixed(1) + '% vs prior month)' : '';
+    ctx += m + ': ' + fmtM(v) + chg + '\n';
+    if (v > 0) prev = v;
   });
-  const grand = Object.values(inflow).reduce((a,mv)=>a+months.reduce((b,m)=>b+(mv[m]||0),0),0);
-  ctx += `\nTotal YTD Inflow: ${fmtM(grand)}\nData as of: ${DATA.lastUpdated}`;
+
+  // Month ranking
+  const ranked = months.map(m => ({m, v: mTot[m]})).filter(x => x.v > 0).sort((a,b) => b.v - a.v);
+  ctx += '\nMONTH RANKING (highest to lowest inflow):\n';
+  ranked.forEach((x, i) => { ctx += (i+1) + '. ' + x.m + ': ' + fmtM(x.v) + '\n'; });
+
+  // Per-project monthly breakdown
+  ctx += '\n=== MONTHLY INFLOW BY PROJECT (Nm) ===\n';
+  Object.entries(inflow).forEach(([proj, mv]) => {
+    const ytd = months.reduce((a,m) => a + (mv[m]||0), 0);
+    if (ytd === 0) return;
+    const row = months.filter(m => mv[m] > 0).map(m => m + ':' + (mv[m]||0).toFixed(1)).join(', ');
+    ctx += proj + ' — YTD: ' + fmtM(ytd) + ' | Monthly: ' + row + '\n';
+  });
+
+  // Project ranking by inflow
+  ctx += '\nPROJECT RANKING BY YTD INFLOW:\n';
+  const projRank = Object.entries(inflow)
+    .map(([p, mv]) => ({p, ytd: months.reduce((a,m) => a+(mv[m]||0), 0)}))
+    .filter(x => x.ytd > 0).sort((a,b) => b.ytd - a.ytd);
+  projRank.forEach((x, i) => { ctx += (i+1) + '. ' + x.p + ': ' + fmtM(x.ytd) + ' (' + (x.ytd/grandYTD*100).toFixed(1) + '% of total)\n'; });
+
+  // Sales data
+  ctx += '\n=== SALES DATA PER PROJECT ===\n';
+  ctx += 'Project | Type | Released | Sold-TD | Value-TD | Sold-YTD | Value-YTD | KYC-Incomplete | Offers\n';
+  sales.forEach(s => {
+    ctx += s.name + ' | ' + s.type + ' | ' + s.releasedUnits + ' | ' + s.totalTD + ' | ' + fmtN(s.valueToDate) + ' | ' + s.totalYTD + ' | ' + fmtN(s.valueYTD) + ' | ' + s.incompleteKYC + ' | ' + s.offers + '\n';
+  });
+
+  // Monthly units sold
+  if (hasSm) {
+    ctx += '\n=== MONTHLY UNITS SOLD BY PROJECT ===\n';
+    Object.entries(sm).forEach(([proj, data]) => {
+      const hasData = months.some(m => data[m] && data[m].units > 0);
+      if (!hasData) return;
+      const row = months.filter(m => data[m]?.units > 0).map(m => m + ':' + data[m].units).join(', ');
+      ctx += proj + ': ' + row + '\n';
+    });
+  }
+
+  // Key KPIs
+  const totTD  = sales.reduce((a,s) => a+s.totalTD, 0);
+  const totYTD = sales.reduce((a,s) => a+s.totalYTD, 0);
+  const totVal = sales.reduce((a,s) => a+s.valueYTD, 0);
+  const totKYC = sales.reduce((a,s) => a+s.incompleteKYC, 0);
+  ctx += '\n=== KEY KPIs ===\n';
+  ctx += 'Total units sold (TD): ' + totTD + '\n';
+  ctx += 'Total units sold (YTD): ' + totYTD + '\n';
+  ctx += 'Total value of sales (YTD): ' + fmtN(totVal) + '\n';
+  ctx += 'Total YTD inflow: ' + fmtM(grandYTD) + '\n';
+  ctx += 'Incomplete KYC: ' + totKYC + ' clients\n';
+  ctx += 'Inflow budget: ' + fmtM(51930) + ' | Achieved: ' + (grandYTD/51930*100).toFixed(1) + '%\n';
+  ctx += 'Sales value budget: ' + fmtN(104430000000) + ' | Achieved: ' + (totVal/104430000000*100).toFixed(1) + '%\n';
+
   return ctx;
 }
 
