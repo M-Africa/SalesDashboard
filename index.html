@@ -984,26 +984,40 @@ function renderMetrics() {
   Object.values(inflow).forEach(mv => months.forEach(m => { ytdInflow += mv[m]||0; }));
 
   // Latest month for current inflow + MoM change
+  // Uses filtered inflow so it respects project/type selections
   const latestM = months.filter(m => Object.values(inflow).some(mv=>(mv[m]||0)>0)).pop() || months[months.length-1];
-  let curInflow = 0;
-  Object.values(inflow).forEach(mv => { curInflow += mv[latestM]||0; });
-  // Previous month inflow for MoM %
   const latestMIdx = MONTHS.indexOf(latestM);
   const prevM = latestMIdx > 0 ? MONTHS[latestMIdx-1] : null;
-  let prevInflow = 0;
-  if (prevM) Object.values(inflow).forEach(mv => { prevInflow += mv[prevM]||0; });
-  const momChange = prevInflow > 0 ? ((curInflow - prevInflow) / prevInflow * 100) : null;
-  // Week-on-week change for weekly sales
-  const allWeeks = [];
-  Object.values(DATA.weeklyDataByProject).forEach(wdp => {
-    Object.keys(wdp).forEach(k => { if (!allWeeks.includes(k)) allWeeks.push(k); });
+  let curInflow = 0, prevInflow = 0;
+  // inflow is already the result of getFilteredInflow() — fully respects active filters
+  Object.values(inflow).forEach(mv => {
+    curInflow  += mv[latestM]||0;
+    if (prevM) prevInflow += mv[prevM]||0;
   });
-  allWeeks.sort((a,b)=>{ const [ma,wa]=a.split('_'); const [mb,wb]=b.split('_'); return (MONTHS.indexOf(ma)-MONTHS.indexOf(mb))||parseInt(wa)-parseInt(wb); });
-  const lastWk  = allWeeks[allWeeks.length-1];
-  const prevWk  = allWeeks[allWeeks.length-2];
+  // Only show MoM if we're not filtering to a specific month (would be misleading)
+  const momChange = (!monthsSel && prevInflow > 0) ? ((curInflow - prevInflow) / prevInflow * 100) : null;
+
+  // Week-on-week change — fully filtered by active project and type selections
+  const wdp = DATA.weeklyDataByProject;
+  const activeWdpKeys = new Set();
+  Object.entries(wdp).forEach(([proj, weeks]) => {
+    if (!projectActive(proj)) return;
+    if (!typeActive(DATA.projectTypes[proj])) return;
+    Object.keys(weeks).forEach(k => activeWdpKeys.add(k));
+  });
+  const allWeeks = [...activeWdpKeys].sort((a,b) => {
+    const [ma,wa] = a.split('_'); const [mb,wb] = b.split('_');
+    return (MONTHS.indexOf(ma)-MONTHS.indexOf(mb)) || parseInt(wa)-parseInt(wb);
+  });
+  const lastWk = allWeeks[allWeeks.length-1];
+  const prevWk = allWeeks[allWeeks.length-2];
   let thisWkTotal = 0, prevWkTotal = 0;
-  if (lastWk) Object.values(DATA.weeklyDataByProject).forEach(wdp => { thisWkTotal += wdp[lastWk]||0; });
-  if (prevWk) Object.values(DATA.weeklyDataByProject).forEach(wdp => { prevWkTotal += wdp[prevWk]||0; });
+  Object.entries(wdp).forEach(([proj, weeks]) => {
+    if (!projectActive(proj)) return;
+    if (!typeActive(DATA.projectTypes[proj])) return;
+    if (lastWk) thisWkTotal += weeks[lastWk]||0;
+    if (prevWk) prevWkTotal += weeks[prevWk]||0;
+  });
   const wowChange = prevWkTotal > 0 ? ((thisWkTotal - prevWkTotal) / prevWkTotal * 100) : null;
 
   // Units sold & value
