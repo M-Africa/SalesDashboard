@@ -568,7 +568,8 @@ const FALLBACK_PROJECT_TYPES = Object.fromEntries(FALLBACK_SALES.map(s=>[s.name,
 // ══════════════════════════════════════════════════════════════════════════
 let currentUser = null;
 let authToken   = null;
-let pendingToken = null;
+let pendingToken     = null;
+let pendingTokenType = 'invite';
 let state = { type:"all", projects:[], months:[] };
 let DATA = {
   inflow:              JSON.parse(JSON.stringify(FALLBACK_INFLOW)),
@@ -649,44 +650,87 @@ async function handleSetPassword() {
   const btn = document.getElementById('set-btn');
   btn.classList.add('loading'); btn.textContent = 'Setting password…';
   try {
-    // Step 1: Exchange invite/recovery token for access token
     let accessToken = null;
-    // Try invitation grant first
-    const invRes = await fetch(API + '/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'grant_type=invitation&token=' + encodeURIComponent(pendingToken)
-    });
-    if (invRes.ok) {
-      const invData = await invRes.json();
-      accessToken = invData.access_token;
-    } else {
-      // Fall back to recovery grant (for password reset links)
-      const recRes = await fetch(API + '/token', {
+    let userData    = null;
+
+    if (pendingTokenType === 'recovery') {
+      // PASSWORD RESET FLOW
+      // POST to /recover with token + new password directly
+      const res = await fetch(API + '/recover', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'grant_type=recovery&token=' + encodeURIComponent(pendingToken)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: pendingToken, password: pwd1 })
       });
-      if (recRes.ok) {
-        const recData = await recRes.json();
-        accessToken = recData.access_token;
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.msg || data.error_description || 'Reset link is invalid or expired. Please request a new one.');
+      accessToken = data.access_token;
+      userData    = data;
+
+    } else {
+      // INVITE FLOW
+      // The invite_token is used directly as a Bearer token to verify the user
+      // Then PUT /user to set the password
+      const verifyRes = await fetch(API + '/user', {
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + pendingToken }
+      });
+      // Whether verify works or not, try setting password with the token
+      const pwdRes = await fetch(API + '/user', {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + pendingToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password: pwd1 })
+      });
+      const pwdData = await pwdRes.json();
+      if (!pwdRes.ok) {
+        // If direct use fails, try the verify endpoint
+        const verRes = await fetch(API + '/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: pendingToken, type: 'invite' })
+        });
+        const verData = await verRes.json();
+        if (!verRes.ok) throw new Error('Invite link is invalid or expired. Please ask for a new invitation.');
+        // Now set password with the verified access token
+        const setPwdRes = await fetch(API + '/user', {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + verData.access_token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ password: pwd1 })
+        });
+        const setPwdData = await setPwdRes.json();
+        if (!setPwdRes.ok) throw new Error(setPwdData.msg || 'Could not set password. Please try again.');
+        accessToken = verData.access_token;
+        userData    = setPwdData;
+      } else {
+        // Direct use of invite token worked — now get a proper session token
+        const tokenRes = await fetch(API + '/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'grant_type=password&username=' + encodeURIComponent(pwdData.email) + '&password=' + encodeURIComponent(pwd1)
+        });
+        if (tokenRes.ok) {
+          const tokenData = await tokenRes.json();
+          accessToken = tokenData.access_token;
+          userData    = pwdData;
+        } else {
+          // Use the invite token itself as session — user can log in fresh
+          accessToken = pendingToken;
+          userData    = pwdData;
+        }
       }
     }
-    if (!accessToken) throw new Error('Invite link is invalid or expired. Please ask for a new invitation link.');
 
-    // Step 2: Set password using the access token
-    const pwdRes = await fetch(API + '/user', {
-      method: 'PUT',
-      headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pwd1 })
-    });
-    const pwdData = await pwdRes.json();
-    if (!pwdRes.ok) throw new Error(pwdData.msg || 'Could not set password. Please try again.');
+    if (!accessToken || !userData) throw new Error('Could not complete setup. Please try logging in with your new password.');
+    saveSession(accessToken, userData);
+    showDashboard(userData);
 
-    saveSession(accessToken, pwdData);
-    showDashboard(pwdData);
   } catch(e) {
-    showError('set-error', e.message);
+    showError('set-error', e.message || 'Something went wrong. Please try again or request a new invite.');
   } finally {
     btn.classList.remove('loading'); btn.textContent = 'Set password & sign in';
   }
@@ -750,11 +794,30 @@ function logout() {
 function parseHashTokens() {
   const hash = window.location.hash.substring(1);
   if (!hash) return false;
-  const params = Object.fromEntries(hash.split('&').map(p=>p.split('=')));
-  const token = params.invite_token || params.recovery_token || params.confirmation_token;
-  if (!token) return false;
-  pendingToken = token;
-  history.replaceState(null,'',window.location.pathname);
+  // Must split on & first, then split each param on FIRST = only
+  // because token values contain = characters (base64 padding)
+  const params = {};
+  hash.split('&').forEach(part => {
+    const eq = part.indexOf('=');
+    if (eq > 0) {
+      const key = part.slice(0, eq);
+      const val = decodeURIComponent(part.slice(eq + 1));
+      params[key] = val;
+    }
+  });
+  if (params.invite_token) {
+    pendingToken = params.invite_token;
+    pendingTokenType = 'invite';
+  } else if (params.recovery_token) {
+    pendingToken = params.recovery_token;
+    pendingTokenType = 'recovery';
+  } else if (params.confirmation_token) {
+    pendingToken = params.confirmation_token;
+    pendingTokenType = 'invite';
+  } else {
+    return false;
+  }
+  history.replaceState(null, '', window.location.pathname);
   return true;
 }
 
@@ -997,7 +1060,9 @@ function renderMetrics() {
   // Only show MoM if we're not filtering to a specific month (would be misleading)
   const momChange = (!monthsSel && prevInflow > 0) ? ((curInflow - prevInflow) / prevInflow * 100) : null;
 
-  // Week-on-week change — fully filtered by active project and type selections
+  // Week-on-week inflow change — filtered by active projects/type
+  // Only shown when both weekNew > 0 AND prior week inflow data exists
+  // This prevents showing a stale WoW % when this week has no sales
   const wdp = DATA.weeklyDataByProject;
   const activeWdpKeys = new Set();
   Object.entries(wdp).forEach(([proj, weeks]) => {
@@ -1018,7 +1083,11 @@ function renderMetrics() {
     if (lastWk) thisWkTotal += weeks[lastWk]||0;
     if (prevWk) prevWkTotal += weeks[prevWk]||0;
   });
-  const wowChange = prevWkTotal > 0 ? ((thisWkTotal - prevWkTotal) / prevWkTotal * 100) : null;
+  // Only show WoW % when this week actually has sales AND inflow data exists for both weeks
+  // If weekNew is 0 (no sales this week), hide the badge — it would be misleading
+  const wowChange = (weekNew > 0 && thisWkTotal > 0 && prevWkTotal > 0)
+    ? ((thisWkTotal - prevWkTotal) / prevWkTotal * 100)
+    : null;
 
   // Units sold & value
   let displayUnits = 0, displayValue = 0;
@@ -1032,7 +1101,7 @@ function renderMetrics() {
   }
 
   let incKYC=0, offers=0, weekNew=0, released=0;
-  sales.forEach(s => { incKYC+=s.incompleteKYC; offers+=s.offers; weekNew+=s.weekNew; released+=s.releasedUnits; });
+  sales.forEach(s => { incKYC+=s.incompleteKYC; offers+=s.offers; weekNew+=s.weekNew||0; weekNew+=s.weekNew; released+=s.releasedUnits; });
 
   const budgetShow = document.getElementById('budget-toggle-btn').classList.contains('active');
 
