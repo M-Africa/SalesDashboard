@@ -578,6 +578,7 @@ let DATA = {
   projectTypes:        JSON.parse(JSON.stringify(FALLBACK_PROJECT_TYPES)),
   weeklyDataByProject: {},
   lastUpdated:         "28 Aug 2026",
+  liveLoaded:          false,  // true only after Google Sheet fetch succeeds
 };
 let barChart, donutChart, lineChart, salesBarChart;
 const MONTHS     = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -961,11 +962,13 @@ async function refreshData() {
   const btn = document.getElementById('refresh-btn2');
   if (btn) { btn.textContent = '↻ Loading…'; btn.disabled = true; }
   try {
+    console.log('Mixta: fetching live sheet data...');
     const [inflowTbl, salesTbl, monthlyTbl] = await Promise.all([
       fetchSheet(SHEET_TABS.INFLOW),
       fetchSheet(SHEET_TABS.SALES),
       fetchSheet(SHEET_TABS.MONTHLY),
     ]);
+    console.log('Mixta: sheets fetched OK — inflow rows:', inflowTbl?.rows?.length, 'sales rows:', salesTbl?.rows?.length);
     const liveInflow  = parseInflow(inflowTbl);
     const liveSales   = parseSales(salesTbl);
     const liveMonthly = parseSalesMonthly(monthlyTbl);
@@ -975,14 +978,16 @@ async function refreshData() {
     if (Object.keys(liveMonthly).length) DATA.salesMonthly = liveMonthly;
     if (Object.keys(liveWeekly).length)  DATA.weeklyDataByProject = liveWeekly;
     DATA.lastUpdated = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    DATA.liveLoaded = true;
+    console.log('Mixta: live data loaded. liveLoaded=true. Weekly keys:', Object.keys(DATA.weeklyDataByProject).length);
     document.getElementById('error-banner').classList.remove('visible');
     document.getElementById('last-updated').textContent = DATA.lastUpdated;
     render();
   } catch(e) {
     const eb = document.getElementById('error-banner');
-    eb.textContent = '⚠ Could not load live data: '+e.message+'. Showing cached data. Ensure your Google Sheet is shared publicly (Anyone with link → Viewer).';
+    eb.textContent = '⚠ Live data error: ' + e.message + ' — Check browser console (F12) for details. Sheet must be set to Anyone with the link can view.';
     eb.classList.add('visible');
-    console.warn('Sheet fetch failed:', e.message);
+    console.error('Mixta sheet fetch failed:', e.message, e);
   } finally {
     if (btn) { btn.textContent = '↻ Refresh data'; btn.disabled = false; }
   }
@@ -1057,8 +1062,11 @@ function renderMetrics() {
     curInflow  += mv[latestM]||0;
     if (prevM) prevInflow += mv[prevM]||0;
   });
-  // Only show MoM if we're not filtering to a specific month (would be misleading)
-  const momChange = (!monthsSel && prevInflow > 0) ? ((curInflow - prevInflow) / prevInflow * 100) : null;
+  // Only show MoM when live data is loaded AND not filtering to specific month
+  // Fallback data has static month values that would give a false MoM reading
+  const momChange = (DATA.liveLoaded && !monthsSel && prevInflow > 0 && curInflow > 0)
+    ? ((curInflow - prevInflow) / prevInflow * 100)
+    : null;
 
   // Week-on-week inflow change — filtered by active projects/type
   // Only shown when both weekNew > 0 AND prior week inflow data exists
@@ -1083,9 +1091,9 @@ function renderMetrics() {
     if (lastWk) thisWkTotal += weeks[lastWk]||0;
     if (prevWk) prevWkTotal += weeks[prevWk]||0;
   });
-  // Only show WoW % when this week actually has sales AND inflow data exists for both weeks
-  // If weekNew is 0 (no sales this week), hide the badge — it would be misleading
-  const wowChange = (weekNew > 0 && thisWkTotal > 0 && prevWkTotal > 0)
+  // Only show WoW when live data loaded AND this week has sales AND both weeks have inflow
+  // Prevents showing stale fallback data or comparing mismatched sources
+  const wowChange = (DATA.liveLoaded && weekNew > 0 && thisWkTotal > 0 && prevWkTotal > 0)
     ? ((thisWkTotal - prevWkTotal) / prevWkTotal * 100)
     : null;
 
