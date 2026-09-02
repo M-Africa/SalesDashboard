@@ -651,84 +651,50 @@ async function handleSetPassword() {
   const btn = document.getElementById('set-btn');
   btn.classList.add('loading'); btn.textContent = 'Setting password…';
   try {
-    let accessToken = null;
-    let userData    = null;
-
-    if (pendingTokenType === 'recovery') {
-      // PASSWORD RESET FLOW
-      // POST to /recover with token + new password directly
-      const res = await fetch(API + '/recover', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: pendingToken, password: pwd1 })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || data.error_description || 'Reset link is invalid or expired. Please request a new one.');
-      accessToken = data.access_token;
-      userData    = data;
-
-    } else {
-      // INVITE FLOW
-      // The invite_token is used directly as a Bearer token to verify the user
-      // Then PUT /user to set the password
-      const verifyRes = await fetch(API + '/user', {
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + pendingToken }
-      });
-      // Whether verify works or not, try setting password with the token
-      const pwdRes = await fetch(API + '/user', {
-        method: 'PUT',
-        headers: {
-          'Authorization': 'Bearer ' + pendingToken,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ password: pwd1 })
-      });
-      const pwdData = await pwdRes.json();
-      if (!pwdRes.ok) {
-        // If direct use fails, try the verify endpoint
-        const verRes = await fetch(API + '/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: pendingToken, type: 'invite' })
-        });
-        const verData = await verRes.json();
-        if (!verRes.ok) throw new Error('Invite link is invalid or expired. Please ask for a new invitation.');
-        // Now set password with the verified access token
-        const setPwdRes = await fetch(API + '/user', {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + verData.access_token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ password: pwd1 })
-        });
-        const setPwdData = await setPwdRes.json();
-        if (!setPwdRes.ok) throw new Error(setPwdData.msg || 'Could not set password. Please try again.');
-        accessToken = verData.access_token;
-        userData    = setPwdData;
-      } else {
-        // Direct use of invite token worked — now get a proper session token
-        const tokenRes = await fetch(API + '/token', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: 'grant_type=password&username=' + encodeURIComponent(pwdData.email) + '&password=' + encodeURIComponent(pwd1)
-        });
-        if (tokenRes.ok) {
-          const tokenData = await tokenRes.json();
-          accessToken = tokenData.access_token;
-          userData    = pwdData;
-        } else {
-          // Use the invite token itself as session — user can log in fresh
-          accessToken = pendingToken;
-          userData    = pwdData;
-        }
-      }
+    // Step 1: Exchange the one-time token for a real access token
+    // This is the ONLY correct Netlify Identity flow for both invites and recovery
+    const tokenType = pendingTokenType === 'recovery' ? 'recovery' : 'invite';
+    const verRes = await fetch(API + '/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: pendingToken, type: tokenType })
+    });
+    const verData = await verRes.json();
+    if (!verRes.ok) {
+      throw new Error(
+        verData.msg || verData.error_description ||
+        'Invite link is invalid or expired. Please ask ' + (tokenType === 'recovery' ? 'for a new password reset email.' : 'to be re-invited.')
+      );
     }
+    const accessToken = verData.access_token;
+    if (!accessToken) throw new Error('Could not verify token. Please request a new invite link.');
 
-    if (!accessToken || !userData) throw new Error('Could not complete setup. Please try logging in with your new password.');
-    saveSession(accessToken, userData);
-    showDashboard(userData);
+    // Step 2: Set the password using the real access token
+    const pwdRes = await fetch(API + '/user', {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ password: pwd1 })
+    });
+    const pwdData = await pwdRes.json();
+    if (!pwdRes.ok) throw new Error(pwdData.msg || 'Could not set password. Please try again.');
+
+    // Step 3: Log the user in with their new password to get a fresh session token
+    const loginRes = await fetch(API + '/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'grant_type=password&username=' + encodeURIComponent(pwdData.email) + '&password=' + encodeURIComponent(pwd1)
+    });
+    if (loginRes.ok) {
+      const loginData = await loginRes.json();
+      saveSession(loginData.access_token, pwdData);
+    } else {
+      // Login failed after set — use the verify token as session, user can log in fresh
+      saveSession(accessToken, pwdData);
+    }
+    showDashboard(pwdData);
 
   } catch(e) {
     showError('set-error', e.message || 'Something went wrong. Please try again or request a new invite.');
@@ -736,6 +702,7 @@ async function handleSetPassword() {
     btn.classList.remove('loading'); btn.textContent = 'Set password & sign in';
   }
 }
+
 
 async function handleForgot() {
   clearError('forgot-error');
@@ -1068,34 +1035,7 @@ function renderMetrics() {
     ? ((curInflow - prevInflow) / prevInflow * 100)
     : null;
 
-  // Week-on-week inflow change — filtered by active projects/type
-  // Only shown when both weekNew > 0 AND prior week inflow data exists
-  // This prevents showing a stale WoW % when this week has no sales
-  const wdp = DATA.weeklyDataByProject;
-  const activeWdpKeys = new Set();
-  Object.entries(wdp).forEach(([proj, weeks]) => {
-    if (!projectActive(proj)) return;
-    if (!typeActive(DATA.projectTypes[proj])) return;
-    Object.keys(weeks).forEach(k => activeWdpKeys.add(k));
-  });
-  const allWeeks = [...activeWdpKeys].sort((a,b) => {
-    const [ma,wa] = a.split('_'); const [mb,wb] = b.split('_');
-    return (MONTHS.indexOf(ma)-MONTHS.indexOf(mb)) || parseInt(wa)-parseInt(wb);
-  });
-  const lastWk = allWeeks[allWeeks.length-1];
-  const prevWk = allWeeks[allWeeks.length-2];
-  let thisWkTotal = 0, prevWkTotal = 0;
-  Object.entries(wdp).forEach(([proj, weeks]) => {
-    if (!projectActive(proj)) return;
-    if (!typeActive(DATA.projectTypes[proj])) return;
-    if (lastWk) thisWkTotal += weeks[lastWk]||0;
-    if (prevWk) prevWkTotal += weeks[prevWk]||0;
-  });
-  // Only show WoW when live data loaded AND this week has sales AND both weeks have inflow
-  // Prevents showing stale fallback data or comparing mismatched sources
-  const wowChange = (DATA.liveLoaded && weekNew > 0 && thisWkTotal > 0 && prevWkTotal > 0)
-    ? ((thisWkTotal - prevWkTotal) / prevWkTotal * 100)
-    : null;
+  // WoW badge removed — no historical weekly sales data in sheet to compare against
 
   // Units sold & value
   let displayUnits = 0, displayValue = 0;
@@ -1165,11 +1105,8 @@ function renderMetrics() {
     </div>
     <div class="metric-card green-card">
       <div class="metric-label">New this week</div>
-      <div style="display:flex;align-items:baseline;justify-content:center;gap:6px;flex-wrap:nowrap;">
-        <div class="metric-value" style="margin:0;">${weekNew}</div>
-        ${wowChange!==null?`<span style="font-size:10px;font-weight:700;line-height:1;padding:3px 6px;border-radius:6px;background:${wowChange>=0?'var(--green-lite)':'rgba(176,28,46,.08)'};color:${wowChange>=0?'var(--green)':'var(--red-dark)'};">${wowChange>=0?'↑':'↓'}${Math.abs(wowChange).toFixed(1)}%</span>`:''}
-      </div>
-      <div class="metric-sub">vs prior week</div>
+      <div class="metric-value">${weekNew}</div>
+      <div class="metric-sub">sales recorded</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Active offers</div>
@@ -1515,20 +1452,23 @@ async function sendChat() {
   msgs.appendChild(botEl);
   msgs.scrollTop = msgs.scrollHeight;
   try {
-    // Call our Netlify serverless proxy — key never exposed in browser
     const res = await fetch('/.netlify/functions/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        question: q,
-        context: buildContext()
-      })
+      body: JSON.stringify({ question: q, context: buildContext() })
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Request failed');
+    // Check if response is HTML (means function not deployed)
+    const rawText = await res.text();
+    if (rawText.trim().startsWith('<')) {
+      throw new Error('Chat function not found on server. Please ensure netlify/functions/chat.js is committed to GitHub and netlify.toml is at the repo root.');
+    }
+    let data;
+    try { data = JSON.parse(rawText); }
+    catch(e) { throw new Error('Invalid response from server: ' + rawText.slice(0,80)); }
+    if (!res.ok) throw new Error(data.error || 'Server error ' + res.status);
     botEl.textContent = data.answer || 'No response received.';
   } catch(e) {
-    botEl.textContent = 'Sorry, I encountered an error: ' + e.message + '. Please try again.';
+    botEl.textContent = 'Error: ' + e.message;
   }
   msgs.scrollTop = msgs.scrollHeight;
 }
