@@ -1,8 +1,14 @@
 [build]
+  publish = "."
   functions = "netlify/functions"
 
+# Never let browsers or CDN cache the dashboard page — every visit gets the latest deploy
 [[headers]]
-  for = "/*"
+  for = "/index.html"
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Content-Type-Options = "nosniff"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
